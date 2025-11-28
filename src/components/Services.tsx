@@ -62,11 +62,11 @@ export default function Services({ onOpenBooking }: ServicesProps) {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
             Xidmətlərim
           </h2>
-          <div className="w-24 h-1 bg-primary-600 mx-auto mb-6"></div>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <div className="w-16 h-0.5 bg-primary-600 mx-auto mb-4"></div>
+          <p className="text-base text-gray-600 max-w-2xl mx-auto">
             Turizm sahəsində hərtərəfli xidmətlər və peşəkar məsləhət
           </p>
         </motion.div>
@@ -81,7 +81,7 @@ export default function Services({ onOpenBooking }: ServicesProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white p-5 sm:p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow"
+                className="bg-white p-5 sm:p-6 rounded-lg border border-gray-100 hover:border-primary-200 hover:shadow-md transition-all"
               >
                 <div className="flex items-center gap-3 sm:gap-4 mb-4">
                   <div className="p-2.5 sm:p-3 bg-primary-100 rounded-lg flex-shrink-0">

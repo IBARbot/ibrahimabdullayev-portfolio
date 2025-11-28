@@ -103,7 +103,7 @@ export default function Hero({ onOpenBooking }: HeroProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight"
+            className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight"
           >
             {content.title.includes('İbrahim Abdullayev') ? (
               <>
@@ -120,7 +120,7 @@ export default function Hero({ onOpenBooking }: HeroProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto"
+            className="text-lg md:text-xl text-gray-600 mb-6 max-w-2xl mx-auto"
           >
             {content.subtitle}
           </motion.p>
@@ -129,7 +129,7 @@ export default function Hero({ onOpenBooking }: HeroProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="text-lg text-gray-500 mb-12 max-w-2xl mx-auto"
+            className="text-base text-gray-500 mb-10 max-w-xl mx-auto"
           >
             {content.description}
           </motion.p>
@@ -147,10 +147,10 @@ export default function Hero({ onOpenBooking }: HeroProps) {
               Xidmətlərimə Bax
             </button>
             <button
-              onClick={() => scrollToSection('contact')}
+              onClick={() => onOpenBooking?.()}
               className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-white text-primary-600 border-2 border-primary-600 rounded-lg font-semibold hover:bg-primary-50 active:bg-primary-100 transition-all active:scale-95 touch-manipulation text-sm sm:text-base"
             >
-              Əlaqə Saxla
+              İndi Rezerv Et
             </button>
           </motion.div>
 

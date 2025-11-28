@@ -61,11 +61,11 @@ export default function Projects({ onOpenBooking }: ProjectsProps) {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
             Portfolio
           </h2>
-          <div className="w-24 h-1 bg-primary-600 mx-auto mb-6"></div>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <div className="w-16 h-0.5 bg-primary-600 mx-auto mb-4"></div>
+          <p className="text-base text-gray-600 max-w-2xl mx-auto">
             Təqdim etdiyim xidmətlər və müştəri uğur hekayələri
           </p>
         </motion.div>
@@ -87,7 +87,7 @@ export default function Projects({ onOpenBooking }: ProjectsProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100"
+              className="bg-white rounded-lg border border-gray-100 overflow-hidden hover:border-primary-200 hover:shadow-md transition-all duration-300"
             >
               <div className="relative h-48 sm:h-56 bg-gradient-to-br from-primary-400 to-primary-600 overflow-hidden group">
                 <img

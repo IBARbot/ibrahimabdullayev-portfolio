@@ -82,11 +82,11 @@ export default function Contact() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
             Əlaqə
           </h2>
-          <div className="w-24 h-1 bg-primary-600 mx-auto mb-6"></div>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <div className="w-16 h-0.5 bg-primary-600 mx-auto mb-4"></div>
+          <p className="text-base text-gray-600 max-w-2xl mx-auto">
             Mənimlə əlaqə saxlayın
           </p>
         </motion.div>
@@ -199,7 +199,7 @@ export default function Contact() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <form onSubmit={handleSubmit} className="bg-white p-5 sm:p-6 lg:p-8 rounded-lg shadow-lg">
+            <form onSubmit={handleSubmit} className="bg-white p-5 sm:p-6 lg:p-8 rounded-lg border border-gray-100">
               <div className="space-y-5 sm:space-y-6">
                 <div>
                   <label

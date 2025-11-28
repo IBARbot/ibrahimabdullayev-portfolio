@@ -71,11 +71,11 @@ export default function About() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
             {content.title}
           </h2>
-          <div className="w-24 h-1 bg-primary-600 mx-auto mb-6"></div>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          <div className="w-16 h-0.5 bg-primary-600 mx-auto mb-4"></div>
+          <p className="text-base text-gray-600 max-w-2xl mx-auto">
             Turizm sahəsində təcrübəli mütəxəssis kimi səyahətçilərə ən yaxşı xidməti təqdim edirəm
           </p>
         </motion.div>
