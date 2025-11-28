@@ -47,11 +47,55 @@ export default async function handler(req, res) {
       let emailContent = `<h2>Yeni Rezervasiya Sorğusu</h2><p><strong>Ad:</strong> ${bookingData.name}</p><p><strong>Email:</strong> ${bookingData.email}</p><p><strong>Telefon:</strong> ${bookingData.phone}</p><p><strong>Növ:</strong> ${bookingData.type}</p>`;
       
       if (bookingData.type === 'flight') {
-        emailSubject = `Yeni Aviabilet Sorğusu - ${bookingData.from || ''} → ${bookingData.to || ''}`;
-        emailContent += `<p><strong>Haradan:</strong> ${bookingData.from || 'Təyin edilməyib'}</p><p><strong>Hara:</strong> ${bookingData.to || 'Təyin edilməyib'}</p><p><strong>Tarix:</strong> ${bookingData.date || 'Təyin edilməyib'}</p><p><strong>Nəfər sayı:</strong> ${bookingData.passengers || 'Təyin edilməyib'}</p>`;
+        emailSubject = `Yeni Aviabilet Sorğusu`;
+        emailContent += `<p><strong>Səyahət növü:</strong> ${bookingData.tripType || 'Təyin edilməyib'}</p>`;
+        
+        if (bookingData.tripType === 'one-way' || bookingData.tripType === 'round-trip') {
+          emailContent += `<p><strong>Haradan:</strong> ${bookingData.from || 'Təyin edilməyib'}</p><p><strong>Hara:</strong> ${bookingData.to || 'Təyin edilməyib'}</p>`;
+          emailContent += `<p><strong>Gediş tarixi:</strong> ${bookingData.departureDate || 'Təyin edilməyib'}</p>`;
+          if (bookingData.tripType === 'round-trip') {
+            emailContent += `<p><strong>Qayıdış tarixi:</strong> ${bookingData.returnDate || 'Təyin edilməyib'}</p>`;
+          }
+        } else if (bookingData.tripType === 'multi-city' && bookingData.segments) {
+          emailContent += `<p><strong>Multi-şəhər uçuşlar:</strong></p><ul>`;
+          bookingData.segments.forEach((segment, index) => {
+            emailContent += `<li>${index + 1}. ${segment.from || 'Təyin edilməyib'} → ${segment.to || 'Təyin edilməyib'} (${segment.date || 'Təyin edilməyib'})</li>`;
+          });
+          emailContent += `</ul>`;
+        }
+        
+        emailContent += `<p><strong>Nəfər sayı:</strong> ${bookingData.passengers || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Sinif:</strong> ${bookingData.class || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Stopla:</strong> ${bookingData.stops || 'Təyin edilməyib'}</p>`;
       } else if (bookingData.type === 'hotel') {
         emailSubject = `Yeni Otel Rezervasiya Sorğusu - ${bookingData.destination || ''}`;
-        emailContent += `<p><strong>Məkan:</strong> ${bookingData.destination || 'Təyin edilməyib'}</p><p><strong>Giriş:</strong> ${bookingData.checkIn || 'Təyin edilməyib'}</p><p><strong>Çıxış:</strong> ${bookingData.checkOut || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Məkan:</strong> ${bookingData.destination || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Giriş:</strong> ${bookingData.checkIn || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Çıxış:</strong> ${bookingData.checkOut || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Otaq sayı:</strong> ${bookingData.rooms || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Nəfər sayı:</strong> ${bookingData.guests || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Otel növü:</strong> ${bookingData.hotelType || 'Təyin edilməyib'}</p>`;
+      } else if (bookingData.type === 'transfer') {
+        emailSubject = `Yeni Transfer Sorğusu`;
+        emailContent += `<p><strong>Transfer növü:</strong> ${bookingData.transferType || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Haradan:</strong> ${bookingData.from || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Hara:</strong> ${bookingData.to || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Tarix:</strong> ${bookingData.date || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Vaxt:</strong> ${bookingData.time || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Nəqliyyat növü:</strong> ${bookingData.vehicleType || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Nəfər sayı:</strong> ${bookingData.passengers || 'Təyin edilməyib'}</p>`;
+      } else if (bookingData.type === 'insurance') {
+        emailSubject = `Yeni Sığorta Sorğusu - ${bookingData.insuranceType || ''}`;
+        emailContent += `<p><strong>Sığorta növü:</strong> ${bookingData.insuranceType || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Paket:</strong> ${bookingData.package || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Başlama tarixi:</strong> ${bookingData.startDate || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Bitmə tarixi:</strong> ${bookingData.endDate || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Əhatə dairəsi:</strong> ${bookingData.coverage || 'Təyin edilməyib'}</p>`;
+      } else if (bookingData.type === 'embassy') {
+        emailSubject = `Yeni Səfirlik Sorğusu - ${bookingData.embassyCountry || ''}`;
+        emailContent += `<p><strong>Ölkə:</strong> ${bookingData.embassyCountry || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Viza növü:</strong> ${bookingData.visaType || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Təcili:</strong> ${bookingData.urgent ? 'Bəli' : 'Xeyr'}</p>`;
       }
       
       emailContent += `<p><strong>Əlavə məlumat:</strong> ${bookingData.notes || 'Yoxdur'}</p>`;
@@ -79,4 +123,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ success: false, message: 'Sorğu göndərilərkən xəta baş verdi' });
   }
 }
-
