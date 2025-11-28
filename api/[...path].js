@@ -65,7 +65,12 @@ export default async function handler(req, res) {
   }
 
   const { method, query, body, headers } = req;
-  const path = query.path ? query.path.join('/') : '';
+  
+  // Vercel-də [...path] formatında query.path array olur
+  // Məsələn: /api/contact → query.path = ['contact']
+  // Məsələn: /api/admin/bookings → query.path = ['admin', 'bookings']
+  const pathArray = query.path || [];
+  const path = Array.isArray(pathArray) ? pathArray.join('/') : pathArray;
 
   // Routes
   if (path === 'health' && method === 'GET') {
@@ -125,6 +130,7 @@ export default async function handler(req, res) {
       }
       return res.status(200).json({ success: true, message: 'Mesajınız uğurla göndərildi!' });
     } catch (error) {
+      console.error('Email xətası:', error);
       return res.status(500).json({ success: false, message: 'Mesaj göndərilərkən xəta baş verdi' });
     }
   }
@@ -162,6 +168,7 @@ export default async function handler(req, res) {
       }
       return res.status(200).json({ success: true, message: 'Sorğunuz uğurla göndərildi! Tezliklə sizinlə əlaqə saxlayacağıq.', bookingId: newBooking.id });
     } catch (error) {
+      console.error('Booking xətası:', error);
       return res.status(500).json({ success: false, message: 'Sorğu göndərilərkən xəta baş verdi' });
     }
   }
@@ -227,6 +234,6 @@ export default async function handler(req, res) {
     }
   }
 
-  return res.status(404).json({ success: false, message: 'Endpoint tapılmadı' });
+  // Əgər endpoint tapılmadısa
+  return res.status(404).json({ success: false, message: 'Endpoint tapılmadı', path: path, method: method });
 }
-
