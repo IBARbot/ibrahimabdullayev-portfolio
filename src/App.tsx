@@ -1,0 +1,96 @@
+import { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { ErrorBoundary } from './components/ErrorBoundary'
+import Navigation from './components/Navigation'
+import Hero from './components/Hero'
+import About from './components/About'
+import Skills from './components/Skills'
+import Services from './components/Services'
+import Projects from './components/Projects'
+import BookingForm from './components/BookingForm'
+import Contact from './components/Contact'
+import Footer from './components/Footer'
+import AdminPanel from './components/AdminPanel'
+import WelcomeModal from './components/WelcomeModal'
+import FloatingWhatsApp from './components/FloatingWhatsApp'
+import BookingModal from './components/BookingModal'
+
+type BookingType = 'flight' | 'hotel' | 'transfer' | 'insurance' | 'embassy'
+
+function HomePage() {
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false)
+  const [showBookingModal, setShowBookingModal] = useState(false)
+  const [bookingType, setBookingType] = useState<BookingType>('flight')
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  useEffect(() => {
+    // Check if modal was shown before
+    const hasSeenModal = localStorage.getItem('hasSeenWelcomeModal')
+    if (!hasSeenModal) {
+      setShowWelcomeModal(true)
+    }
+  }, [])
+
+  const openBookingModal = (type: BookingType = 'flight') => {
+    setBookingType(type)
+    setShowBookingModal(true)
+  }
+
+  return (
+    <div className="min-h-screen">
+      <Navigation isScrolled={isScrolled} onOpenBooking={openBookingModal} />
+      <main>
+        <Hero onOpenBooking={openBookingModal} />
+        <About />
+        <Skills />
+        <Services onOpenBooking={openBookingModal} />
+        <Projects onOpenBooking={openBookingModal} />
+        <BookingForm />
+        <Contact />
+      </main>
+      <Footer />
+      
+      {/* Floating WhatsApp Button */}
+      <FloatingWhatsApp />
+      
+      {/* Welcome Modal */}
+      {showWelcomeModal && (
+        <WelcomeModal
+          onClose={() => setShowWelcomeModal(false)}
+          onOpenBooking={() => openBookingModal('flight')}
+        />
+      )}
+
+      {/* Booking Modal */}
+      <BookingModal
+        isOpen={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        initialType={bookingType}
+      />
+    </div>
+  )
+}
+
+function App() {
+  return (
+    <ErrorBoundary>
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/admin" element={<AdminPanel />} />
+        </Routes>
+      </Router>
+    </ErrorBoundary>
+  )
+}
+
+export default App
+

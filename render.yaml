@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: ibrahim-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node backend/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # Aşağıdakıları Render Dashboard-dan əlavə edin:
+      # - key: JWT_SECRET
+      #   value: your-secret-key
+      # - key: EMAIL_USER
+      #   value: ibrahim.abdullayev1@gmail.com
+      # - key: EMAIL_PASS
+      #   value: your-gmail-app-password
+      # - key: CONTACT_EMAIL
+      #   value: ibrahim.abdullayev1@gmail.com
+      # - key: ADMIN_USERNAME
+      #   value: admin
+      # - key: ADMIN_PASSWORD
+      #   value: your-secure-password
+
