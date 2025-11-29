@@ -103,7 +103,7 @@
       "toPlaceholder": "Стамбул (IST)",
       "airportPlaceholder": "Аэропорт или адрес",
       "hotelPlaceholder": "Отель или адрес",
-      "countryPlaceholder": "Турция"
+      "countryPlaceholder": "Турция",
       "departureDate": "Дата вылета",
       "returnDate": "Дата возврата",
       "passengers": "Пассажиры",
@@ -245,5 +245,72 @@
     "title": "Портфолио",
     "loading": "Загрузка проектов...",
     "subtitle": "Услуги, которые я предлагаю, и истории успеха клиентов"
+  },
+  "admin": {
+    "title": "Панель администратора",
+    "login": {
+      "title": "Вход в админ-панель",
+      "username": "Имя пользователя",
+      "password": "Пароль",
+      "login": "Войти",
+      "forgotPassword": "Забыли пароль",
+      "error": "Неверное имя пользователя или пароль"
+    },
+    "logout": "Выйти",
+    "tabs": {
+      "content": "Контент",
+      "stats": "Статистика"
+    },
+    "content": {
+      "hero": {
+        "title": "Секция Hero",
+        "titleLabel": "Заголовок",
+        "subtitleLabel": "Подзаголовок",
+        "descriptionLabel": "Описание",
+        "imageLabel": "Изображение"
+      },
+      "about": {
+        "title": "Секция О себе",
+        "titleLabel": "Заголовок",
+        "contentLabel": "Содержание"
+      },
+      "contact": {
+        "title": "Контактная информация",
+        "email": "Email",
+        "phone": "Телефон",
+        "address": "Адрес",
+        "linkedin": "LinkedIn",
+        "instagram": "Instagram",
+        "whatsapp": "WhatsApp"
+      },
+      "save": "Сохранить",
+      "upload": "Загрузить",
+      "remove": "Удалить",
+      "saved": "Контент сохранен!",
+      "error": "Произошла ошибка"
+    },
+    "stats": {
+      "download": "Скачать CSV",
+      "totalViews": "Всего просмотров",
+      "today": "Сегодня",
+      "clicks": "Клики",
+      "uniqueUsers": "Уникальные пользователи",
+      "pageViews": "Просмотры страниц",
+      "thisWeek": "На этой неделе",
+      "thisMonth": "В этом месяце",
+      "scrollDepth": "Глубина прокрутки",
+      "topElements": "Наиболее кликаемые элементы",
+      "noData": "Пока нет данных",
+      "downloaded": "Статистика загружена!"
+    },
+    "forgotPassword": {
+      "title": "Забыли пароль",
+      "email": "Адрес электронной почты",
+      "send": "Отправить",
+      "sending": "Отправка...",
+      "cancel": "Отмена",
+      "success": "Если этот адрес электронной почты зарегистрирован, ссылка для сброса пароля будет отправлена на вашу почту. Пожалуйста, проверьте папку входящих и спам. Ссылка действительна в течение 1 часа."
+    },
+    "loading": "Загрузка..."
   }
 }

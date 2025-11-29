@@ -249,5 +249,74 @@
     "title": "Portfolio",
     "loading": "Loading projects...",
     "subtitle": "Services I offer and customer success stories"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "login": {
+      "title": "Admin Login",
+      "username": "Username",
+      "password": "Password",
+      "login": "Login",
+      "forgotPassword": "Forgot Password",
+      "error": "Invalid username or password"
+    },
+    "logout": "Logout",
+    "tabs": {
+      "content": "Content",
+      "stats": "Statistics"
+    },
+    "content": {
+      "hero": {
+        "title": "Hero Section",
+        "titleLabel": "Title",
+        "subtitleLabel": "Subtitle",
+        "descriptionLabel": "Description",
+        "imageLabel": "Image"
+      },
+      "about": {
+        "title": "About Section",
+        "titleLabel": "Title",
+        "contentLabel": "Content"
+      },
+      "contact": {
+        "title": "Contact Information",
+        "email": "Email",
+        "phone": "Phone",
+        "address": "Address",
+        "linkedin": "LinkedIn",
+        "instagram": "Instagram",
+        "whatsapp": "WhatsApp",
+        "socialMedia": "Social Media Links"
+      },
+      "save": "Save",
+      "saving": "Saving...",
+      "upload": "Upload",
+      "remove": "Remove",
+      "saved": "Content saved!",
+      "error": "An error occurred"
+    },
+    "stats": {
+      "download": "Download CSV",
+      "totalViews": "Total Views",
+      "today": "Today",
+      "clicks": "Clicks",
+      "uniqueUsers": "Unique Users",
+      "pageViews": "Page Views",
+      "thisWeek": "This Week",
+      "thisMonth": "This Month",
+      "scrollDepth": "Scroll Depth",
+      "topElements": "Most Clicked Elements",
+      "noData": "No data yet",
+      "downloaded": "Statistics downloaded!"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "email": "Email address",
+      "send": "Send",
+      "sending": "Sending...",
+      "cancel": "Cancel",
+      "success": "If this email address is registered, a password reset link will be sent to your email. Please check your inbox and spam folder. The link is valid for 1 hour."
+    },
+    "loading": "Loading..."
   }
 }

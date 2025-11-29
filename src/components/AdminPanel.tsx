@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { LogOut, Save, Upload, Image as ImageIcon, FileText, Mail, Phone, MapPin, BarChart3, Eye, MousePointer, TrendingUp, Download } from 'lucide-react'
 
 interface Content {
@@ -60,6 +61,7 @@ interface AnalyticsStats {
 }
 
 export default function AdminPanel() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [username, setUsername] = useState('')
@@ -155,7 +157,7 @@ export default function AdminPanel() {
     link.click()
     document.body.removeChild(link)
     
-    setMessage({ type: 'success', text: 'Statistikalar yükləndi!' })
+    setMessage({ type: 'success', text: t('admin.stats.downloaded') })
   }
 
   const loadContent = async () => {
@@ -224,7 +226,7 @@ export default function AdminPanel() {
         // Always show success message (security best practice - prevents email enumeration)
         setMessage({ 
           type: 'success', 
-          text: data.message || 'Əgər bu email ünvanı qeydiyyatdan keçibsə, şifrə sıfırlama linki email-ə göndəriləcək. Zəhmət olmasa email-ınızın gələnlər qutusunu və spam qovluğunu yoxlayın. Link 1 saat müddətində etibarlıdır.' 
+          text: data.message || t('admin.forgotPassword.success')
         })
         setShowForgotPassword(false)
         setForgotPasswordEmail('')
@@ -232,7 +234,7 @@ export default function AdminPanel() {
         // Even on error, show the same message for security
         setMessage({ 
           type: 'success', 
-          text: 'Əgər bu email ünvanı qeydiyyatdan keçibsə, şifrə sıfırlama linki email-ə göndəriləcək. Zəhmət olmasa email-ınızın gələnlər qutusunu və spam qovluğunu yoxlayın. Link 1 saat müddətində etibarlıdır.' 
+          text: t('admin.forgotPassword.success')
         })
         setShowForgotPassword(false)
         setForgotPasswordEmail('')
@@ -241,7 +243,7 @@ export default function AdminPanel() {
       // Even on network error, show the same message for security
       setMessage({ 
         type: 'success', 
-        text: 'Əgər bu email ünvanı qeydiyyatdan keçibsə, şifrə sıfırlama linki email-ə göndəriləcək. Zəhmət olmasa email-ınızın gələnlər qutusunu və spam qovluğunu yoxlayın. Link 1 saat müddətində etibarlıdır.' 
+        text: t('admin.forgotPassword.success')
       })
       setShowForgotPassword(false)
       setForgotPasswordEmail('')
@@ -269,18 +271,18 @@ export default function AdminPanel() {
       const data = await response.json()
 
       if (data.success) {
-        setMessage({ type: 'success', text: 'Məzmun uğurla yeniləndi!' })
+        setMessage({ type: 'success', text: t('admin.content.saved') })
       } else {
-        setMessage({ type: 'error', text: data.message || 'Xəta baş verdi' })
+        setMessage({ type: 'error', text: data.message || t('admin.content.error') })
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'Xəta baş verdi' })
+      setMessage({ type: 'error', text: t('admin.content.error') })
     } finally {
       setLoading(false)
     }
   }
 
-  const handleImageUpload = (field: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (_field: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -309,7 +311,7 @@ export default function AdminPanel() {
           className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full"
         >
           <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
-            Admin Girişi
+            {t('admin.login.title')}
           </h2>
 
           {message.type && (
@@ -327,7 +329,7 @@ export default function AdminPanel() {
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                İstifadəçi adı
+                {t('admin.login.username')}
               </label>
               <input
                 type="text"
@@ -335,13 +337,13 @@ export default function AdminPanel() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                placeholder="İstifadəçi adı"
+                placeholder={t('admin.login.username')}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Şifrə
+                {t('admin.login.password')}
               </label>
               <input
                 type="password"
@@ -358,7 +360,7 @@ export default function AdminPanel() {
               disabled={loading}
               className="w-full px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Giriş edilir...' : 'Giriş'}
+              {loading ? t('admin.loading') : t('admin.login.login')}
             </button>
 
             <div className="text-center mt-4">
@@ -367,7 +369,7 @@ export default function AdminPanel() {
                 onClick={() => setShowForgotPassword(true)}
                 className="text-sm text-primary-600 hover:text-primary-700 underline"
               >
-                Şifrəmi unutdum
+                {t('admin.login.forgotPassword')}
               </button>
             </div>
           </form>
@@ -386,14 +388,14 @@ export default function AdminPanel() {
                 onClick={(e) => e.stopPropagation()}
                 className="bg-white rounded-lg p-6 max-w-md w-full"
               >
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Şifrə Sıfırlama</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">{t('admin.forgotPassword.title')}</h3>
                 <p className="text-sm text-gray-600 mb-4">
-                  Admin email ünvanınızı daxil edin. Şifrə sıfırlama linki email-ə göndəriləcək.
+                  {t('admin.forgotPassword.success')}
                 </p>
                 <form onSubmit={handleForgotPassword} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email
+                      {t('admin.forgotPassword.email')}
                     </label>
                     <input
                       type="email"
@@ -401,7 +403,7 @@ export default function AdminPanel() {
                       onChange={(e) => setForgotPasswordEmail(e.target.value)}
                       required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                      placeholder="Email ünvanı"
+                      placeholder={t('admin.forgotPassword.email')}
                     />
                   </div>
                   <div className="flex gap-3">
@@ -413,14 +415,14 @@ export default function AdminPanel() {
                       }}
                       className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                     >
-                      Ləğv et
+                      {t('admin.forgotPassword.cancel')}
                     </button>
                     <button
                       type="submit"
                       disabled={loading}
                       className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {loading ? 'Göndərilir...' : 'Göndər'}
+                      {loading ? t('admin.forgotPassword.sending') : t('admin.forgotPassword.send')}
                     </button>
                   </div>
                 </form>
@@ -437,7 +439,7 @@ export default function AdminPanel() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Yüklənir...</p>
+          <p className="mt-4 text-gray-600">{t('admin.loading')}</p>
         </div>
       </div>
     )
@@ -449,13 +451,13 @@ export default function AdminPanel() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t('admin.title')}</h1>
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-red-600 transition-colors"
             >
               <LogOut className="w-5 h-5" />
-              Çıxış
+              {t('admin.logout')}
             </button>
           </div>
         </div>
@@ -488,7 +490,7 @@ export default function AdminPanel() {
               }`}
             >
               <FileText className="w-5 h-5 inline-block mr-2" />
-              Kontent
+              {t('admin.tabs.content')}
             </button>
             <button
               onClick={() => setActiveTab('stats')}
@@ -499,7 +501,7 @@ export default function AdminPanel() {
               }`}
             >
               <BarChart3 className="w-5 h-5 inline-block mr-2" />
-              Statistikalar
+              {t('admin.tabs.stats')}
             </button>
           </nav>
         </div>
@@ -514,7 +516,7 @@ export default function AdminPanel() {
                 className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Download className="w-5 h-5" />
-                CSV Yüklə
+                {t('admin.stats.download')}
               </button>
             </div>
 
@@ -523,7 +525,7 @@ export default function AdminPanel() {
               <div className="bg-white p-6 rounded-lg shadow-md">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">Ümumi Baxış</p>
+                    <p className="text-sm text-gray-600">{t('admin.stats.totalViews')}</p>
                     <p className="text-2xl font-bold text-gray-900 mt-1">
                       {stats?.pageViews.total || 0}
                     </p>
@@ -534,7 +536,7 @@ export default function AdminPanel() {
               <div className="bg-white p-6 rounded-lg shadow-md">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">Bu Gün</p>
+                    <p className="text-sm text-gray-600">{t('admin.stats.today')}</p>
                     <p className="text-2xl font-bold text-gray-900 mt-1">
                       {stats?.pageViews.today || 0}
                     </p>
@@ -545,7 +547,7 @@ export default function AdminPanel() {
               <div className="bg-white p-6 rounded-lg shadow-md">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">Kliklər</p>
+                    <p className="text-sm text-gray-600">{t('admin.stats.clicks')}</p>
                     <p className="text-2xl font-bold text-gray-900 mt-1">
                       {stats?.clicks.total || 0}
                     </p>
@@ -556,7 +558,7 @@ export default function AdminPanel() {
               <div className="bg-white p-6 rounded-lg shadow-md">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">Unikal İstifadəçilər</p>
+                    <p className="text-sm text-gray-600">{t('admin.stats.uniqueUsers')}</p>
                     <p className="text-2xl font-bold text-gray-900 mt-1">
                       {stats?.users.unique || 0}
                     </p>
@@ -569,21 +571,21 @@ export default function AdminPanel() {
             {/* Detailed Stats */}
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Səhifə Baxışları</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.stats.pageViews')}</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Bu Həftə</span>
+                    <span className="text-gray-600">{t('admin.stats.thisWeek')}</span>
                     <span className="font-semibold">{stats?.pageViews.thisWeek || 0}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Bu Ay</span>
+                    <span className="text-gray-600">{t('admin.stats.thisMonth')}</span>
                     <span className="font-semibold">{stats?.pageViews.thisMonth || 0}</span>
                   </div>
                 </div>
               </div>
 
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Scroll Dərinliyi</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.stats.scrollDepth')}</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">25%</span>
@@ -606,7 +608,7 @@ export default function AdminPanel() {
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Ən Çox Kliklənən Elementlər</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.stats.topElements')}</h3>
               <div className="space-y-2">
                 {stats?.clicks.topElements && stats.clicks.topElements.length > 0 ? (
                   stats.clicks.topElements.map((item, index) => (
@@ -616,7 +618,7 @@ export default function AdminPanel() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-500 text-center py-4">Hələ məlumat yoxdur</p>
+                  <p className="text-gray-500 text-center py-4">{t('admin.stats.noData')}</p>
                 )}
               </div>
             </div>
@@ -627,13 +629,13 @@ export default function AdminPanel() {
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <FileText className="w-5 h-5" />
-              Hero Bölməsi
+              {t('admin.content.hero.title')}
             </h2>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Başlıq
+                  {t('admin.content.hero.titleLabel')}
                 </label>
                 <input
                   type="text"
@@ -650,7 +652,7 @@ export default function AdminPanel() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Alt başlıq
+                  {t('admin.content.hero.subtitleLabel')}
                 </label>
                 <input
                   type="text"
@@ -667,7 +669,7 @@ export default function AdminPanel() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Təsvir
+                  {t('admin.content.hero.descriptionLabel')}
                 </label>
                 <textarea
                   value={content.hero.description}
@@ -684,7 +686,7 @@ export default function AdminPanel() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Şəkil (Base64 və ya URL)
+                  {t('admin.content.hero.imageLabel')} (Base64 və ya URL)
                 </label>
                 <input
                   type="file"
@@ -711,7 +713,7 @@ export default function AdminPanel() {
                       }}
                       className="absolute top-2 right-2 px-3 py-1 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors"
                     >
-                      Sil
+                      {t('admin.content.remove')}
                     </button>
                   </div>
                 )}
@@ -723,13 +725,13 @@ export default function AdminPanel() {
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <FileText className="w-5 h-5" />
-              Haqqımda Bölməsi
+              {t('admin.content.about.title')}
             </h2>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Başlıq
+                  {t('admin.content.about.titleLabel')}
                 </label>
                 <input
                   type="text"
@@ -746,7 +748,7 @@ export default function AdminPanel() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Məzmun
+                  {t('admin.content.about.contentLabel')}
                 </label>
                 <textarea
                   value={content.about.content}
@@ -767,14 +769,14 @@ export default function AdminPanel() {
           <div className="bg-white p-6 rounded-lg shadow-md md:col-span-2">
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <Phone className="w-5 h-5" />
-              Əlaqə Məlumatları
+              {t('admin.content.contact.title')}
             </h2>
 
             <div className="grid md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   <Mail className="w-4 h-4" />
-                  Email
+                  {t('admin.content.contact.email')}
                 </label>
                 <input
                   type="email"
@@ -792,7 +794,7 @@ export default function AdminPanel() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   <Phone className="w-4 h-4" />
-                  Telefon
+                  {t('admin.content.contact.phone')}
                 </label>
                 <input
                   type="tel"
@@ -810,7 +812,7 @@ export default function AdminPanel() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  Ünvan
+                  {t('admin.content.contact.address')}
                 </label>
                 <input
                   type="text"
@@ -831,13 +833,13 @@ export default function AdminPanel() {
           <div className="bg-white p-6 rounded-lg shadow-md md:col-span-2">
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <FileText className="w-5 h-5" />
-              Sosial Media Linkləri
+              {t('admin.content.contact.socialMedia')}
             </h2>
 
             <div className="grid md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  LinkedIn
+                  {t('admin.content.contact.linkedin')}
                 </label>
                 <input
                   type="url"
@@ -855,7 +857,7 @@ export default function AdminPanel() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Instagram
+                  {t('admin.content.contact.instagram')}
                 </label>
                 <input
                   type="url"
@@ -873,7 +875,7 @@ export default function AdminPanel() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  WhatsApp
+                  {t('admin.content.contact.whatsapp')}
                 </label>
                 <input
                   type="url"
@@ -902,7 +904,7 @@ export default function AdminPanel() {
                 className="flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Save className="w-5 h-5" />
-                {loading ? 'Saxlanılır...' : 'Saxla'}
+                {loading ? t('admin.content.saving') : t('admin.content.save')}
               </button>
             </div>
           )}

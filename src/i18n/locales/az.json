@@ -237,5 +237,74 @@
     "title": "Portfolio",
     "loading": "Layihələr yüklənir...",
     "subtitle": "Təqdim etdiyim xidmətlər və müştəri uğur hekayələri"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "login": {
+      "title": "Admin Girişi",
+      "username": "İstifadəçi adı",
+      "password": "Şifrə",
+      "login": "Daxil ol",
+      "forgotPassword": "Şifrəmi unutdum",
+      "error": "İstifadəçi adı və ya şifrə yalnışdır"
+    },
+    "logout": "Çıxış",
+    "tabs": {
+      "content": "Kontent",
+      "stats": "Statistikalar"
+    },
+    "content": {
+      "hero": {
+        "title": "Hero Bölməsi",
+        "titleLabel": "Başlıq",
+        "subtitleLabel": "Alt başlıq",
+        "descriptionLabel": "Təsvir",
+        "imageLabel": "Şəkil"
+      },
+      "about": {
+        "title": "Haqqımda Bölməsi",
+        "titleLabel": "Başlıq",
+        "contentLabel": "Məzmun"
+      },
+      "contact": {
+        "title": "Əlaqə Məlumatları",
+        "email": "Email",
+        "phone": "Telefon",
+        "address": "Ünvan",
+        "linkedin": "LinkedIn",
+        "instagram": "Instagram",
+        "whatsapp": "WhatsApp"
+      },
+      "save": "Saxla",
+      "saving": "Saxlanılır...",
+      "upload": "Yüklə",
+      "remove": "Sil",
+      "saved": "Kontent saxlanıldı!",
+      "error": "Xəta baş verdi",
+      "socialMedia": "Sosial Media Linkləri"
+    },
+    "stats": {
+      "download": "CSV Yüklə",
+      "totalViews": "Ümumi Baxış",
+      "today": "Bu Gün",
+      "clicks": "Kliklər",
+      "uniqueUsers": "Unikal İstifadəçilər",
+      "pageViews": "Səhifə Baxışları",
+      "thisWeek": "Bu Həftə",
+      "thisMonth": "Bu Ay",
+      "scrollDepth": "Scroll Dərinliyi",
+      "topElements": "Ən Çox Kliklənən Elementlər",
+      "noData": "Hələ məlumat yoxdur",
+      "downloaded": "Statistikalar yükləndi!"
+    },
+    "forgotPassword": {
+      "title": "Şifrəni Unutdum",
+      "email": "Email ünvanı",
+      "send": "Göndər",
+      "sending": "Göndərilir...",
+      "cancel": "Ləğv et",
+      "success": "Əgər bu email ünvanı qeydiyyatdan keçibsə, şifrə sıfırlama linki email-ə göndəriləcək. Zəhmət olmasa email-ınızın gələnlər qutusunu və spam qovluğunu yoxlayın. Link 1 saat müddətində etibarlıdır."
+    },
+    "loading": "Yüklənir..."
   }
 }
