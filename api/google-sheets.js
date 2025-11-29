@@ -50,39 +50,43 @@ export default async function handler(req, res) {
       bookingData.departureDate || '',             // 9. Flight - Gediş tarixi
       bookingData.returnDate || '',                // 10. Flight - Qayıdış tarixi
       bookingData.segments ? JSON.stringify(bookingData.segments) : '', // 11. Flight - Multi-city segments (JSON)
-      bookingData.passengers || '',                // 12. Flight - Nəfər sayı
-      bookingData.class || '',                     // 13. Flight - Sinif
-      bookingData.stops || '',                     // 14. Flight - Stopla
+      bookingData.passengers || '',                // 12. Flight - Nəfər sayı (legacy)
+      bookingData.passengerInfo ? JSON.stringify(bookingData.passengerInfo) : '', // 13. Flight - Passenger Info (JSON)
+      bookingData.class || '',                     // 14. Flight - Sinif
+      bookingData.stops || '',                     // 15. Flight - Stopla
       
-      // Hotel fields (15-20)
-      bookingData.destination || '',               // 15. Hotel - Məkan
-      bookingData.checkIn || '',                   // 16. Hotel - Giriş tarixi
-      bookingData.checkOut || '',                  // 17. Hotel - Çıxış tarixi
-      bookingData.rooms || '',                     // 18. Hotel - Otaq sayı
-      bookingData.guests || '',                    // 19. Hotel - Nəfər sayı
-      bookingData.hotelType || '',                 // 20. Hotel - Otel növü
+      // Hotel fields (16-21)
+      bookingData.destination || '',               // 16. Hotel - Məkan
+      bookingData.checkIn || '',                   // 17. Hotel - Giriş tarixi
+      bookingData.checkOut || '',                  // 18. Hotel - Çıxış tarixi
+      bookingData.rooms || '',                     // 19. Hotel - Otaq sayı
+      bookingData.guests || '',                    // 20. Hotel - Nəfər sayı (legacy)
+      bookingData.guestInfo ? JSON.stringify(bookingData.guestInfo) : '', // 21. Hotel - Guest Info (JSON)
+      bookingData.hotelType || '',                 // 22. Hotel - Otel növü
       
-      // Transfer fields (21-26)
-      bookingData.transferType || '',              // 21. Transfer - Transfer növü
-      bookingData.date || '',                      // 22. Transfer - Tarix
-      bookingData.time || '',                      // 23. Transfer - Vaxt
-      bookingData.vehicleType || '',               // 24. Transfer - Nəqliyyat növü
-      // Note: Transfer passengers uses same field as Flight passengers (column 12)
+      // Transfer fields (23-28)
+      bookingData.transferType || '',              // 23. Transfer - Transfer növü
+      bookingData.date || '',                      // 24. Transfer - Tarix
+      bookingData.time || '',                      // 25. Transfer - Vaxt
+      bookingData.vehicleType || '',               // 26. Transfer - Nəqliyyat növü
+      bookingData.transferPassengerInfo ? JSON.stringify(bookingData.transferPassengerInfo) : '', // 27. Transfer - Passenger Info (JSON)
       
-      // Insurance fields (27-31)
-      bookingData.insuranceType || '',             // 25. Insurance - Sığorta növü
-      bookingData.package || '',                   // 26. Insurance - Paket
-      bookingData.startDate || '',                 // 27. Insurance - Başlama tarixi
-      bookingData.endDate || '',                   // 28. Insurance - Bitmə tarixi
-      bookingData.coverage || '',                  // 29. Insurance - Əhatə dairəsi
+      // Insurance fields (28-33)
+      bookingData.insuranceType || '',             // 28. Insurance - Sığorta növü
+      bookingData.package || '',                   // 29. Insurance - Paket
+      bookingData.startDate || '',                 // 30. Insurance - Başlama tarixi
+      bookingData.endDate || '',                 // 31. Insurance - Bitmə tarixi
+      bookingData.coverage || '',                  // 32. Insurance - Əhatə dairəsi
+      bookingData.insuranceTravelerInfo ? JSON.stringify(bookingData.insuranceTravelerInfo) : '', // 33. Insurance - Traveler Info (JSON)
       
-      // Embassy fields (30-32)
-      bookingData.embassyCountry || '',            // 30. Embassy - Ölkə
-      bookingData.visaType || '',                  // 31. Embassy - Viza növü
-      bookingData.urgent ? 'Bəli' : 'Xeyr',       // 32. Embassy - Təcili
+      // Embassy fields (34-37)
+      bookingData.embassyCountry || '',            // 34. Embassy - Ölkə
+      bookingData.visaType || '',                  // 35. Embassy - Viza növü
+      bookingData.urgent ? 'Bəli' : 'Xeyr',       // 36. Embassy - Təcili
+      bookingData.embassyTravelerInfo ? JSON.stringify(bookingData.embassyTravelerInfo) : '', // 37. Embassy - Traveler Info (JSON)
       
-      // Common notes (33)
-      bookingData.notes || '',                     // 33. Əlavə məlumat
+      // Common notes (38)
+      bookingData.notes || '',                     // 38. Əlavə məlumat
     ];
 
     console.log('Göndəriləcək məlumat:', rowData);
@@ -139,9 +143,9 @@ export default async function handler(req, res) {
         console.log('Row data:', JSON.stringify(rowData));
 
         // Append to Google Sheets using access token
-        // Range format: Sheet1!A:AG or A:AG (for default sheet)
-        // Using A:AG for 33 columns (A to AG)
-        const range = 'A:AG'; // 33 columns
+        // Range format: Sheet1!A:AL or A:AL (for default sheet)
+        // Using A:AL for 38 columns (A to AL)
+        const range = 'A:AL'; // 38 columns
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=RAW`;
         
         console.log('Google Sheets API URL:', url);

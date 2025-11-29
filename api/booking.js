@@ -80,7 +80,20 @@ export default async function handler(req, res) {
           emailContent += `</ul>`;
         }
         
-        emailContent += `<p><strong>Nəfər sayı:</strong> ${bookingData.passengers || 'Təyin edilməyib'}</p>`;
+        // Passenger info
+        if (bookingData.passengerInfo) {
+          const pi = bookingData.passengerInfo;
+          emailContent += `<p><strong>Sərnişin detalları:</strong></p>`;
+          emailContent += `<ul>`;
+          emailContent += `<li>Böyüklər (12+): ${pi.adults || 0}</li>`;
+          emailContent += `<li>Uşaqlar (2-11): ${pi.children || 0}${pi.childAges && pi.childAges.length > 0 ? ` (Yaşlar: ${pi.childAges.join(', ')})` : ''}</li>`;
+          emailContent += `<li>Körpələr (0-23 ay): ${pi.infants || 0}${pi.infantAges && pi.infantAges.length > 0 ? ` (Aylar: ${pi.infantAges.join(', ')})` : ''}</li>`;
+          if (pi.seniors) emailContent += `<li>Yaşlılar (65+): ${pi.seniors}</li>`;
+          emailContent += `<li>Ümumi: ${(pi.adults || 0) + (pi.children || 0) + (pi.infants || 0) + (pi.seniors || 0)}</li>`;
+          emailContent += `</ul>`;
+        } else {
+          emailContent += `<p><strong>Nəfər sayı:</strong> ${bookingData.passengers || 'Təyin edilməyib'}</p>`;
+        }
         emailContent += `<p><strong>Sinif:</strong> ${bookingData.class || 'Təyin edilməyib'}</p>`;
         emailContent += `<p><strong>Stopla:</strong> ${bookingData.stops || 'Təyin edilməyib'}</p>`;
       } else if (bookingData.type === 'hotel') {
@@ -89,7 +102,20 @@ export default async function handler(req, res) {
         emailContent += `<p><strong>Giriş:</strong> ${bookingData.checkIn || 'Təyin edilməyib'}</p>`;
         emailContent += `<p><strong>Çıxış:</strong> ${bookingData.checkOut || 'Təyin edilməyib'}</p>`;
         emailContent += `<p><strong>Otaq sayı:</strong> ${bookingData.rooms || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Nəfər sayı:</strong> ${bookingData.guests || 'Təyin edilməyib'}</p>`;
+        // Guest info
+        if (bookingData.guestInfo) {
+          const gi = bookingData.guestInfo;
+          emailContent += `<p><strong>Qonaq detalları:</strong></p>`;
+          emailContent += `<ul>`;
+          emailContent += `<li>Böyüklər (18+): ${gi.adults || 0}</li>`;
+          emailContent += `<li>Uşaqlar (2-17): ${gi.children || 0}${gi.childAges && gi.childAges.length > 0 ? ` (Yaşlar: ${gi.childAges.join(', ')})` : ''}</li>`;
+          emailContent += `<li>Körpələr (0-23 ay): ${gi.infants || 0}${gi.infantAges && gi.infantAges.length > 0 ? ` (Aylar: ${gi.infantAges.join(', ')})` : ''}</li>`;
+          if (gi.seniors) emailContent += `<li>Yaşlılar (65+): ${gi.seniors}</li>`;
+          emailContent += `<li>Ümumi: ${(gi.adults || 0) + (gi.children || 0) + (gi.infants || 0) + (gi.seniors || 0)}</li>`;
+          emailContent += `</ul>`;
+        } else {
+          emailContent += `<p><strong>Nəfər sayı:</strong> ${bookingData.guests || 'Təyin edilməyib'}</p>`;
+        }
         emailContent += `<p><strong>Otel növü:</strong> ${bookingData.hotelType || 'Təyin edilməyib'}</p>`;
       } else if (bookingData.type === 'transfer') {
         emailSubject = `Yeni Transfer Sorğusu`;
@@ -99,6 +125,18 @@ export default async function handler(req, res) {
         emailContent += `<p><strong>Tarix:</strong> ${bookingData.date || 'Təyin edilməyib'}</p>`;
         emailContent += `<p><strong>Vaxt:</strong> ${bookingData.time || 'Təyin edilməyib'}</p>`;
         emailContent += `<p><strong>Nəqliyyat növü:</strong> ${bookingData.vehicleType || 'Təyin edilməyib'}</p>`;
+        // Transfer passenger info
+        if (bookingData.transferPassengerInfo) {
+          const tpi = bookingData.transferPassengerInfo;
+          emailContent += `<p><strong>Sərnişin detalları:</strong></p>`;
+          emailContent += `<ul>`;
+          emailContent += `<li>Böyüklər (18+): ${tpi.adults || 0}</li>`;
+          emailContent += `<li>Uşaqlar (2-17): ${tpi.children || 0}${tpi.childAges && tpi.childAges.length > 0 ? ` (Yaşlar: ${tpi.childAges.join(', ')})` : ''}</li>`;
+          emailContent += `<li>Körpələr (0-23 ay): ${tpi.infants || 0}${tpi.infantAges && tpi.infantAges.length > 0 ? ` (Aylar: ${tpi.infantAges.join(', ')})` : ''}</li>`;
+          if (tpi.seniors) emailContent += `<li>Yaşlılar (65+): ${tpi.seniors}</li>`;
+          emailContent += `<li>Ümumi: ${(tpi.adults || 0) + (tpi.children || 0) + (tpi.infants || 0) + (tpi.seniors || 0)}</li>`;
+          emailContent += `</ul>`;
+        }
         emailContent += `<p><strong>Nəfər sayı:</strong> ${bookingData.passengers || 'Təyin edilməyib'}</p>`;
       } else if (bookingData.type === 'insurance') {
         emailSubject = `Yeni Sığorta Sorğusu - ${bookingData.insuranceType || ''}`;

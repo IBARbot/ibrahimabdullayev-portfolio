@@ -6,6 +6,15 @@ import { useTranslation } from 'react-i18next'
 type BookingType = 'flight' | 'hotel' | 'transfer' | 'insurance' | 'embassy'
 type TripType = 'one-way' | 'round-trip' | 'multi-city'
 
+interface PassengerInfo {
+  adults: number
+  children: number
+  infants: number
+  seniors?: number
+  childAges?: number[] // Array of ages for children
+  infantAges?: number[] // Array of ages for infants (months)
+}
+
 interface BookingFormData {
   type: BookingType
   name: string
@@ -20,6 +29,7 @@ interface BookingFormData {
   departureDate?: string
   returnDate?: string
   passengers?: string
+  passengerInfo?: PassengerInfo
   class?: string
   stops?: string
   // Multi-city
@@ -30,22 +40,29 @@ interface BookingFormData {
   checkOut?: string
   rooms?: string
   guests?: string
+  guestInfo?: PassengerInfo
   hotelType?: string
   // Transfer
   transferType?: string
   date?: string
   time?: string
   vehicleType?: string
+  transferPassengers?: string
+  transferPassengerInfo?: PassengerInfo
   // Insurance
   insuranceType?: string
   package?: string
   startDate?: string
   endDate?: string
   coverage?: string
+  insuranceTravelers?: string
+  insuranceTravelerInfo?: PassengerInfo
   // Embassy
   embassyCountry?: string
   visaType?: string
   urgent?: boolean
+  embassyTravelers?: string
+  embassyTravelerInfo?: PassengerInfo
   // Common
   notes?: string
 }
@@ -66,6 +83,52 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
     message: string
   }>({ type: null, message: '' })
   const [multiCitySegments, setMultiCitySegments] = useState([{ from: '', to: '', date: '' }])
+  
+  // Passenger info state
+  const [passengerInfo, setPassengerInfo] = useState<PassengerInfo>({
+    adults: 1,
+    children: 0,
+    infants: 0,
+    seniors: 0,
+    childAges: [],
+    infantAges: [],
+  })
+  
+  const [guestInfo, setGuestInfo] = useState<PassengerInfo>({
+    adults: 1,
+    children: 0,
+    infants: 0,
+    seniors: 0,
+    childAges: [],
+    infantAges: [],
+  })
+  
+  const [transferPassengerInfo, setTransferPassengerInfo] = useState<PassengerInfo>({
+    adults: 1,
+    children: 0,
+    infants: 0,
+    seniors: 0,
+    childAges: [],
+    infantAges: [],
+  })
+
+  const [insuranceTravelerInfo, setInsuranceTravelerInfo] = useState<PassengerInfo>({
+    adults: 1,
+    children: 0,
+    infants: 0,
+    seniors: 0,
+    childAges: [],
+    infantAges: [],
+  })
+
+  const [embassyTravelerInfo, setEmbassyTravelerInfo] = useState<PassengerInfo>({
+    adults: 1,
+    children: 0,
+    infants: 0,
+    seniors: 0,
+    childAges: [],
+    infantAges: [],
+  })
 
   // Update bookingType when initialType changes (e.g., when modal opens with different service)
   useEffect(() => {
@@ -140,9 +203,40 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
       // Add trip type and multi-city segments for flights
       if (bookingType === 'flight') {
         submitData.tripType = tripType
+        submitData.passengerInfo = passengerInfo
         if (tripType === 'multi-city') {
           submitData.segments = multiCitySegments
         }
+      }
+      
+      // Add guest info for hotels
+      if (bookingType === 'hotel') {
+        submitData.guestInfo = guestInfo
+      }
+      
+      // Add passenger info for transfers
+      if (bookingType === 'transfer') {
+        submitData.transferPassengerInfo = transferPassengerInfo
+      }
+      
+      // Add traveler info for insurance
+      if (bookingType === 'insurance') {
+        submitData.insuranceTravelerInfo = insuranceTravelerInfo
+      }
+      
+      // Add traveler info for embassy
+      if (bookingType === 'embassy') {
+        submitData.embassyTravelerInfo = embassyTravelerInfo
+      }
+      
+      // Add traveler info for insurance
+      if (bookingType === 'insurance') {
+        submitData.insuranceTravelerInfo = insuranceTravelerInfo
+      }
+      
+      // Add traveler info for embassy
+      if (bookingType === 'embassy') {
+        submitData.embassyTravelerInfo = embassyTravelerInfo
       }
 
       const response = await fetch('/api/booking', {
@@ -451,22 +545,135 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                 </div>
               )}
 
-              <div className="grid md:grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('booking.hotel.guests')}
-                  </label>
-                  <input
-                    type="number"
-                    name="passengers"
-                    value={formData.passengers || ''}
-                    onChange={handleChange}
-                    min="1"
-                    max="9"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                    placeholder="1"
-                  />
+              {/* Passenger Details */}
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <h4 className="text-sm font-semibold text-gray-900 mb-4">{t('booking.flight.passengerDetails')}</h4>
+                <div className="grid md:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.flight.adults')} (12+)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="9"
+                      value={passengerInfo.adults}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        setPassengerInfo({ ...passengerInfo, adults: val })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.flight.children')} (2-11)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="9"
+                      value={passengerInfo.children}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        const newAges = Array(val).fill(0).map((_, i) => passengerInfo.childAges?.[i] || 5)
+                        setPassengerInfo({ ...passengerInfo, children: val, childAges: newAges })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.flight.infants')} (0-23 ay)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="9"
+                      value={passengerInfo.infants}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        const newAges = Array(val).fill(0).map((_, i) => passengerInfo.infantAges?.[i] || 6)
+                        setPassengerInfo({ ...passengerInfo, infants: val, infantAges: newAges })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.flight.seniors')} (65+)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="9"
+                      value={passengerInfo.seniors || 0}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        setPassengerInfo({ ...passengerInfo, seniors: val })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
                 </div>
+                {passengerInfo.children > 0 && (
+                  <div className="mt-4">
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.flight.childAge')}
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {Array(passengerInfo.children).fill(0).map((_, i) => (
+                        <input
+                          key={i}
+                          type="number"
+                          min="2"
+                          max="11"
+                          value={passengerInfo.childAges?.[i] || 5}
+                          onChange={(e) => {
+                            const newAges = [...(passengerInfo.childAges || [])]
+                            newAges[i] = parseInt(e.target.value) || 5
+                            setPassengerInfo({ ...passengerInfo, childAges: newAges })
+                          }}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
+                          placeholder={`Uşaq ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {passengerInfo.infants > 0 && (
+                  <div className="mt-4">
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.flight.infantAge')}
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {Array(passengerInfo.infants).fill(0).map((_, i) => (
+                        <input
+                          key={i}
+                          type="number"
+                          min="0"
+                          max="23"
+                          value={passengerInfo.infantAges?.[i] || 6}
+                          onChange={(e) => {
+                            const newAges = [...(passengerInfo.infantAges || [])]
+                            newAges[i] = parseInt(e.target.value) || 6
+                            setPassengerInfo({ ...passengerInfo, infantAges: newAges })
+                          }}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
+                          placeholder={`Körpə ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <p className="text-sm font-medium text-gray-900">
+                    {t('booking.flight.totalPassengers')}: {passengerInfo.adults + passengerInfo.children + passengerInfo.infants + (passengerInfo.seniors || 0)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     {t('booking.flight.class')}
@@ -548,53 +755,166 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                   />
                 </div>
               </div>
-              <div className="grid md:grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('booking.hotel.rooms')}
-                  </label>
-                  <input
-                    type="number"
-                    name="rooms"
-                    value={formData.rooms || ''}
-                    onChange={handleChange}
-                    min="1"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                    placeholder="1"
-                  />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('booking.hotel.rooms')}
+                </label>
+                <input
+                  type="number"
+                  name="rooms"
+                  value={formData.rooms || ''}
+                  onChange={handleChange}
+                  min="1"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                  placeholder="1"
+                />
+              </div>
+
+              {/* Guest Details */}
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <h4 className="text-sm font-semibold text-gray-900 mb-4">{t('booking.hotel.guestDetails')}</h4>
+                <div className="grid md:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.hotel.adults')} (18+)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={guestInfo.adults}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        setGuestInfo({ ...guestInfo, adults: val })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.hotel.children')} (2-17)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={guestInfo.children}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        const newAges = Array(val).fill(0).map((_, i) => guestInfo.childAges?.[i] || 5)
+                        setGuestInfo({ ...guestInfo, children: val, childAges: newAges })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.hotel.infants')} (0-23 ay)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={guestInfo.infants}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        const newAges = Array(val).fill(0).map((_, i) => guestInfo.infantAges?.[i] || 6)
+                        setGuestInfo({ ...guestInfo, infants: val, infantAges: newAges })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.hotel.seniors')} (65+)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={guestInfo.seniors || 0}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        setGuestInfo({ ...guestInfo, seniors: val })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('booking.hotel.guests')}
-                  </label>
-                  <input
-                    type="number"
-                    name="guests"
-                    value={formData.guests || ''}
-                    onChange={handleChange}
-                    min="1"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                    placeholder="2"
-                  />
+                {guestInfo.children > 0 && (
+                  <div className="mt-4">
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.hotel.childAge')}
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {Array(guestInfo.children).fill(0).map((_, i) => (
+                        <input
+                          key={i}
+                          type="number"
+                          min="2"
+                          max="17"
+                          value={guestInfo.childAges?.[i] || 5}
+                          onChange={(e) => {
+                            const newAges = [...(guestInfo.childAges || [])]
+                            newAges[i] = parseInt(e.target.value) || 5
+                            setGuestInfo({ ...guestInfo, childAges: newAges })
+                          }}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
+                          placeholder={`${t('booking.hotel.child')} ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {guestInfo.infants > 0 && (
+                  <div className="mt-4">
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.hotel.infantAge')}
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {Array(guestInfo.infants).fill(0).map((_, i) => (
+                        <input
+                          key={i}
+                          type="number"
+                          min="0"
+                          max="23"
+                          value={guestInfo.infantAges?.[i] || 6}
+                          onChange={(e) => {
+                            const newAges = [...(guestInfo.infantAges || [])]
+                            newAges[i] = parseInt(e.target.value) || 6
+                            setGuestInfo({ ...guestInfo, infantAges: newAges })
+                          }}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
+                          placeholder={`${t('booking.hotel.infant')} ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <p className="text-sm font-medium text-gray-900">
+                    {t('booking.hotel.totalGuests')}: {guestInfo.adults + guestInfo.children + guestInfo.infants + (guestInfo.seniors || 0)}
+                  </p>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('booking.hotel.hotelType')}
-                  </label>
-                  <select
-                    name="hotelType"
-                    value={formData.hotelType || ''}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                  >
-                    <option value="">Seçin</option>
-                    <option value="budget">Budget</option>
-                    <option value="3-star">3 Ulduz</option>
-                    <option value="4-star">4 Ulduz</option>
-                    <option value="5-star">5 Ulduz</option>
-                    <option value="luxury">Luxury</option>
-                  </select>
-                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('booking.hotel.hotelType')}
+                </label>
+                <select
+                  name="hotelType"
+                  value={formData.hotelType || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                >
+                  <option value="">{t('booking.flight.select')}</option>
+                  <option value="budget">{t('booking.hotel.hotelTypeOptions.budget')}</option>
+                  <option value="3-star">{t('booking.hotel.hotelTypeOptions.3star')}</option>
+                  <option value="4-star">{t('booking.hotel.hotelTypeOptions.4star')}</option>
+                  <option value="5-star">{t('booking.hotel.hotelTypeOptions.5star')}</option>
+                  <option value="luxury">{t('booking.hotel.hotelTypeOptions.luxury')}</option>
+                </select>
               </div>
             </>
           )}
@@ -691,19 +1011,133 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                   </select>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nəfər sayı
-                </label>
-                <input
-                  type="number"
-                  name="passengers"
-                  value={formData.passengers || ''}
-                  onChange={handleChange}
-                  min="1"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                  placeholder="1"
-                />
+
+              {/* Transfer Passenger Details */}
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <h4 className="text-sm font-semibold text-gray-900 mb-4">{t('booking.transfer.passengerDetails')}</h4>
+                <div className="grid md:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.transfer.adults')} (18+)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={transferPassengerInfo.adults}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        setTransferPassengerInfo({ ...transferPassengerInfo, adults: val })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.transfer.children')} (2-17)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={transferPassengerInfo.children}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        const newAges = Array(val).fill(0).map((_, i) => transferPassengerInfo.childAges?.[i] || 5)
+                        setTransferPassengerInfo({ ...transferPassengerInfo, children: val, childAges: newAges })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.transfer.infants')} (0-23 ay)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={transferPassengerInfo.infants}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        const newAges = Array(val).fill(0).map((_, i) => transferPassengerInfo.infantAges?.[i] || 6)
+                        setTransferPassengerInfo({ ...transferPassengerInfo, infants: val, infantAges: newAges })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.transfer.seniors')} (65+)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={transferPassengerInfo.seniors || 0}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        setTransferPassengerInfo({ ...transferPassengerInfo, seniors: val })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                </div>
+                {transferPassengerInfo.children > 0 && (
+                  <div className="mt-4">
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.transfer.childAge')}
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {Array(transferPassengerInfo.children).fill(0).map((_, i) => (
+                        <input
+                          key={i}
+                          type="number"
+                          min="2"
+                          max="17"
+                          value={transferPassengerInfo.childAges?.[i] || 5}
+                          onChange={(e) => {
+                            const newAges = [...(transferPassengerInfo.childAges || [])]
+                            newAges[i] = parseInt(e.target.value) || 5
+                            setTransferPassengerInfo({ ...transferPassengerInfo, childAges: newAges })
+                          }}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
+                          placeholder={`${t('booking.transfer.child')} ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {transferPassengerInfo.infants > 0 && (
+                  <div className="mt-4">
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.transfer.infantAge')}
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {Array(transferPassengerInfo.infants).fill(0).map((_, i) => (
+                        <input
+                          key={i}
+                          type="number"
+                          min="0"
+                          max="23"
+                          value={transferPassengerInfo.infantAges?.[i] || 6}
+                          onChange={(e) => {
+                            const newAges = [...(transferPassengerInfo.infantAges || [])]
+                            newAges[i] = parseInt(e.target.value) || 6
+                            setTransferPassengerInfo({ ...transferPassengerInfo, infantAges: newAges })
+                          }}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
+                          placeholder={`${t('booking.transfer.infant')} ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <p className="text-sm font-medium text-gray-900">
+                    {t('booking.transfer.totalPassengers')}: {transferPassengerInfo.adults + transferPassengerInfo.children + transferPassengerInfo.infants + (transferPassengerInfo.seniors || 0)}
+                  </p>
+                </div>
               </div>
             </>
           )}
@@ -843,6 +1277,134 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                   />
                   <span className="text-sm font-medium text-gray-700">{t('booking.embassy.urgent')}</span>
                 </label>
+              </div>
+
+              {/* Embassy Traveler Details */}
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <h4 className="text-sm font-semibold text-gray-900 mb-4">{t('booking.embassy.travelerDetails')}</h4>
+                <div className="grid md:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.embassy.adults')} (18+)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={embassyTravelerInfo.adults}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        setEmbassyTravelerInfo({ ...embassyTravelerInfo, adults: val })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.embassy.children')} (2-17)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={embassyTravelerInfo.children}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        const newAges = Array(val).fill(0).map((_, i) => embassyTravelerInfo.childAges?.[i] || 5)
+                        setEmbassyTravelerInfo({ ...embassyTravelerInfo, children: val, childAges: newAges })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.embassy.infants')} (0-23 ay)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={embassyTravelerInfo.infants}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        const newAges = Array(val).fill(0).map((_, i) => embassyTravelerInfo.infantAges?.[i] || 6)
+                        setEmbassyTravelerInfo({ ...embassyTravelerInfo, infants: val, infantAges: newAges })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.embassy.seniors')} (65+)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={embassyTravelerInfo.seniors || 0}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        setEmbassyTravelerInfo({ ...embassyTravelerInfo, seniors: val })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                </div>
+                {embassyTravelerInfo.children > 0 && (
+                  <div className="mt-4">
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.embassy.childAge')}
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {Array(embassyTravelerInfo.children).fill(0).map((_, i) => (
+                        <input
+                          key={i}
+                          type="number"
+                          min="2"
+                          max="17"
+                          value={embassyTravelerInfo.childAges?.[i] || 5}
+                          onChange={(e) => {
+                            const newAges = [...(embassyTravelerInfo.childAges || [])]
+                            newAges[i] = parseInt(e.target.value) || 5
+                            setEmbassyTravelerInfo({ ...embassyTravelerInfo, childAges: newAges })
+                          }}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
+                          placeholder={`${t('booking.embassy.child')} ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {embassyTravelerInfo.infants > 0 && (
+                  <div className="mt-4">
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.embassy.infantAge')}
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {Array(embassyTravelerInfo.infants).fill(0).map((_, i) => (
+                        <input
+                          key={i}
+                          type="number"
+                          min="0"
+                          max="23"
+                          value={embassyTravelerInfo.infantAges?.[i] || 6}
+                          onChange={(e) => {
+                            const newAges = [...(embassyTravelerInfo.infantAges || [])]
+                            newAges[i] = parseInt(e.target.value) || 6
+                            setEmbassyTravelerInfo({ ...embassyTravelerInfo, infantAges: newAges })
+                          }}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
+                          placeholder={`${t('booking.embassy.infant')} ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <p className="text-sm font-medium text-gray-900">
+                    {t('booking.embassy.totalTravelers')}: {embassyTravelerInfo.adults + embassyTravelerInfo.children + embassyTravelerInfo.infants + (embassyTravelerInfo.seniors || 0)}
+                  </p>
+                </div>
               </div>
             </>
           )}
