@@ -13,6 +13,7 @@ import AdminPanel from './components/AdminPanel'
 import WelcomeModal from './components/WelcomeModal'
 import FloatingWhatsApp from './components/FloatingWhatsApp'
 import BookingModal from './components/BookingModal'
+import Analytics from './components/Analytics'
 
 type BookingType = 'flight' | 'hotel' | 'transfer' | 'insurance' | 'embassy'
 
@@ -45,6 +46,7 @@ function HomePage() {
 
   return (
     <div className="min-h-screen">
+      <Analytics />
       <Navigation isScrolled={isScrolled} onOpenBooking={openBookingModal} />
       <main>
         <Hero onOpenBooking={openBookingModal} />

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { LogOut, Save, Upload, Image as ImageIcon, FileText, Mail, Phone, MapPin } from 'lucide-react'
+import { LogOut, Save, Upload, Image as ImageIcon, FileText, Mail, Phone, MapPin, BarChart3, Eye, MousePointer, TrendingUp } from 'lucide-react'
 
 interface Content {
   hero: {
@@ -18,7 +18,45 @@ interface Content {
     email: string
     phone: string
     address: string
+    linkedin?: string
+    instagram?: string
+    whatsapp?: string
   }
+}
+
+interface AnalyticsStats {
+  pageViews: {
+    total: number
+    today: number
+    thisWeek: number
+    thisMonth: number
+    byPath: Record<string, number>
+  }
+  clicks: {
+    total: number
+    byElement: Record<string, number>
+    topElements: Array<{ element: string; count: number }>
+  }
+  scrolls: {
+    averageDepth: number
+    byDepth: {
+      25: number
+      50: number
+      75: number
+      100: number
+    }
+  }
+  users: {
+    unique: number
+    returning: number
+    new: number
+  }
+  devices: {
+    desktop: number
+    mobile: number
+    tablet: number
+  }
+  referrers: Record<string, number>
 }
 
 export default function AdminPanel() {
@@ -28,6 +66,8 @@ export default function AdminPanel() {
   const [password, setPassword] = useState('')
   const [content, setContent] = useState<Content | null>(null)
   const [loading, setLoading] = useState(false)
+  const [stats, setStats] = useState<AnalyticsStats | null>(null)
+  const [activeTab, setActiveTab] = useState<'content' | 'stats'>('content')
   const [message, setMessage] = useState<{ type: 'success' | 'error' | null; text: string }>({
     type: null,
     text: '',
@@ -38,8 +78,28 @@ export default function AdminPanel() {
     if (token) {
       setIsAuthenticated(true)
       loadContent()
+      loadStats()
     }
   }, [])
+
+  const loadStats = async () => {
+    const token = localStorage.getItem('adminToken')
+    if (!token) return
+
+    try {
+      const response = await fetch('/api/analytics/stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+      const data = await response.json()
+      if (data.success) {
+        setStats(data.data)
+      }
+    } catch (error) {
+      console.error('Stats yüklənərkən xəta:', error)
+    }
+  }
 
   const loadContent = async () => {
     try {
@@ -247,8 +307,142 @@ export default function AdminPanel() {
           </motion.div>
         )}
 
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Hero Section */}
+        {/* Tabs */}
+        <div className="mb-6 border-b border-gray-200">
+          <nav className="flex space-x-8">
+            <button
+              onClick={() => setActiveTab('content')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'content'
+                  ? 'border-primary-500 text-primary-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <FileText className="w-5 h-5 inline-block mr-2" />
+              Kontent
+            </button>
+            <button
+              onClick={() => setActiveTab('stats')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'stats'
+                  ? 'border-primary-500 text-primary-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <BarChart3 className="w-5 h-5 inline-block mr-2" />
+              Statistikalar
+            </button>
+          </nav>
+        </div>
+
+        {activeTab === 'stats' ? (
+          <div className="space-y-6">
+            {/* Stats Overview Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Ümumi Baxış</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">
+                      {stats?.pageViews.total || 0}
+                    </p>
+                  </div>
+                  <Eye className="w-8 h-8 text-primary-600" />
+                </div>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Bu Gün</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">
+                      {stats?.pageViews.today || 0}
+                    </p>
+                  </div>
+                  <TrendingUp className="w-8 h-8 text-green-600" />
+                </div>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Kliklər</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">
+                      {stats?.clicks.total || 0}
+                    </p>
+                  </div>
+                  <MousePointer className="w-8 h-8 text-blue-600" />
+                </div>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Unikal İstifadəçilər</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">
+                      {stats?.users.unique || 0}
+                    </p>
+                  </div>
+                  <BarChart3 className="w-8 h-8 text-purple-600" />
+                </div>
+              </div>
+            </div>
+
+            {/* Detailed Stats */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Səhifə Baxışları</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Bu Həftə</span>
+                    <span className="font-semibold">{stats?.pageViews.thisWeek || 0}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Bu Ay</span>
+                    <span className="font-semibold">{stats?.pageViews.thisMonth || 0}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Scroll Dərinliyi</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">25%</span>
+                    <span className="font-semibold">{stats?.scrolls.byDepth[25] || 0}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">50%</span>
+                    <span className="font-semibold">{stats?.scrolls.byDepth[50] || 0}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">75%</span>
+                    <span className="font-semibold">{stats?.scrolls.byDepth[75] || 0}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">100%</span>
+                    <span className="font-semibold">{stats?.scrolls.byDepth[100] || 0}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Ən Çox Kliklənən Elementlər</h3>
+              <div className="space-y-2">
+                {stats?.clicks.topElements && stats.clicks.topElements.length > 0 ? (
+                  stats.clicks.topElements.map((item, index) => (
+                    <div key={index} className="flex justify-between items-center p-2 hover:bg-gray-50 rounded">
+                      <span className="text-gray-700">{item.element}</span>
+                      <span className="font-semibold text-primary-600">{item.count}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-center py-4">Hələ məlumat yoxdur</p>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Hero Section */}
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <FileText className="w-5 h-5" />
@@ -515,19 +709,22 @@ export default function AdminPanel() {
               </div>
             </div>
           </div>
-        </div>
+          </div>
+        )}
 
-        {/* Save Button */}
-        <div className="mt-8 flex justify-end">
-          <button
-            onClick={handleSave}
-            disabled={loading}
-            className="flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Save className="w-5 h-5" />
-            {loading ? 'Saxlanılır...' : 'Saxla'}
-          </button>
-        </div>
+        {/* Save Button - Only show in content tab */}
+        {activeTab === 'content' && (
+            <div className="mt-8 flex justify-end">
+              <button
+                onClick={handleSave}
+                disabled={loading}
+                className="flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Save className="w-5 h-5" />
+                {loading ? 'Saxlanılır...' : 'Saxla'}
+              </button>
+            </div>
+          )}
       </div>
     </div>
   )
