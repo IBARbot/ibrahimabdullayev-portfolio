@@ -24,7 +24,7 @@ Vercel Dashboard → Settings → Environment Variables bölməsində:
 - ✅ `GOOGLE_SERVICE_ACCOUNT_KEY` = (Base64 encode edilmiş JSON)
 
 **İsteğe bağlı (fallback üçün):**
-- `GOOGLE_SHEETS_API_KEY` = `AIzaSyBT47CJJvh9lidce-smaTWvpOrZ82ReAXI`
+- `GOOGLE_SHEETS_API_KEY` = `YOUR_API_KEY_HERE` (Vercel Environment Variables-də təyin edin, bu faylda API key yazmayın!)
 
 ### 3. Vercel Logs Yoxlama
 

@@ -25,17 +25,27 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const { path } = req.query;
-  const pathArray = Array.isArray(path) ? path : [path];
-  const route = pathArray.join('/');
+  // Handle Vercel path parsing
+  let route = '';
+  if (req.query.path) {
+    const path = req.query.path;
+    const pathArray = Array.isArray(path) ? path : [path];
+    route = pathArray.filter(Boolean).join('/');
+  } else if (req.url) {
+    // Fallback: parse from URL
+    const urlPath = req.url.split('?')[0];
+    const match = urlPath.match(/\/api\/admin\/(.+)$/);
+    if (match) {
+      route = match[1];
+    }
+  }
 
   console.log('=== ADMIN API REQUEST ===');
   console.log('Method:', req.method);
   console.log('URL:', req.url);
-  console.log('Query path:', path);
-  console.log('Path array:', pathArray);
+  console.log('Query:', JSON.stringify(req.query));
   console.log('Route:', route);
-  console.log('Headers:', JSON.stringify(req.headers, null, 2));
+  console.log('Route === "forgot-password":', route === 'forgot-password');
 
   try {
     // Login route

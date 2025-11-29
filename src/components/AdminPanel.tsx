@@ -334,7 +334,7 @@ export default function AdminPanel() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                placeholder="ibrahim.abdullayev1@gmail.com"
+                placeholder="İstifadəçi adı"
               />
             </div>
 
@@ -400,7 +400,7 @@ export default function AdminPanel() {
                       onChange={(e) => setForgotPasswordEmail(e.target.value)}
                       required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                      placeholder="ibrahim.abdullayev1@gmail.com"
+                      placeholder="Email ünvanı"
                     />
                   </div>
                   <div className="flex gap-3">
