@@ -33,13 +33,56 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, message: 'Google Sheets konfiqurasiya edilməyib' });
     }
 
-    // Prepare row data - matches your Google Sheets structure (5 columns: Tarix, Növ, Ad, Email, Telefon)
+    // Prepare row data - All possible fields from booking form
+    // Structure: Common fields first, then type-specific fields
     const rowData = [
-      new Date().toISOString(), // A: Tarix
-      bookingData.type || '',   // B: Növ
-      bookingData.name || '',   // C: Ad
-      bookingData.email || '',  // D: Email
-      bookingData.phone || '',  // E: Telefon
+      // Common fields (1-5)
+      new Date().toISOString(),                    // 1. Tarix
+      bookingData.type || '',                      // 2. Növ
+      bookingData.name || '',                      // 3. Ad
+      bookingData.email || '',                     // 4. Email
+      bookingData.phone || '',                    // 5. Telefon
+      
+      // Flight fields (6-14)
+      bookingData.tripType || '',                  // 6. Flight - Səyahət növü
+      bookingData.from || '',                      // 7. Haradan (Flight/Transfer)
+      bookingData.to || '',                        // 8. Hara (Flight/Transfer)
+      bookingData.departureDate || '',             // 9. Flight - Gediş tarixi
+      bookingData.returnDate || '',                // 10. Flight - Qayıdış tarixi
+      bookingData.segments ? JSON.stringify(bookingData.segments) : '', // 11. Flight - Multi-city segments (JSON)
+      bookingData.passengers || '',                // 12. Flight - Nəfər sayı
+      bookingData.class || '',                     // 13. Flight - Sinif
+      bookingData.stops || '',                     // 14. Flight - Stopla
+      
+      // Hotel fields (15-20)
+      bookingData.destination || '',               // 15. Hotel - Məkan
+      bookingData.checkIn || '',                   // 16. Hotel - Giriş tarixi
+      bookingData.checkOut || '',                  // 17. Hotel - Çıxış tarixi
+      bookingData.rooms || '',                     // 18. Hotel - Otaq sayı
+      bookingData.guests || '',                    // 19. Hotel - Nəfər sayı
+      bookingData.hotelType || '',                 // 20. Hotel - Otel növü
+      
+      // Transfer fields (21-26)
+      bookingData.transferType || '',              // 21. Transfer - Transfer növü
+      bookingData.date || '',                      // 22. Transfer - Tarix
+      bookingData.time || '',                      // 23. Transfer - Vaxt
+      bookingData.vehicleType || '',               // 24. Transfer - Nəqliyyat növü
+      // Note: Transfer passengers uses same field as Flight passengers (column 12)
+      
+      // Insurance fields (27-31)
+      bookingData.insuranceType || '',             // 25. Insurance - Sığorta növü
+      bookingData.package || '',                   // 26. Insurance - Paket
+      bookingData.startDate || '',                 // 27. Insurance - Başlama tarixi
+      bookingData.endDate || '',                   // 28. Insurance - Bitmə tarixi
+      bookingData.coverage || '',                  // 29. Insurance - Əhatə dairəsi
+      
+      // Embassy fields (30-32)
+      bookingData.embassyCountry || '',            // 30. Embassy - Ölkə
+      bookingData.visaType || '',                  // 31. Embassy - Viza növü
+      bookingData.urgent ? 'Bəli' : 'Xeyr',       // 32. Embassy - Təcili
+      
+      // Common notes (33)
+      bookingData.notes || '',                     // 33. Əlavə məlumat
     ];
 
     console.log('Göndəriləcək məlumat:', rowData);
