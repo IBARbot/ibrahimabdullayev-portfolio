@@ -4,10 +4,12 @@ import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import BookingForm from './BookingForm'
 
+type BookingType = 'flight' | 'hotel' | 'transfer' | 'insurance' | 'embassy'
+
 interface BookingModalProps {
   isOpen: boolean
   onClose: () => void
-  initialType?: 'flight' | 'hotel' | 'transfer' | 'insurance' | 'embassy'
+  initialType?: BookingType
 }
 
 export default function BookingModal({ isOpen, onClose, initialType = 'flight' }: BookingModalProps) {
