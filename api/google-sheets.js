@@ -204,7 +204,7 @@ export default async function handler(req, res) {
     // Method 2: API Key (Fallback)
     else if (apiKey) {
       console.log('API Key metodu istifadə olunur...');
-      const range = 'A:AG';
+      const range = 'A:AL'; // 38 columns
       const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=RAW&key=${apiKey}`;
       response = await fetch(url, {
         method: 'POST',

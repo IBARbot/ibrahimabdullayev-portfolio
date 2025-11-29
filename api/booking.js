@@ -150,6 +150,18 @@ export default async function handler(req, res) {
         emailContent += `<p><strong>Ölkə:</strong> ${bookingData.embassyCountry || 'Təyin edilməyib'}</p>`;
         emailContent += `<p><strong>Viza növü:</strong> ${bookingData.visaType || 'Təyin edilməyib'}</p>`;
         emailContent += `<p><strong>Təcili:</strong> ${bookingData.urgent ? 'Bəli' : 'Xeyr'}</p>`;
+        // Embassy traveler info
+        if (bookingData.embassyTravelerInfo) {
+          const eti = bookingData.embassyTravelerInfo;
+          emailContent += `<p><strong>Səyahətçi detalları:</strong></p>`;
+          emailContent += `<ul>`;
+          emailContent += `<li>Böyüklər (18+): ${eti.adults || 0}</li>`;
+          emailContent += `<li>Uşaqlar (2-17): ${eti.children || 0}${eti.childAges && eti.childAges.length > 0 ? ` (Yaşlar: ${eti.childAges.join(', ')})` : ''}</li>`;
+          emailContent += `<li>Körpələr (0-23 ay): ${eti.infants || 0}${eti.infantAges && eti.infantAges.length > 0 ? ` (Aylar: ${eti.infantAges.join(', ')})` : ''}</li>`;
+          if (eti.seniors) emailContent += `<li>Yaşlılar (65+): ${eti.seniors}</li>`;
+          emailContent += `<li>Ümumi: ${(eti.adults || 0) + (eti.children || 0) + (eti.infants || 0) + (eti.seniors || 0)}</li>`;
+          emailContent += `</ul>`;
+        }
       }
       
       emailContent += `<p><strong>Əlavə məlumat:</strong> ${bookingData.notes || 'Yoxdur'}</p>`;
