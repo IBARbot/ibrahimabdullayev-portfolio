@@ -1,0 +1,78 @@
+{
+  "nav": {
+    "home": "Ana Səhifə",
+    "about": "Haqqımda",
+    "services": "Xidmətlər",
+    "portfolio": "Portfolio",
+    "contact": "Əlaqə",
+    "bookNow": "İndi Rezerv Et"
+  },
+  "hero": {
+    "title": "Salam, mən İbrahim Abdullayev",
+    "subtitle": "Turizm Sahəsində Aparıcı Mütəxəssis",
+    "description": "Aviabilet rezervasiyası, otel booking, transfer xidmətləri, sığorta və səfirlik işləri üzrə peşəkar məsləhətçi. İllər boyu təcrübəmlə səyahətçilərə ən yaxşı həlləri təqdim edirəm.",
+    "viewServices": "Xidmətlərimə Bax",
+    "contact": "Əlaqə Saxla"
+  },
+  "about": {
+    "title": "Haqqımda",
+    "content": "Mən turizm sahəsində aparıcı mütəxəssisəm və səyahətçilərə ən yaxşı xidməti təqdim etmək üçün çalışıram.\n\nİllər boyu hava yolu sistemləri, otel rezervasiyaları, transfer xidmətləri, sığorta və səfirlik işləri üzrə təcrübə toplamışam. Hər müştəriyə fərdi yanaşaraq onun ehtiyaclarına ən uyğun həlli təqdim edirəm.\n\nMəqsədim səyahəti daha əlçatan etmək və hər müştəriyə keyfiyyətli xidmət göstərməkdir. Ağıllı səyahət ağıllı planlaşdırma ilə başlayır."
+  },
+  "services": {
+    "title": "Xidmətlərim",
+    "subtitle": "Təqdim etdiyim peşəkar xidmətlər",
+    "flight": {
+      "title": "Aviabilet Rezervasiyası",
+      "description": "Dünyanın istənilən istiqamətinə ən yaxşı qiymətlərlə aviabilet rezervasiyası"
+    },
+    "hotel": {
+      "title": "Otel Booking",
+      "description": "Komfortlu və təhlükəsiz otel rezervasiyaları"
+    },
+    "transfer": {
+      "title": "Transfer Xidmətləri",
+      "description": "Hava limanı, otel və digər nöqtələr arasında transfer"
+    },
+    "insurance": {
+      "title": "Sığorta",
+      "description": "Səyahət sığortası və digər sığorta xidmətləri"
+    },
+    "embassy": {
+      "title": "Səfirlik İşləri",
+      "description": "Viza müraciətləri və səfirlik işləri"
+    },
+    "bookNow": "İndi Rezerv Et"
+  },
+  "contact": {
+    "title": "Əlaqə",
+    "subtitle": "Mənimlə əlaqə saxlayın",
+    "bookingRequest": "Rezervasiya Sorğusu",
+    "sendMessage": "Məktub Yaz",
+    "email": "Email",
+    "phone": "Telefon",
+    "address": "Ünvan",
+    "send": "Göndər"
+  },
+  "booking": {
+    "title": "Rezervasiya Sorğusu",
+    "type": "Xidmət növü",
+    "name": "Ad",
+    "email": "Email",
+    "phone": "Telefon",
+    "notes": "Əlavə məlumat",
+    "submit": "Sorğu Göndər",
+    "success": "Sorğunuz uğurla göndərildi!",
+    "error": "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin."
+  },
+  "footer": {
+    "rights": "Bütün hüquqlar qorunur",
+    "madeWith": "Sevgi ilə hazırlanıb"
+  },
+  "welcome": {
+    "title": "Xoş gəlmisiniz!",
+    "message": "Səyahətiniz üçün ən yaxşı həlləri təqdim edirəm",
+    "contactWhatsApp": "WhatsApp ilə Əlaqə",
+    "bookNow": "İndi Rezerv Et"
+  }
+}
+

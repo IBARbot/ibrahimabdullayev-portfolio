@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Menu, X, Calendar } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import LanguageSwitcher from './LanguageSwitcher'
 
 interface NavigationProps {
   isScrolled: boolean
@@ -9,6 +11,7 @@ interface NavigationProps {
 const PROFILE_IMAGE = 'https://i.imgur.com/64oQNiZ.jpeg'
 
 export default function Navigation({ isScrolled, onOpenBooking }: NavigationProps) {
+  const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
 
@@ -39,11 +42,11 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
   }
 
   const navItems = [
-    { id: 'home', label: 'Ana Səhifə' },
-    { id: 'about', label: 'Haqqımda' },
-    { id: 'services', label: 'Xidmətlər' },
-    { id: 'projects', label: 'Portfolio' },
-    { id: 'contact', label: 'Əlaqə' },
+    { id: 'home', label: t('nav.home') },
+    { id: 'about', label: t('nav.about') },
+    { id: 'services', label: t('nav.services') },
+    { id: 'projects', label: t('nav.portfolio') },
+    { id: 'contact', label: t('nav.contact') },
   ]
 
   return (

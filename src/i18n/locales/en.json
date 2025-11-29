@@ -1,0 +1,78 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "portfolio": "Portfolio",
+    "contact": "Contact",
+    "bookNow": "Book Now"
+  },
+  "hero": {
+    "title": "Hello, I'm Ibrahim Abdullayev",
+    "subtitle": "Leading Specialist in Tourism",
+    "description": "Professional consultant for flight bookings, hotel reservations, transfer services, insurance, and embassy services. With years of experience, I provide the best solutions for travelers.",
+    "viewServices": "View Services",
+    "contact": "Contact Me"
+  },
+  "about": {
+    "title": "About Me",
+    "content": "I am a leading specialist in tourism and work to provide the best service to travelers.\n\nOver the years, I have gained experience in airline systems, hotel reservations, transfer services, insurance, and embassy services. I approach each client individually and provide solutions that best meet their needs.\n\nMy goal is to make travel more accessible and provide quality service to every client. Smart travel starts with smart planning."
+  },
+  "services": {
+    "title": "My Services",
+    "subtitle": "Professional services I offer",
+    "flight": {
+      "title": "Flight Booking",
+      "description": "Flight reservations to any destination worldwide at the best prices"
+    },
+    "hotel": {
+      "title": "Hotel Booking",
+      "description": "Comfortable and secure hotel reservations"
+    },
+    "transfer": {
+      "title": "Transfer Services",
+      "description": "Transfers between airports, hotels, and other locations"
+    },
+    "insurance": {
+      "title": "Insurance",
+      "description": "Travel insurance and other insurance services"
+    },
+    "embassy": {
+      "title": "Embassy Services",
+      "description": "Visa applications and embassy services"
+    },
+    "bookNow": "Book Now"
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Get in touch with me",
+    "bookingRequest": "Booking Request",
+    "sendMessage": "Send Message",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "send": "Send"
+  },
+  "booking": {
+    "title": "Booking Request",
+    "type": "Service Type",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "notes": "Additional Information",
+    "submit": "Submit Request",
+    "success": "Your request has been sent successfully!",
+    "error": "An error occurred. Please try again."
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "madeWith": "Made with love"
+  },
+  "welcome": {
+    "title": "Welcome!",
+    "message": "I provide the best solutions for your travel",
+    "contactWhatsApp": "Contact via WhatsApp",
+    "bookNow": "Book Now"
+  }
+}
+

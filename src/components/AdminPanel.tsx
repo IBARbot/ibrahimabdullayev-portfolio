@@ -140,10 +140,11 @@ export default function AdminPanel() {
     csvRows.push(`Devices,Mobil,${stats.devices.mobile}`)
     csvRows.push(`Devices,Tablet,${stats.devices.tablet}`)
 
-    // Create CSV content
-    const csvContent = csvRows.join('\n')
+    // Create CSV content with UTF-8 BOM for proper encoding
+    const BOM = '\uFEFF'
+    const csvContent = BOM + csvRows.join('\n')
     
-    // Create blob and download
+    // Create blob and download with UTF-8 encoding
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
     const url = URL.createObjectURL(blob)
