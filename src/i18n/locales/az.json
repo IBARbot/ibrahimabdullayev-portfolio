@@ -16,30 +16,48 @@
   },
   "about": {
     "title": "Haqqımda",
-    "content": "Mən turizm sahəsində aparıcı mütəxəssisəm və səyahətçilərə ən yaxşı xidməti təqdim etmək üçün çalışıram.\n\nİllər boyu hava yolu sistemləri, otel rezervasiyaları, transfer xidmətləri, sığorta və səfirlik işləri üzrə təcrübə toplamışam. Hər müştəriyə fərdi yanaşaraq onun ehtiyaclarına ən uyğun həlli təqdim edirəm.\n\nMəqsədim səyahəti daha əlçatan etmək və hər müştəriyə keyfiyyətli xidmət göstərməkdir. Ağıllı səyahət ağıllı planlaşdırma ilə başlayır."
+    "subtitle": "Turizm sahəsində təcrübəli mütəxəssis kimi səyahətçilərə ən yaxşı xidməti təqdim edirəm",
+    "content": "Mən turizm sahəsində aparıcı mütəxəssisəm və səyahətçilərə ən yaxşı xidməti təqdim etmək üçün çalışıram.\n\nİllər boyu hava yolu sistemləri, otel rezervasiyaları, transfer xidmətləri, sığorta və səfirlik işləri üzrə təcrübə toplamışam. Hər müştəriyə fərdi yanaşaraq onun ehtiyaclarına ən uyğun həlli təqdim edirəm.\n\nMəqsədim səyahəti daha əlçatan etmək və hər müştəriyə keyfiyyətli xidmət göstərməkdir. Ağıllı səyahət ağıllı planlaşdırma ilə başlayır.",
+    "professional": "Peşəkar Xidmət",
+    "professionalDesc": "Hər müştəriyə fərdi yanaşaraq ən yaxşı həlli təqdim edirəm",
+    "experience": "Geniş Təcrübə",
+    "experienceDesc": "İllər boyu turizm sahəsində təcrübə toplamışam və daim öyrənirəm",
+    "satisfaction": "Müştəri Məmnuniyyəti",
+    "satisfactionDesc": "Müştərilərin məmnuniyyəti mənim üçün ən vacibdir",
+    "specialist": "Turizm Mütəxəssisi"
   },
   "services": {
     "title": "Xidmətlərim",
-    "subtitle": "Təqdim etdiyim peşəkar xidmətlər",
+    "subtitle": "Turizm sahəsində hərtərəfli xidmətlər və peşəkar məsləhət",
     "flight": {
       "title": "Aviabilet Rezervasiyası",
-      "description": "Dünyanın istənilən istiqamətinə ən yaxşı qiymətlərlə aviabilet rezervasiyası"
+      "description": "Ən yaxşı qiymətlərlə aviabilet rezervasiyası və məsləhəti",
+      "features": ["Uçuş axtarışı", "Multi-city", "Optimal qiymətlər", "24/7 dəstək"]
     },
     "hotel": {
-      "title": "Otel Booking",
-      "description": "Komfortlu və təhlükəsiz otel rezervasiyaları"
+      "title": "Otel Rezervasiyası",
+      "description": "Dünyanın hər yerində otel rezervasiyası və booking xidməti",
+      "features": ["Ən yaxşı otellər", "Rəqabətli qiymətlər", "Giriş/çıxış tarixləri", "Otaq seçimi"]
     },
     "transfer": {
       "title": "Transfer Xidmətləri",
-      "description": "Hava limanı, otel və digər nöqtələr arasında transfer"
+      "description": "Hava limanı, otel və şəhər daxilində transfer xidmətləri",
+      "features": ["Hava limanı transfer", "Şəhər daxili", "Komfortlu nəqliyyat", "Təhlükəsiz səyahət"]
     },
     "insurance": {
-      "title": "Sığorta",
-      "description": "Səyahət sığortası və digər sığorta xidmətləri"
+      "title": "Sığorta Xidmətləri",
+      "description": "Səyahət, sağlamlıq və həyat sığortası paketləri",
+      "features": ["Səyahət sığortası", "Sağlamlıq sığortası", "Həyat sığortası", "Fərdi paketlər"]
     },
     "embassy": {
       "title": "Səfirlik İşləri",
-      "description": "Viza müraciətləri və səfirlik işləri"
+      "description": "Viza müraciətləri və səfirlik işləri üzrə məsləhət",
+      "features": ["Viza müraciətləri", "Sənəd hazırlığı", "Təcili xidmət", "Məsləhət"]
+    },
+    "planning": {
+      "title": "Səyahət Planlaşdırması",
+      "description": "Kompleks səyahət planları və marşrut optimallaşdırması",
+      "features": ["Marşrut planlaşdırması", "Multi-destination", "Büdcə optimallaşdırması", "Fərdi planlar"]
     },
     "bookNow": "İndi Rezerv Et"
   },
@@ -51,18 +69,80 @@
     "email": "Email",
     "phone": "Telefon",
     "address": "Ünvan",
-    "send": "Göndər"
+    "send": "Göndər",
+    "subject": "Mövzu",
+    "message": "Mesaj",
+    "success": "Mesajınız uğurla göndərildi!",
+    "error": "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin."
   },
   "booking": {
     "title": "Rezervasiya Sorğusu",
+    "subtitle": "Xidmətlərimiz üçün sorğu göndərin",
     "type": "Xidmət növü",
-    "name": "Ad",
+    "name": "Ad Soyad",
+    "namePlaceholder": "Adınız",
     "email": "Email",
+    "emailOrPhone": "(və ya telefon)",
     "phone": "Telefon",
+    "phoneOrEmail": "(və ya email)",
+    "phonePlaceholder": "+994 50 123 45 67",
+    "emailPlaceholder": "email@example.com",
     "notes": "Əlavə məlumat",
     "submit": "Sorğu Göndər",
     "success": "Sorğunuz uğurla göndərildi!",
-    "error": "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin."
+    "error": "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.",
+    "validationError": "Zəhmət olmasa email və ya telefon nömrəsindən ən azı birini daxil edin.",
+    "flight": {
+      "tripType": "Səyahət növü",
+      "oneWay": "Tək gediş",
+      "roundTrip": "Gediş-qayıdış",
+      "multiCity": "Multi-city",
+      "from": "Haradan",
+      "to": "Hara",
+      "fromPlaceholder": "Bakı (GYD)",
+      "toPlaceholder": "İstanbul (IST)",
+      "departureDate": "Gediş tarixi",
+      "returnDate": "Qayıdış tarixi",
+      "passengers": "Nəfər sayı",
+      "class": "Sinif",
+      "stops": "Stopla",
+      "addSegment": "Əlavə et",
+      "removeSegment": "Sil",
+      "segment": "Seqment"
+    },
+    "hotel": {
+      "destination": "Məkan",
+      "checkIn": "Giriş tarixi",
+      "checkOut": "Çıxış tarixi",
+      "rooms": "Otaq sayı",
+      "guests": "Nəfər sayı",
+      "hotelType": "Otel növü"
+    },
+    "transfer": {
+      "transferType": "Transfer növü",
+      "date": "Tarix",
+      "time": "Vaxt",
+      "vehicleType": "Nəqliyyat növü"
+    },
+    "insurance": {
+      "insuranceType": "Sığorta növü",
+      "package": "Paket",
+      "startDate": "Başlama tarixi",
+      "endDate": "Bitmə tarixi",
+      "coverage": "Əhatə dairəsi"
+    },
+    "embassy": {
+      "country": "Ölkə",
+      "visaType": "Viza növü",
+      "urgent": "Təcili"
+    },
+    "types": {
+      "flight": "Aviabilet",
+      "hotel": "Otel",
+      "transfer": "Transfer",
+      "insurance": "Sığorta",
+      "embassy": "Səfirlik"
+    }
   },
   "footer": {
     "rights": "Bütün hüquqlar qorunur",
@@ -75,4 +155,3 @@
     "bookNow": "İndi Rezerv Et"
   }
 }
-

@@ -97,12 +97,13 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
                 {item.label}
               </button>
             ))}
+            <LanguageSwitcher />
             <button
               onClick={() => onOpenBooking?.()}
               className="px-4 py-2 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 active:bg-primary-800 transition-colors flex items-center gap-2 text-sm touch-manipulation"
             >
               <Calendar className="w-4 h-4" />
-              İndi Rezerv Et
+              {t('nav.bookNow')}
             </button>
           </div>
 
@@ -135,12 +136,15 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
                 {item.label}
               </button>
             ))}
+            <div className="px-3 py-2">
+              <LanguageSwitcher />
+            </div>
             <button
               onClick={() => onOpenBooking?.()}
               className="w-full mt-2 px-4 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 active:bg-primary-800 transition-colors flex items-center justify-center gap-2 text-base touch-manipulation"
             >
               <Calendar className="w-5 h-5" />
-              İndi Rezerv Et
+              {t('nav.bookNow')}
             </button>
           </div>
         </div>

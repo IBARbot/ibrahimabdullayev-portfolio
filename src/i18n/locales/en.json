@@ -16,30 +16,48 @@
   },
   "about": {
     "title": "About Me",
-    "content": "I am a leading specialist in tourism and work to provide the best service to travelers.\n\nOver the years, I have gained experience in airline systems, hotel reservations, transfer services, insurance, and embassy services. I approach each client individually and provide solutions that best meet their needs.\n\nMy goal is to make travel more accessible and provide quality service to every client. Smart travel starts with smart planning."
+    "subtitle": "As an experienced specialist in tourism, I provide the best service to travelers",
+    "content": "I am a leading specialist in tourism and work to provide the best service to travelers.\n\nOver the years, I have gained experience in airline systems, hotel reservations, transfer services, insurance, and embassy services. I approach each client individually and provide solutions that best meet their needs.\n\nMy goal is to make travel more accessible and provide quality service to every client. Smart travel starts with smart planning.",
+    "professional": "Professional Service",
+    "professionalDesc": "I approach each client individually and provide the best solutions",
+    "experience": "Extensive Experience",
+    "experienceDesc": "I have gained years of experience in tourism and continue to learn",
+    "satisfaction": "Customer Satisfaction",
+    "satisfactionDesc": "Customer satisfaction is most important to me",
+    "specialist": "Tourism Specialist"
   },
   "services": {
     "title": "My Services",
-    "subtitle": "Professional services I offer",
+    "subtitle": "Comprehensive services and professional advice in tourism",
     "flight": {
       "title": "Flight Booking",
-      "description": "Flight reservations to any destination worldwide at the best prices"
+      "description": "Flight reservations and advice at the best prices",
+      "features": ["Flight search", "Multi-city", "Optimal prices", "24/7 support"]
     },
     "hotel": {
       "title": "Hotel Booking",
-      "description": "Comfortable and secure hotel reservations"
+      "description": "Hotel reservations and booking services worldwide",
+      "features": ["Best hotels", "Competitive prices", "Check-in/out dates", "Room selection"]
     },
     "transfer": {
       "title": "Transfer Services",
-      "description": "Transfers between airports, hotels, and other locations"
+      "description": "Transfer services between airports, hotels, and within cities",
+      "features": ["Airport transfer", "City transfers", "Comfortable transport", "Safe travel"]
     },
     "insurance": {
-      "title": "Insurance",
-      "description": "Travel insurance and other insurance services"
+      "title": "Insurance Services",
+      "description": "Travel, health, and life insurance packages",
+      "features": ["Travel insurance", "Health insurance", "Life insurance", "Custom packages"]
     },
     "embassy": {
       "title": "Embassy Services",
-      "description": "Visa applications and embassy services"
+      "description": "Visa applications and embassy services advice",
+      "features": ["Visa applications", "Document preparation", "Urgent service", "Consultation"]
+    },
+    "planning": {
+      "title": "Travel Planning",
+      "description": "Complex travel plans and route optimization",
+      "features": ["Route planning", "Multi-destination", "Budget optimization", "Custom plans"]
     },
     "bookNow": "Book Now"
   },
@@ -51,18 +69,80 @@
     "email": "Email",
     "phone": "Phone",
     "address": "Address",
-    "send": "Send"
+    "send": "Send",
+    "subject": "Subject",
+    "message": "Message",
+    "success": "Your message has been sent successfully!",
+    "error": "An error occurred. Please try again."
   },
   "booking": {
     "title": "Booking Request",
+    "subtitle": "Submit a request for our services",
     "type": "Service Type",
-    "name": "Name",
+    "name": "Full Name",
+    "namePlaceholder": "Your name",
     "email": "Email",
+    "emailOrPhone": "(or phone)",
     "phone": "Phone",
+    "phoneOrEmail": "(or email)",
+    "phonePlaceholder": "+1 234 567 8900",
+    "emailPlaceholder": "email@example.com",
     "notes": "Additional Information",
     "submit": "Submit Request",
     "success": "Your request has been sent successfully!",
-    "error": "An error occurred. Please try again."
+    "error": "An error occurred. Please try again.",
+    "validationError": "Please enter at least email or phone number.",
+    "flight": {
+      "tripType": "Trip Type",
+      "oneWay": "One-way",
+      "roundTrip": "Round-trip",
+      "multiCity": "Multi-city",
+      "from": "From",
+      "to": "To",
+      "fromPlaceholder": "Baku (GYD)",
+      "toPlaceholder": "Istanbul (IST)",
+      "departureDate": "Departure Date",
+      "returnDate": "Return Date",
+      "passengers": "Passengers",
+      "class": "Class",
+      "stops": "Stops",
+      "addSegment": "Add",
+      "removeSegment": "Remove",
+      "segment": "Segment"
+    },
+    "hotel": {
+      "destination": "Destination",
+      "checkIn": "Check-in Date",
+      "checkOut": "Check-out Date",
+      "rooms": "Rooms",
+      "guests": "Guests",
+      "hotelType": "Hotel Type"
+    },
+    "transfer": {
+      "transferType": "Transfer Type",
+      "date": "Date",
+      "time": "Time",
+      "vehicleType": "Vehicle Type"
+    },
+    "insurance": {
+      "insuranceType": "Insurance Type",
+      "package": "Package",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "coverage": "Coverage"
+    },
+    "embassy": {
+      "country": "Country",
+      "visaType": "Visa Type",
+      "urgent": "Urgent"
+    },
+    "types": {
+      "flight": "Flight",
+      "hotel": "Hotel",
+      "transfer": "Transfer",
+      "insurance": "Insurance",
+      "embassy": "Embassy"
+    }
   },
   "footer": {
     "rights": "All rights reserved",
@@ -75,4 +155,3 @@
     "bookNow": "Book Now"
   }
 }
-
