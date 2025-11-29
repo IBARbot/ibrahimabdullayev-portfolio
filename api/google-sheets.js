@@ -135,29 +135,49 @@ export default async function handler(req, res) {
         }
 
         console.log('Access token alındı, Google Sheets-ə yazılır...');
+        console.log('Row data length:', rowData.length);
+        console.log('Row data:', JSON.stringify(rowData));
 
         // Append to Google Sheets using access token
-        // Range: A:AG (33 columns from A to AG)
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:AG:append?valueInputOption=RAW`;
+        // Range format: Sheet1!A:AG or A:AG (for default sheet)
+        // Using A:AG for 33 columns (A to AG)
+        const range = 'A:AG'; // 33 columns
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=RAW`;
+        
+        console.log('Google Sheets API URL:', url);
+        
+        const requestBody = {
+          values: [rowData],
+        };
+        
+        console.log('Request body:', JSON.stringify(requestBody));
+        
         response = await fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${tokenData.access_token}`,
           },
-          body: JSON.stringify({
-            values: [rowData],
-          }),
+          body: JSON.stringify(requestBody),
         });
 
         console.log('Google Sheets API response status:', response.status);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Google Sheets API error response:', errorText);
+        } else {
+          const successData = await response.json();
+          console.log('Google Sheets API success response:', JSON.stringify(successData));
+        }
       } catch (serviceAccountError) {
         console.error('Service Account xətası:', serviceAccountError);
         console.error('Error details:', serviceAccountError.message);
         // Fallback to API Key method if Service Account fails
         if (apiKey) {
           console.log('API Key metodu ilə yenidən cəhd edilir...');
-          const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:AG:append?valueInputOption=RAW&key=${apiKey}`;
+          const range = 'A:AG';
+          const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=RAW&key=${apiKey}`;
           response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -168,6 +188,10 @@ export default async function handler(req, res) {
             }),
           });
           console.log('API Key metodu response status:', response.status);
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('API Key metodu error response:', errorText);
+          }
         } else {
           throw serviceAccountError;
         }
@@ -176,7 +200,8 @@ export default async function handler(req, res) {
     // Method 2: API Key (Fallback)
     else if (apiKey) {
       console.log('API Key metodu istifadə olunur...');
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:AG:append?valueInputOption=RAW&key=${apiKey}`;
+      const range = 'A:AG';
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=RAW&key=${apiKey}`;
       response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -187,6 +212,10 @@ export default async function handler(req, res) {
         }),
       });
       console.log('API Key metodu response status:', response.status);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Key metodu error response:', errorText);
+      }
     } else {
       console.log('Google Sheets konfiqurasiyası yoxdur, skip edilir');
       return res.status(200).json({ success: true, message: 'Google Sheets konfiqurasiya edilməyib' });
