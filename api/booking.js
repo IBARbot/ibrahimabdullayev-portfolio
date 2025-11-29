@@ -43,7 +43,7 @@ export default async function handler(req, res) {
     };
     
     // Send to Google Sheets (async, don't wait)
-    if (process.env.GOOGLE_SHEET_ID && process.env.GOOGLE_SHEETS_API_KEY) {
+    if (process.env.GOOGLE_SHEET_ID && (process.env.GOOGLE_SHEETS_API_KEY || process.env.GOOGLE_SERVICE_ACCOUNT_KEY)) {
       try {
         const sheetsUrl = `${req.headers.origin || 'https://ibrahimabdullayev-portfolio.vercel.app'}/api/google-sheets`;
         fetch(sheetsUrl, {

@@ -1,6 +1,5 @@
 // Vercel Serverless Function - Google Sheets Integration
 // This function appends booking data to Google Sheets
-import jwt from 'jsonwebtoken';
 
 export default async function handler(req, res) {
   // CORS
@@ -53,6 +52,7 @@ export default async function handler(req, res) {
         const serviceAccount = JSON.parse(serviceAccountJson);
 
         // Get access token using Service Account
+        const jwt = require('jsonwebtoken');
         const now = Math.floor(Date.now() / 1000);
         const token = jwt.sign(
           {
