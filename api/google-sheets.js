@@ -137,7 +137,8 @@ export default async function handler(req, res) {
         console.log('Access token alındı, Google Sheets-ə yazılır...');
 
         // Append to Google Sheets using access token
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:append?valueInputOption=RAW`;
+        // Range: A:AG (33 columns from A to AG)
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:AG:append?valueInputOption=RAW`;
         response = await fetch(url, {
           method: 'POST',
           headers: {
@@ -156,7 +157,7 @@ export default async function handler(req, res) {
         // Fallback to API Key method if Service Account fails
         if (apiKey) {
           console.log('API Key metodu ilə yenidən cəhd edilir...');
-          const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:append?valueInputOption=RAW&key=${apiKey}`;
+          const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:AG:append?valueInputOption=RAW&key=${apiKey}`;
           response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -175,7 +176,7 @@ export default async function handler(req, res) {
     // Method 2: API Key (Fallback)
     else if (apiKey) {
       console.log('API Key metodu istifadə olunur...');
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:append?valueInputOption=RAW&key=${apiKey}`;
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:AG:append?valueInputOption=RAW&key=${apiKey}`;
       response = await fetch(url, {
         method: 'POST',
         headers: {
