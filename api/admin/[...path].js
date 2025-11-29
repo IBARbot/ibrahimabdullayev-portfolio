@@ -196,8 +196,13 @@ export default async function handler(req, res) {
     }
 
     // Check authentication for protected routes
+    console.log('⚠️ Route not matched as public route, checking authentication...');
+    console.log('Route:', route);
+    console.log('Method:', req.method);
     const authHeader = req.headers.authorization;
+    console.log('Auth header exists:', !!authHeader);
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.error('❌ Unauthorized - No auth header or invalid format');
       return res.status(401).json({ success: false, message: 'Unauthorized' });
     }
 
