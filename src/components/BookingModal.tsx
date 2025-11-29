@@ -13,12 +13,18 @@ interface BookingModalProps {
 export default function BookingModal({ isOpen, onClose, initialType = 'flight' }: BookingModalProps) {
   const { t } = useTranslation()
   const [showSuccess, setShowSuccess] = useState(false)
+  const [currentInitialType, setCurrentInitialType] = useState<BookingType>(initialType)
 
   useEffect(() => {
     if (!isOpen) {
       setShowSuccess(false)
+      // Reset to flight when modal closes
+      setCurrentInitialType('flight')
+    } else {
+      // Update initialType when modal opens
+      setCurrentInitialType(initialType)
     }
-  }, [isOpen])
+  }, [isOpen, initialType])
 
   const handleClose = () => {
     onClose()
@@ -93,7 +99,7 @@ export default function BookingModal({ isOpen, onClose, initialType = 'flight' }
             </div>
           ) : (
             <div className="p-4 sm:p-6">
-              <BookingForm initialType={initialType} onBookingSuccess={handleBookingSuccess} />
+              <BookingForm initialType={currentInitialType} onBookingSuccess={handleBookingSuccess} />
             </div>
           )}
         </motion.div>

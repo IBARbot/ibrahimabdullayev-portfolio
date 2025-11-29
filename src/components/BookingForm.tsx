@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Send, Plane, Hotel, Car, Shield, Building2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -65,6 +65,16 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
     message: string
   }>({ type: null, message: '' })
   const [multiCitySegments, setMultiCitySegments] = useState([{ from: '', to: '', date: '' }])
+
+  // Update bookingType when initialType changes (e.g., when modal opens with different service)
+  useEffect(() => {
+    setBookingType(initialType)
+    setFormData(prev => ({ ...prev, type: initialType }))
+    // Reset trip type when switching to flight
+    if (initialType === 'flight') {
+      setTripType('one-way')
+    }
+  }, [initialType])
 
   const bookingTypes = [
     { id: 'flight' as BookingType, label: t('booking.types.flight'), icon: Plane },
