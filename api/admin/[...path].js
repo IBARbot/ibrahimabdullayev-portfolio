@@ -60,6 +60,10 @@ export default async function handler(req, res) {
       // Only send email if email matches admin email
       if (email && adminEmail && email.toLowerCase() === adminEmail.toLowerCase()) {
         try {
+          console.log('Password reset requested for:', adminEmail);
+          console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'Mövcuddur' : 'Yoxdur');
+          console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? 'Mövcuddur' : 'Yoxdur');
+
           const resetToken = jwt.sign(
             { 
               email: adminEmail,
@@ -71,10 +75,12 @@ export default async function handler(req, res) {
           );
 
           const resetLink = `${req.headers.origin || 'https://ibrahimabdullayev.com'}/admin/reset-password?token=${resetToken}`;
+          console.log('Reset link generated:', resetLink);
 
           const transporter = createTransporter();
           if (transporter) {
-            await transporter.sendMail({
+            console.log('Email transporter yaradıldı, email göndərilir...');
+            const emailResult = await transporter.sendMail({
               from: process.env.EMAIL_USER,
               to: adminEmail,
               subject: 'Admin Panel - Şifrə Sıfırlama',
@@ -97,11 +103,20 @@ export default async function handler(req, res) {
                 </div>
               `,
             });
+            console.log('Email uğurla göndərildi:', emailResult.messageId);
+          } else {
+            console.error('Email transporter yaradıla bilmədi. EMAIL_USER və ya EMAIL_PASS yoxdur.');
           }
         } catch (error) {
           console.error('Forgot password email error:', error);
+          console.error('Error details:', error.message);
+          console.error('Error stack:', error.stack);
           // Still return success message for security
         }
+      } else {
+        console.log('Email uyğun gəlmir və ya adminEmail yoxdur');
+        console.log('Requested email:', email);
+        console.log('Admin email:', adminEmail);
       }
 
       // Always return the same message (security best practice)
