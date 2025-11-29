@@ -14,7 +14,7 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'about', 'skills', 'services', 'projects', 'booking', 'contact']
+      const sections = ['home', 'about', 'services', 'projects', 'booking', 'contact']
       const current = sections.find(section => {
         const element = document.getElementById(section)
         if (element) {
@@ -46,7 +46,6 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
   const navItems = [
     { id: 'home', label: 'Ana Səhifə' },
     { id: 'about', label: 'Haqqımda' },
-    { id: 'skills', label: 'Bacarıqlar' },
     { id: 'services', label: 'Xidmətlər' },
     { id: 'projects', label: 'Portfolio' },
     { id: 'booking', label: 'Rezervasiya' },
