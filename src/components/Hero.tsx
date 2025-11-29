@@ -3,13 +3,6 @@ import { motion } from 'framer-motion'
 import { ChevronDown, Linkedin, Mail, Loader2, Instagram, MessageCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-interface HeroContent {
-  title: string
-  subtitle: string
-  description: string
-  image: string
-}
-
 const PROFILE_IMAGE = 'https://i.imgur.com/64oQNiZ.jpeg'
 
 interface HeroProps {
@@ -18,29 +11,38 @@ interface HeroProps {
 
 export default function Hero({ onOpenBooking }: HeroProps) {
   const { t, i18n } = useTranslation()
-  const [content, setContent] = useState<HeroContent | null>(null)
+  const [heroImage, setHeroImage] = useState<string>(PROFILE_IMAGE)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Load hero image from backend (if available)
     fetch('/api/content')
       .then((res) => res.json())
       .then((data) => {
-        if (data.hero) {
-          setContent(data.hero)
+        if (data.hero?.image) {
+          setHeroImage(data.hero.image)
         }
         setLoading(false)
       })
       .catch((err) => {
         console.error('Content yüklənərkən xəta:', err)
-        setContent({
-          title: t('hero.title'),
-          subtitle: t('hero.subtitle'),
-          description: t('hero.description'),
-          image: '',
-        })
         setLoading(false)
       })
   }, [])
+
+  // Update image when language changes (if backend provides different images per language)
+  useEffect(() => {
+    fetch('/api/content')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.hero?.image) {
+          setHeroImage(data.hero.image)
+        }
+      })
+      .catch(() => {
+        // Keep default image
+      })
+  }, [i18n.language])
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id)
@@ -49,13 +51,18 @@ export default function Hero({ onOpenBooking }: HeroProps) {
     }
   }
 
-  if (loading || !content) {
+  if (loading) {
     return (
       <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-primary-50">
         <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
       </section>
     )
   }
+
+  // Use translations for all text content
+  const heroTitle = t('hero.title')
+  const heroSubtitle = t('hero.subtitle')
+  const heroDescription = t('hero.description')
 
   return (
     <section
@@ -81,13 +88,13 @@ export default function Hero({ onOpenBooking }: HeroProps) {
               <div className="absolute inset-0 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full blur-2xl opacity-30 animate-blob"></div>
               <div className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-white shadow-2xl">
                 <img
-                  src={PROFILE_IMAGE}
-                  alt="İbrahim Abdullayev"
+                  src={heroImage}
+                  alt={heroTitle}
                   className="w-full h-full object-cover"
                   loading="eager"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement
-                    target.src = 'https://via.placeholder.com/400x400/0ea5e9/ffffff?text=IA'
+                    target.src = PROFILE_IMAGE
                   }}
                 />
               </div>
@@ -107,14 +114,16 @@ export default function Hero({ onOpenBooking }: HeroProps) {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight"
           >
-            {content.title.includes('İbrahim Abdullayev') ? (
+            {heroTitle.includes('İbrahim Abdullayev') || heroTitle.includes('Ibrahim Abdullayev') || heroTitle.includes('Ибрагим Абдуллаев') ? (
               <>
-                {content.title.split('İbrahim Abdullayev')[0]}
-                <span className="text-primary-600">İbrahim Abdullayev</span>
-                {content.title.split('İbrahim Abdullayev')[1]}
+                {heroTitle.split(/İbrahim Abdullayev|Ibrahim Abdullayev|Ибрагим Абдуллаев/)[0]}
+                <span className="text-primary-600">
+                  {i18n.language === 'az' ? 'İbrahim Abdullayev' : i18n.language === 'ru' ? 'Ибрагим Абдуллаев' : 'Ibrahim Abdullayev'}
+                </span>
+                {heroTitle.split(/İbrahim Abdullayev|Ibrahim Abdullayev|Ибрагим Абдуллаев/)[1]}
               </>
             ) : (
-              content.title
+              heroTitle
             )}
           </motion.h1>
 
@@ -124,7 +133,7 @@ export default function Hero({ onOpenBooking }: HeroProps) {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-lg md:text-xl text-gray-600 mb-6 max-w-2xl mx-auto"
           >
-            {content.subtitle}
+            {heroSubtitle}
           </motion.p>
 
           <motion.p
@@ -133,7 +142,7 @@ export default function Hero({ onOpenBooking }: HeroProps) {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="text-base text-gray-500 mb-10 max-w-xl mx-auto"
           >
-            {content.description}
+            {heroDescription}
           </motion.p>
 
           <motion.div

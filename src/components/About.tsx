@@ -5,46 +5,13 @@ import { useTranslation } from 'react-i18next'
 
 const PROFILE_IMAGE = 'https://i.imgur.com/64oQNiZ.jpeg'
 
-interface AboutContent {
-  title: string
-  content: string
-}
-
 export default function About() {
   const { t } = useTranslation()
-  const [content, setContent] = useState<AboutContent | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    fetch('/api/content')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.about) {
-          setContent(data.about)
-        }
-        setLoading(false)
-      })
-      .catch((err) => {
-        console.error('Content yüklənərkən xəta:', err)
-        setContent({
-          title: t('about.title'),
-          content: t('about.content'),
-        })
-        setLoading(false)
-      })
-  }, [])
-
-  if (loading || !content) {
-    return (
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center items-center py-20">
-            <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
-          </div>
-        </div>
-      </section>
-    )
-  }
+  // Use translations directly instead of backend content
+  const aboutTitle = t('about.title')
+  const aboutContent = t('about.content')
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -74,7 +41,7 @@ export default function About() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            {content.title}
+            {aboutTitle}
           </h2>
           <div className="w-16 h-0.5 bg-primary-600 mx-auto mb-4"></div>
           <p className="text-base text-gray-600 max-w-2xl mx-auto">
