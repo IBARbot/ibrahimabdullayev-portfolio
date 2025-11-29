@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { LogOut, Save, Upload, Image as ImageIcon, FileText, Mail, Phone, MapPin, BarChart3, Eye, MousePointer, TrendingUp } from 'lucide-react'
+import { LogOut, Save, Upload, Image as ImageIcon, FileText, Mail, Phone, MapPin, BarChart3, Eye, MousePointer, TrendingUp, Download } from 'lucide-react'
 
 interface Content {
   hero: {
@@ -99,6 +99,60 @@ export default function AdminPanel() {
     } catch (error) {
       console.error('Stats yüklənərkən xəta:', error)
     }
+  }
+
+  const downloadStats = () => {
+    if (!stats) return
+
+    // Convert stats to CSV format
+    const csvRows: string[] = []
+    
+    // Header
+    csvRows.push('Statistika Növü,Metrik,Dəyər')
+    
+    // Page Views
+    csvRows.push(`Page Views,Ümumi,${stats.pageViews.total}`)
+    csvRows.push(`Page Views,Bu Gün,${stats.pageViews.today}`)
+    csvRows.push(`Page Views,Bu Həftə,${stats.pageViews.thisWeek}`)
+    csvRows.push(`Page Views,Bu Ay,${stats.pageViews.thisMonth}`)
+    
+    // Clicks
+    csvRows.push(`Clicks,Ümumi,${stats.clicks.total}`)
+    stats.clicks.topElements.forEach(item => {
+      csvRows.push(`Clicks,"${item.element}",${item.count}`)
+    })
+    
+    // Scrolls
+    csvRows.push(`Scrolls,25%,${stats.scrolls.byDepth[25]}`)
+    csvRows.push(`Scrolls,50%,${stats.scrolls.byDepth[50]}`)
+    csvRows.push(`Scrolls,75%,${stats.scrolls.byDepth[75]}`)
+    csvRows.push(`Scrolls,100%,${stats.scrolls.byDepth[100]}`)
+    
+    // Users
+    csvRows.push(`Users,Unikal,${stats.users.unique}`)
+    csvRows.push(`Users,Yeni,${stats.users.new}`)
+    csvRows.push(`Users,Qayıdan,${stats.users.returning}`)
+    
+    // Devices
+    csvRows.push(`Devices,Desktop,${stats.devices.desktop}`)
+    csvRows.push(`Devices,Mobil,${stats.devices.mobile}`)
+    csvRows.push(`Devices,Tablet,${stats.devices.tablet}`)
+
+    // Create CSV content
+    const csvContent = csvRows.join('\n')
+    
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `statistikalar_${new Date().toISOString().split('T')[0]}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    
+    setMessage({ type: 'success', text: 'Statistikalar yükləndi!' })
   }
 
   const loadContent = async () => {
@@ -337,6 +391,18 @@ export default function AdminPanel() {
 
         {activeTab === 'stats' ? (
           <div className="space-y-6">
+            {/* Download Button */}
+            <div className="flex justify-end">
+              <button
+                onClick={downloadStats}
+                disabled={!stats}
+                className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Download className="w-5 h-5" />
+                CSV Yüklə
+              </button>
+            </div>
+
             {/* Stats Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="bg-white p-6 rounded-lg shadow-md">

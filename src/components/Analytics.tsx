@@ -1,9 +1,50 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
+// Google Analytics 4 (GA4) integration
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void
+    dataLayer?: any[]
+  }
+}
+
 // Analytics tracking component
 export default function Analytics() {
   const location = useLocation()
+  // @ts-ignore - Vite environment variables
+  const gaId = import.meta.env?.VITE_GOOGLE_ANALYTICS_ID || ''
+
+  // Initialize Google Analytics
+  useEffect(() => {
+    if (gaId && typeof window !== 'undefined') {
+      // Load GA4 script
+      const script1 = document.createElement('script')
+      script1.async = true
+      script1.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`
+      document.head.appendChild(script1)
+
+      // Initialize dataLayer and gtag
+      window.dataLayer = window.dataLayer || []
+      window.gtag = function(...args: any[]) {
+        window.dataLayer!.push(args)
+      }
+      window.gtag('js', new Date())
+      window.gtag('config', gaId, {
+        page_path: location.pathname,
+      })
+    }
+  }, [gaId])
+
+  // Track page views with GA4
+  useEffect(() => {
+    if (gaId && window.gtag) {
+      window.gtag('config', gaId, {
+        page_path: location.pathname,
+        page_title: document.title,
+      })
+    }
+  }, [location, gaId])
 
   useEffect(() => {
     // Track page view

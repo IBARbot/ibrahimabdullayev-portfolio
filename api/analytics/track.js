@@ -42,8 +42,8 @@ export default async function handler(req, res) {
       // GA4 Measurement Protocol integration can be added here
     }
 
-    // Optional: Store in Google Sheets for analysis
-    if (process.env.GOOGLE_SHEET_ID_ANALYTICS && process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+    // Store in Google Sheets for analysis (same sheet, different page)
+    if (process.env.GOOGLE_SHEET_ID && (process.env.GOOGLE_SERVICE_ACCOUNT_KEY || process.env.GOOGLE_SHEETS_API_KEY)) {
       try {
         const sheetsUrl = `${req.headers.origin || 'https://ibrahimabdullayev-portfolio.vercel.app'}/api/google-sheets-analytics`;
         fetch(sheetsUrl, {
