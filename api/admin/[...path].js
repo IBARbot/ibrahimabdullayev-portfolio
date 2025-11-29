@@ -58,11 +58,15 @@ export default async function handler(req, res) {
       const securityMessage = 'Əgər bu email ünvanı qeydiyyatdan keçibsə, şifrə sıfırlama linki email-ə göndəriləcək. Zəhmət olmasa email-ınızın gələnlər qutusunu və spam qovluğunu yoxlayın. Link 1 saat müddətində etibarlıdır.';
 
       // Only send email if email matches admin email
+      console.log('Forgot password request received');
+      console.log('Requested email:', email);
+      console.log('Admin email from env:', adminEmail);
+      console.log('EMAIL_USER exists:', !!process.env.EMAIL_USER);
+      console.log('EMAIL_PASS exists:', !!process.env.EMAIL_PASS);
+      
       if (email && adminEmail && email.toLowerCase() === adminEmail.toLowerCase()) {
+        console.log('Email matches admin email, proceeding with reset...');
         try {
-          console.log('Password reset requested for:', adminEmail);
-          console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'Mövcuddur' : 'Yoxdur');
-          console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? 'Mövcuddur' : 'Yoxdur');
 
           const resetToken = jwt.sign(
             { 
@@ -78,13 +82,19 @@ export default async function handler(req, res) {
           console.log('Reset link generated:', resetLink);
 
           const transporter = createTransporter();
-          if (transporter) {
-            console.log('Email transporter yaradıldı, email göndərilir...');
-            const emailResult = await transporter.sendMail({
-              from: process.env.EMAIL_USER,
-              to: adminEmail,
-              subject: 'Admin Panel - Şifrə Sıfırlama',
-              html: `
+          if (!transporter) {
+            console.error('❌ Email transporter yaradıla bilmədi! EMAIL_USER və ya EMAIL_PASS yoxdur.');
+            console.error('EMAIL_USER:', process.env.EMAIL_USER || 'YOXDUR');
+            console.error('EMAIL_PASS:', process.env.EMAIL_PASS ? 'MÖVCUDDUR (uzunluq: ' + process.env.EMAIL_PASS.length + ')' : 'YOXDUR');
+          } else {
+            console.log('✅ Email transporter yaradıldı');
+            console.log('📧 Email göndərilir:', adminEmail);
+            try {
+              const emailResult = await transporter.sendMail({
+                from: process.env.EMAIL_USER,
+                to: adminEmail,
+                subject: 'Admin Panel - Şifrə Sıfırlama',
+                html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                   <h2 style="color: #0ea5e9;">Şifrə Sıfırlama</h2>
                   <p>Salam,</p>
@@ -102,10 +112,17 @@ export default async function handler(req, res) {
                   <p style="color: #666; font-size: 12px;">Bu avtomatik email-dir, cavab göndərməyin.</p>
                 </div>
               `,
-            });
-            console.log('Email uğurla göndərildi:', emailResult.messageId);
-          } else {
-            console.error('Email transporter yaradıla bilmədi. EMAIL_USER və ya EMAIL_PASS yoxdur.');
+              });
+              console.log('✅ Email uğurla göndərildi!');
+              console.log('Message ID:', emailResult.messageId);
+              console.log('Response:', emailResult.response);
+            } catch (emailError) {
+              console.error('❌ Email göndərmə xətası:', emailError);
+              console.error('Error code:', emailError.code);
+              console.error('Error command:', emailError.command);
+              console.error('Error response:', emailError.response);
+              throw emailError; // Re-throw to be caught by outer catch
+            }
           }
         } catch (error) {
           console.error('Forgot password email error:', error);
