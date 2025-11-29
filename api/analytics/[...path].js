@@ -90,8 +90,11 @@ export default async function handler(req, res) {
       }
 
       const { startDate, endDate, type } = req.query;
+      const sheetId = process.env.GOOGLE_SHEET_ID;
+      const serviceAccountKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+      const apiKey = process.env.GOOGLE_SHEETS_API_KEY;
 
-      // Mock stats structure (in production, query database)
+      // Initialize stats structure
       const stats = {
         pageViews: {
           total: 0,
@@ -130,6 +133,153 @@ export default async function handler(req, res) {
           endDate: endDate || new Date().toISOString(),
         },
       };
+
+      // Read analytics data from Google Sheets
+      if (sheetId && (serviceAccountKey || apiKey)) {
+        try {
+          let accessToken = null;
+
+          // Get access token using Service Account
+          if (serviceAccountKey) {
+            try {
+              const jwt = (await import('jsonwebtoken')).default;
+              const serviceAccountJson = Buffer.from(serviceAccountKey, 'base64').toString('utf-8');
+              const serviceAccount = JSON.parse(serviceAccountJson);
+
+              const now = Math.floor(Date.now() / 1000);
+              const token = jwt.sign(
+                {
+                  iss: serviceAccount.client_email,
+                  sub: serviceAccount.client_email,
+                  aud: 'https://oauth2.googleapis.com/token',
+                  exp: now + 3600,
+                  iat: now,
+                  scope: 'https://www.googleapis.com/auth/spreadsheets.readonly',
+                },
+                serviceAccount.private_key,
+                { algorithm: 'RS256' }
+              );
+
+              const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                  grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                  assertion: token,
+                }),
+              });
+
+              const tokenData = await tokenResponse.json();
+              if (tokenData.access_token) {
+                accessToken = tokenData.access_token;
+              }
+            } catch (serviceAccountError) {
+              console.error('Service Account token error:', serviceAccountError);
+            }
+          }
+
+          // Read Analytics sheet data
+          const range = 'Analytics!A:I';
+          let url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}`;
+          if (accessToken) {
+            url += `?access_token=${accessToken}`;
+          } else if (apiKey) {
+            url += `?key=${apiKey}`;
+          } else {
+            throw new Error('No authentication method available');
+          }
+
+          const sheetsResponse = await fetch(url);
+          const sheetsData = await sheetsResponse.json();
+
+          if (sheetsData.values && sheetsData.values.length > 1) {
+            // Skip header row (index 0)
+            const rows = sheetsData.values.slice(1);
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+            const uniqueIPs = new Set();
+            const uniquePaths = new Set();
+
+            rows.forEach((row) => {
+              if (!row || row.length < 2) return;
+
+              const timestamp = row[0] ? new Date(row[0]) : null;
+              const eventType = row[1] || '';
+              const path = row[2] || '';
+              const element = row[3] || '';
+              const value = row[4] || '';
+              const ip = row[8] || '';
+
+              if (timestamp && !isNaN(timestamp.getTime())) {
+                // Page Views
+                if (eventType === 'pageview') {
+                  stats.pageViews.total++;
+                  uniquePaths.add(path);
+                  
+                  if (timestamp >= today) stats.pageViews.today++;
+                  if (timestamp >= weekAgo) stats.pageViews.thisWeek++;
+                  if (timestamp >= monthAgo) stats.pageViews.thisMonth++;
+
+                  if (path) {
+                    stats.pageViews.byPath[path] = (stats.pageViews.byPath[path] || 0) + 1;
+                  }
+                }
+
+                // Clicks
+                if (eventType === 'click') {
+                  stats.clicks.total++;
+                  if (element) {
+                    stats.clicks.byElement[element] = (stats.clicks.byElement[element] || 0) + 1;
+                  }
+                }
+
+                // Scrolls
+                if (eventType === 'scroll' && value) {
+                  const depth = parseInt(value);
+                  if (!isNaN(depth)) {
+                    if (depth >= 25) stats.scrolls.byDepth[25]++;
+                    if (depth >= 50) stats.scrolls.byDepth[50]++;
+                    if (depth >= 75) stats.scrolls.byDepth[75]++;
+                    if (depth >= 100) stats.scrolls.byDepth[100]++;
+                  }
+                }
+
+                // Unique users (by IP)
+                if (ip && ip !== 'unknown') {
+                  uniqueIPs.add(ip);
+                }
+              }
+            });
+
+            // Calculate top elements
+            stats.clicks.topElements = Object.entries(stats.clicks.byElement)
+              .map(([element, count]) => ({ element, count }))
+              .sort((a, b) => b.count - a.count)
+              .slice(0, 10);
+
+            // Set unique users
+            stats.users.unique = uniqueIPs.size;
+            stats.users.new = uniqueIPs.size; // Simplified - in production, track returning users
+
+            // Calculate average scroll depth
+            const scrollCounts = Object.values(stats.scrolls.byDepth);
+            const totalScrolls = scrollCounts.reduce((a, b) => a + b, 0);
+            if (totalScrolls > 0) {
+              stats.scrolls.averageDepth = Math.round(
+                (stats.scrolls.byDepth[25] * 25 +
+                 stats.scrolls.byDepth[50] * 50 +
+                 stats.scrolls.byDepth[75] * 75 +
+                 stats.scrolls.byDepth[100] * 100) / totalScrolls
+              );
+            }
+          }
+        } catch (sheetsError) {
+          console.error('Google Sheets read error:', sheetsError);
+          // Return empty stats if Sheets read fails
+        }
+      }
 
       return res.status(200).json({
         success: true,
