@@ -68,6 +68,8 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(false)
   const [stats, setStats] = useState<AnalyticsStats | null>(null)
   const [activeTab, setActiveTab] = useState<'content' | 'stats'>('content')
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error' | null; text: string }>({
     type: null,
     text: '',
@@ -201,6 +203,36 @@ export default function AdminPanel() {
     navigate('/')
   }
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setMessage({ type: null, text: '' })
+
+    try {
+      const response = await fetch('/api/admin/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: forgotPasswordEmail }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setMessage({ type: 'success', text: data.message })
+        setShowForgotPassword(false)
+        setForgotPasswordEmail('')
+      } else {
+        setMessage({ type: 'error', text: data.message || 'Xəta baş verdi' })
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Xəta baş verdi' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleSave = async () => {
     if (!content) return
 
@@ -311,7 +343,73 @@ export default function AdminPanel() {
             >
               {loading ? 'Giriş edilir...' : 'Giriş'}
             </button>
+
+            <div className="text-center mt-4">
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-sm text-primary-600 hover:text-primary-700 underline"
+              >
+                Şifrəmi unutdum
+              </button>
+            </div>
           </form>
+
+          {/* Forgot Password Modal */}
+          {showForgotPassword && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+              onClick={() => setShowForgotPassword(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-lg p-6 max-w-md w-full"
+              >
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Şifrə Sıfırlama</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Admin email ünvanınızı daxil edin. Şifrə sıfırlama linki email-ə göndəriləcək.
+                </p>
+                <form onSubmit={handleForgotPassword} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={forgotPasswordEmail}
+                      onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                      placeholder="ibrahim.abdullayev1@gmail.com"
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowForgotPassword(false)
+                        setForgotPasswordEmail('')
+                      }}
+                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      Ləğv et
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {loading ? 'Göndərilir...' : 'Göndər'}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
         </motion.div>
       </div>
     )

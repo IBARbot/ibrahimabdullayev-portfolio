@@ -10,6 +10,7 @@ import Projects from './components/Projects'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import AdminPanel from './components/AdminPanel'
+import ResetPassword from './components/ResetPassword'
 import WelcomeModal from './components/WelcomeModal'
 import FloatingWhatsApp from './components/FloatingWhatsApp'
 import BookingModal from './components/BookingModal'
@@ -86,6 +87,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/admin/reset-password" element={<ResetPassword />} />
         </Routes>
       </Router>
     </ErrorBoundary>
