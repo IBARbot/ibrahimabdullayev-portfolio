@@ -33,6 +33,7 @@ interface BookingFormData {
   hotelType?: string
   // Transfer
   transferType?: string
+  date?: string
   time?: string
   vehicleType?: string
   // Insurance
