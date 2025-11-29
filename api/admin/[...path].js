@@ -173,10 +173,28 @@ export default async function handler(req, res) {
         });
       }
 
+      // Şifrə validasiyası - güclü şifrə tələbləri
+      const passwordErrors = [];
       if (newPassword.length < 8) {
+        passwordErrors.push('ən azı 8 simvol');
+      }
+      if (!/[A-Z]/.test(newPassword)) {
+        passwordErrors.push('ən azı bir böyük hərf');
+      }
+      if (!/[a-z]/.test(newPassword)) {
+        passwordErrors.push('ən azı bir kiçik hərf');
+      }
+      if (!/[0-9]/.test(newPassword)) {
+        passwordErrors.push('ən azı bir rəqəm');
+      }
+      if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword)) {
+        passwordErrors.push('ən azı bir xüsusi simvol (!@#$%^&* və s.)');
+      }
+
+      if (passwordErrors.length > 0) {
         return res.status(400).json({ 
           success: false, 
-          message: 'Şifrə ən azı 8 simvol olmalıdır' 
+          message: `Şifrə tələbləri: ${passwordErrors.join(', ')}` 
         });
       }
 
@@ -197,11 +215,46 @@ export default async function handler(req, res) {
       }
 
       console.log('Password reset requested for:', decoded.email);
-      console.log('New password (to be set in Vercel):', newPassword);
+      console.log('New password validated successfully');
+
+      // Şifrə sıfırlandıqdan sonra bildiriş email göndər
+      const adminEmail = process.env.ADMIN_EMAIL || process.env.CONTACT_EMAIL || process.env.EMAIL_USER;
+      const transporter = createTransporter();
+      
+      if (transporter && adminEmail) {
+        try {
+          await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: adminEmail,
+            subject: 'Admin Panel - Şifrə Sıfırlandı',
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #0ea5e9;">Şifrə Sıfırlandı</h2>
+                <p>Salam,</p>
+                <p>Admin panel şifrəniz uğurla sıfırlandı.</p>
+                <p><strong>Yeni şifrə təyin edildi:</strong> ${new Date().toLocaleString('az-AZ')}</p>
+                <p><strong>Vacib:</strong> Yeni şifrəni Vercel Dashboard-da tətbiq etmək üçün:</p>
+                <ol style="line-height: 1.8;">
+                  <li>Vercel Dashboard → Settings → Environment Variables</li>
+                  <li><code>ADMIN_PASSWORD</code> dəyişənini tapın</li>
+                  <li>Dəyəri yeniləyin: <code>${newPassword}</code></li>
+                  <li>Deployment-i yeniləyin (Redeploy)</li>
+                </ol>
+                <p style="color: #d32f2f; font-weight: bold;">Qeyd: Şifrəni təhlükəsiz saxlayın və heç kimlə paylaşmayın.</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+                <p style="color: #666; font-size: 12px;">Bu avtomatik email-dir, cavab göndərməyin.</p>
+              </div>
+            `,
+          });
+          console.log('Password reset notification email sent');
+        } catch (emailError) {
+          console.error('Password reset notification email error:', emailError);
+        }
+      }
 
       return res.status(200).json({ 
         success: true, 
-        message: 'Şifrə uğurla sıfırlandı! Zəhmət olmasa Vercel Dashboard-da ADMIN_PASSWORD environment variable-ını yeniləyin və saytı yenidən deploy edin.' 
+        message: 'Şifrə uğurla sıfırlandı! Bildiriş email göndərildi. Zəhmət olmasa Vercel Dashboard-da ADMIN_PASSWORD environment variable-ını yeniləyin və saytı yenidən deploy edin.' 
       });
     }
 
