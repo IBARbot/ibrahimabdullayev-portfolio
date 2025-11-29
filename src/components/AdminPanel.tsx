@@ -172,7 +172,7 @@ export default function AdminPanel() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                placeholder="admin"
+                placeholder="ibrahim.abdullayev1@gmail.com"
               />
             </div>
 
@@ -318,11 +318,27 @@ export default function AdminPanel() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                 />
                 {content.hero.image && (
-                  <img
-                    src={content.hero.image}
-                    alt="Hero"
-                    className="mt-2 w-full h-32 object-cover rounded-lg"
-                  />
+                  <div className="mt-2 relative">
+                    <img
+                      src={content.hero.image}
+                      alt="Hero"
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (content) {
+                          setContent({
+                            ...content,
+                            hero: { ...content.hero, image: '' },
+                          })
+                        }
+                      }}
+                      className="absolute top-2 right-2 px-3 py-1 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors"
+                    >
+                      Sil
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -431,6 +447,70 @@ export default function AdminPanel() {
                     })
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Social Media Links */}
+          <div className="bg-white p-6 rounded-lg shadow-md md:col-span-2">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              Sosial Media Linkləri
+            </h2>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  LinkedIn
+                </label>
+                <input
+                  type="url"
+                  value={content.contact.linkedin || ''}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      contact: { ...content.contact, linkedin: e.target.value },
+                    })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                  placeholder="https://linkedin.com/..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Instagram
+                </label>
+                <input
+                  type="url"
+                  value={content.contact.instagram || ''}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      contact: { ...content.contact, instagram: e.target.value },
+                    })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                  placeholder="https://instagram.com/..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  WhatsApp
+                </label>
+                <input
+                  type="url"
+                  value={content.contact.whatsapp || ''}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      contact: { ...content.contact, whatsapp: e.target.value },
+                    })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                  placeholder="https://wa.me/..."
                 />
               </div>
             </div>
