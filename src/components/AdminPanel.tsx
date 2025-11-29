@@ -220,14 +220,30 @@ export default function AdminPanel() {
       const data = await response.json()
 
       if (data.success) {
-        setMessage({ type: 'success', text: data.message })
+        // Always show success message (security best practice - prevents email enumeration)
+        setMessage({ 
+          type: 'success', 
+          text: data.message || 'Əgər bu email ünvanı qeydiyyatdan keçibsə, şifrə sıfırlama linki email-ə göndəriləcək. Zəhmət olmasa email-ınızın gələnlər qutusunu və spam qovluğunu yoxlayın. Link 1 saat müddətində etibarlıdır.' 
+        })
         setShowForgotPassword(false)
         setForgotPasswordEmail('')
       } else {
-        setMessage({ type: 'error', text: data.message || 'Xəta baş verdi' })
+        // Even on error, show the same message for security
+        setMessage({ 
+          type: 'success', 
+          text: 'Əgər bu email ünvanı qeydiyyatdan keçibsə, şifrə sıfırlama linki email-ə göndəriləcək. Zəhmət olmasa email-ınızın gələnlər qutusunu və spam qovluğunu yoxlayın. Link 1 saat müddətində etibarlıdır.' 
+        })
+        setShowForgotPassword(false)
+        setForgotPasswordEmail('')
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'Xəta baş verdi' })
+      // Even on network error, show the same message for security
+      setMessage({ 
+        type: 'success', 
+        text: 'Əgər bu email ünvanı qeydiyyatdan keçibsə, şifrə sıfırlama linki email-ə göndəriləcək. Zəhmət olmasa email-ınızın gələnlər qutusunu və spam qovluğunu yoxlayın. Link 1 saat müddətində etibarlıdır.' 
+      })
+      setShowForgotPassword(false)
+      setForgotPasswordEmail('')
     } finally {
       setLoading(false)
     }
