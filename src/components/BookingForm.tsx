@@ -224,14 +224,13 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ad Soyad *
+                Ad Soyad
               </label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                 placeholder="Adınız"
               />
@@ -317,28 +316,26 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Haradan *
+                        Haradan
                       </label>
                       <input
                         type="text"
                         name="from"
                         value={formData.from || ''}
                         onChange={handleChange}
-                        required
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                         placeholder="Bakı (GYD)"
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Hara *
+                        Hara
                       </label>
                       <input
                         type="text"
                         name="to"
                         value={formData.to || ''}
                         onChange={handleChange}
-                        required
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                         placeholder="İstanbul (IST)"
                       />
@@ -348,14 +345,13 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Gediş tarixi *
+                        Gediş tarixi
                       </label>
                       <input
                         type="date"
                         name="departureDate"
                         value={formData.departureDate || ''}
                         onChange={handleChange}
-                        required
                         min={new Date().toISOString().split('T')[0]}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                       />
@@ -363,14 +359,13 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                     {tripType === 'round-trip' && (
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Qayıdış tarixi *
+                          Qayıdış tarixi
                         </label>
                         <input
                           type="date"
                           name="returnDate"
                           value={formData.returnDate || ''}
                           onChange={handleChange}
-                          required
                           min={formData.departureDate || new Date().toISOString().split('T')[0]}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                         />
@@ -446,14 +441,13 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nəfər sayı *
+                    Nəfər sayı
                   </label>
                   <input
                     type="number"
                     name="passengers"
                     value={formData.passengers || ''}
                     onChange={handleChange}
-                    required
                     min="1"
                     max="9"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
@@ -502,14 +496,13 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Məkan *
+                  Məkan
                 </label>
                 <input
                   type="text"
                   name="destination"
                   value={formData.destination || ''}
                   onChange={handleChange}
-                  required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   placeholder="İstanbul, Türkiyə"
                 />
@@ -517,28 +510,26 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Giriş tarixi *
+                    Giriş tarixi
                   </label>
                   <input
                     type="date"
                     name="checkIn"
                     value={formData.checkIn || ''}
                     onChange={handleChange}
-                    required
                     min={new Date().toISOString().split('T')[0]}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Çıxış tarixi *
+                    Çıxış tarixi
                   </label>
                   <input
                     type="date"
                     name="checkOut"
                     value={formData.checkOut || ''}
                     onChange={handleChange}
-                    required
                     min={formData.checkIn || new Date().toISOString().split('T')[0]}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   />
@@ -547,14 +538,13 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Otaq sayı *
+                    Otaq sayı
                   </label>
                   <input
                     type="number"
                     name="rooms"
                     value={formData.rooms || ''}
                     onChange={handleChange}
-                    required
                     min="1"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                     placeholder="1"
@@ -562,14 +552,13 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nəfər sayı *
+                    Nəfər sayı
                   </label>
                   <input
                     type="number"
                     name="guests"
                     value={formData.guests || ''}
                     onChange={handleChange}
-                    required
                     min="1"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                     placeholder="2"
@@ -602,13 +591,12 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Transfer növü *
+                  Transfer növü
                 </label>
                 <select
                   name="transferType"
                   value={formData.transferType || ''}
                   onChange={handleChange}
-                  required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                 >
                   <option value="">Seçin</option>
@@ -621,28 +609,26 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Haradan *
+                    Haradan
                   </label>
                   <input
                     type="text"
                     name="from"
                     value={formData.from || ''}
                     onChange={handleChange}
-                    required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                     placeholder="Hava limanı və ya ünvan"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Hara *
+                    Hara
                   </label>
                   <input
                     type="text"
                     name="to"
                     value={formData.to || ''}
                     onChange={handleChange}
-                    required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                     placeholder="Otel və ya ünvan"
                   />
@@ -651,28 +637,26 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tarix *
+                    Tarix
                   </label>
                   <input
                     type="date"
                     name="date"
                     value={formData.date || ''}
                     onChange={handleChange}
-                    required
                     min={new Date().toISOString().split('T')[0]}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Vaxt *
+                    Vaxt
                   </label>
                   <input
                     type="time"
                     name="time"
                     value={formData.time || ''}
                     onChange={handleChange}
-                    required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   />
                 </div>
@@ -696,14 +680,13 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nəfər sayı *
+                  Nəfər sayı
                 </label>
                 <input
                   type="number"
                   name="passengers"
                   value={formData.passengers || ''}
                   onChange={handleChange}
-                  required
                   min="1"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   placeholder="1"
@@ -718,13 +701,12 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Sığorta növü *
+                    Sığorta növü
                   </label>
                   <select
                     name="insuranceType"
                     value={formData.insuranceType || ''}
                     onChange={handleChange}
-                    required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   >
                     <option value="">Seçin</option>
@@ -736,13 +718,12 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Paket *
+                    Paket
                   </label>
                   <select
                     name="package"
                     value={formData.package || ''}
                     onChange={handleChange}
-                    required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   >
                     <option value="">Seçin</option>
@@ -756,28 +737,26 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Başlama tarixi *
+                    Başlama tarixi
                   </label>
                   <input
                     type="date"
                     name="startDate"
                     value={formData.startDate || ''}
                     onChange={handleChange}
-                    required
                     min={new Date().toISOString().split('T')[0]}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Bitmə tarixi *
+                    Bitmə tarixi
                   </label>
                   <input
                     type="date"
                     name="endDate"
                     value={formData.endDate || ''}
                     onChange={handleChange}
-                    required
                     min={formData.startDate || new Date().toISOString().split('T')[0]}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   />
@@ -809,27 +788,25 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Ölkə *
+                    Ölkə
                   </label>
                   <input
                     type="text"
                     name="embassyCountry"
                     value={formData.embassyCountry || ''}
                     onChange={handleChange}
-                    required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                     placeholder="Türkiyə"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Viza növü *
+                    Viza növü
                   </label>
                   <select
                     name="visaType"
                     value={formData.visaType || ''}
                     onChange={handleChange}
-                    required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   >
                     <option value="">Seçin</option>
