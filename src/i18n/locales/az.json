@@ -149,9 +149,26 @@
     "madeWith": "Sevgi ilə hazırlanıb"
   },
   "welcome": {
-    "title": "Xoş gəlmisiniz!",
-    "message": "Səyahətiniz üçün ən yaxşı həlləri təqdim edirəm",
-    "contactWhatsApp": "WhatsApp ilə Əlaqə",
-    "bookNow": "İndi Rezerv Et"
+    "title": "Xoş Gəlmisiniz!",
+    "message": "Sizə necə kömək edə bilərəm?",
+    "contactWhatsApp": "Dərhal Əlaqə Saxla",
+    "contactWhatsAppDesc": "WhatsApp-dan birbaşa mesaj göndər",
+    "bookNow": "İndi Rezerv Et",
+    "bookNowDesc": "Birbaşa rezervasiya formunu doldur",
+    "footer": "Bu mesaj yalnız bir dəfə göstəriləcək"
+  },
+  "contactInfo": {
+    "title": "Əlaqə Məlumatları",
+    "description": "Turizm xidmətləri, rezervasiya və ya sualınız varsa, mənimlə əlaqə saxlayın. Cavab verməyə çalışacağam.",
+    "socialMedia": "Sosial Media",
+    "name": "Ad",
+    "namePlaceholder": "Adınız",
+    "subject": "Mövzu",
+    "subjectPlaceholder": "Mesajın mövzusu",
+    "message": "Mesaj",
+    "messagePlaceholder": "Mesajınızı yazın...",
+    "send": "Mesaj Göndər",
+    "sending": "Göndərilir...",
+    "pages": "Səhifələr"
   }
 }

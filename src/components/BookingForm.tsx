@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Send, Plane, Hotel, Car, Shield, Building2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 type BookingType = 'flight' | 'hotel' | 'transfer' | 'insurance' | 'embassy'
 type TripType = 'one-way' | 'round-trip' | 'multi-city'
@@ -49,6 +50,7 @@ interface BookingFormData {
 }
 
 export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: () => void }) {
+  const { t } = useTranslation()
   const [bookingType, setBookingType] = useState<BookingType>('flight')
   const [tripType, setTripType] = useState<TripType>('one-way')
   const [formData, setFormData] = useState<BookingFormData>({
@@ -65,11 +67,11 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
   const [multiCitySegments, setMultiCitySegments] = useState([{ from: '', to: '', date: '' }])
 
   const bookingTypes = [
-    { id: 'flight' as BookingType, label: 'Aviabilet', icon: Plane },
-    { id: 'hotel' as BookingType, label: 'Otel', icon: Hotel },
-    { id: 'transfer' as BookingType, label: 'Transfer', icon: Car },
-    { id: 'insurance' as BookingType, label: 'Sığorta', icon: Shield },
-    { id: 'embassy' as BookingType, label: 'Səfirlik', icon: Building2 },
+    { id: 'flight' as BookingType, label: t('booking.types.flight'), icon: Plane },
+    { id: 'hotel' as BookingType, label: t('booking.types.hotel'), icon: Hotel },
+    { id: 'transfer' as BookingType, label: t('booking.types.transfer'), icon: Car },
+    { id: 'insurance' as BookingType, label: t('booking.types.insurance'), icon: Shield },
+    { id: 'embassy' as BookingType, label: t('booking.types.embassy'), icon: Building2 },
   ]
 
   const handleTypeChange = (type: BookingType) => {
@@ -113,7 +115,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
     if (!formData.email && !formData.phone) {
       setSubmitStatus({
         type: 'error',
-        message: 'Zəhmət olmasa email və ya telefon nömrəsindən ən azı birini daxil edin.',
+        message: t('booking.validationError'),
       })
       return
     }
@@ -145,7 +147,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
       if (data.success) {
         setSubmitStatus({
           type: 'success',
-          message: data.message || 'Sorğunuz uğurla göndərildi!',
+          message: data.message || t('booking.success'),
         })
         setFormData({
           type: bookingType,
@@ -160,13 +162,13 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
       } else {
         setSubmitStatus({
           type: 'error',
-          message: data.message || 'Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.',
+          message: data.message || t('booking.error'),
         })
       }
     } catch (error) {
       setSubmitStatus({
         type: 'error',
-        message: 'Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.',
+        message: t('booking.error'),
       })
     } finally {
       setIsSubmitting(false)
@@ -182,11 +184,11 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
         className="text-center mb-8"
       >
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-          Rezervasiya Sorğusu
+          {t('booking.title')}
         </h2>
         <div className="w-24 h-1 bg-primary-600 mx-auto mb-4"></div>
         <p className="text-lg text-gray-600">
-          Xidmətlərimiz üçün sorğu göndərin
+          {t('booking.subtitle')}
         </p>
       </motion.div>
 
@@ -224,7 +226,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ad Soyad
+                {t('booking.name')}
               </label>
               <input
                 type="text"
@@ -232,13 +234,13 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                 value={formData.name}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                placeholder="Adınız"
+                placeholder={t('booking.namePlaceholder')}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email <span className="text-gray-500 text-xs">(və ya telefon)</span>
+                {t('booking.email')} <span className="text-gray-500 text-xs">({t('booking.emailOrPhone')})</span>
               </label>
               <input
                 type="email"
@@ -246,14 +248,14 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                 value={formData.email}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                placeholder="email@example.com"
+                placeholder={t('booking.emailPlaceholder')}
               />
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Telefon <span className="text-gray-500 text-xs">(və ya email)</span>
+              {t('booking.phone')} <span className="text-gray-500 text-xs">({t('booking.phoneOrEmail')})</span>
             </label>
             <input
               type="tel"
@@ -261,7 +263,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               value={formData.phone}
               onChange={handleChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-              placeholder="+994 50 123 45 67"
+              placeholder={t('booking.phonePlaceholder')}
             />
           </div>
 
@@ -271,7 +273,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               {/* Trip Type Selector */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Səyahət növü
+                  {t('booking.flight.tripType')}
                 </label>
                 <div className="grid grid-cols-3 gap-3">
                   <button
@@ -283,7 +285,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                         : 'border-gray-200 text-gray-700'
                     }`}
                   >
-                    Tək gediş
+                    {t('booking.flight.oneWay')}
                   </button>
                   <button
                     type="button"
@@ -294,7 +296,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                         : 'border-gray-200 text-gray-700'
                     }`}
                   >
-                    Gediş-qayıdış
+                    {t('booking.flight.roundTrip')}
                   </button>
                   <button
                     type="button"
@@ -305,7 +307,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                         : 'border-gray-200 text-gray-700'
                     }`}
                   >
-                    Multi-şəhər
+                    {t('booking.flight.multiCity')}
                   </button>
                 </div>
               </div>
@@ -316,7 +318,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Haradan
+                        {t('booking.flight.from')}
                       </label>
                       <input
                         type="text"
@@ -324,12 +326,12 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                         value={formData.from || ''}
                         onChange={handleChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                        placeholder="Bakı (GYD)"
+                        placeholder={t('booking.flight.fromPlaceholder')}
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Hara
+                        {t('booking.flight.to')}
                       </label>
                       <input
                         type="text"
@@ -337,7 +339,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                         value={formData.to || ''}
                         onChange={handleChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                        placeholder="İstanbul (IST)"
+                        placeholder={t('booking.flight.toPlaceholder')}
                       />
                     </div>
                   </div>
@@ -345,7 +347,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Gediş tarixi
+                        {t('booking.flight.departureDate')}
                       </label>
                       <input
                         type="date"
@@ -359,7 +361,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                     {tripType === 'round-trip' && (
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Qayıdış tarixi
+                          {t('booking.flight.returnDate')}
                         </label>
                         <input
                           type="date"
@@ -382,7 +384,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                     <div key={index} className="grid md:grid-cols-4 gap-4 p-4 bg-white rounded-lg border">
                       <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Haradan
+                          {t('booking.flight.from')}
                         </label>
                         <input
                           type="text"
@@ -394,7 +396,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Hara
+                          {t('booking.flight.to')}
                         </label>
                         <input
                           type="text"
@@ -406,7 +408,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Tarix
+                          {t('booking.transfer.date')}
                         </label>
                         <input
                           type="date"
@@ -422,7 +424,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                             onClick={() => removeMultiCitySegment(index)}
                             className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm"
                           >
-                            Sil
+                            {t('booking.flight.removeSegment')}
                           </button>
                         )}
                       </div>
@@ -433,7 +435,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                     onClick={addMultiCitySegment}
                     className="text-primary-600 hover:text-primary-700 text-sm font-medium"
                   >
-                    + Əlavə uçuş əlavə et
+                    + {t('booking.flight.addSegment')} {t('booking.flight.segment')}
                   </button>
                 </div>
               )}
@@ -441,7 +443,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nəfər sayı
+                    {t('booking.hotel.guests')}
                   </label>
                   <input
                     type="number"
@@ -456,7 +458,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Sinif
+                    {t('booking.flight.class')}
                   </label>
                   <select
                     name="class"
@@ -473,7 +475,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Stopla
+                    {t('booking.flight.stops')}
                   </label>
                   <select
                     name="stops"
@@ -496,7 +498,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Məkan
+                  {t('booking.hotel.destination')}
                 </label>
                 <input
                   type="text"
@@ -510,7 +512,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Giriş tarixi
+                    {t('booking.hotel.checkIn')}
                   </label>
                   <input
                     type="date"
@@ -523,7 +525,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Çıxış tarixi
+                    {t('booking.hotel.checkOut')}
                   </label>
                   <input
                     type="date"
@@ -538,7 +540,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Otaq sayı
+                    {t('booking.hotel.rooms')}
                   </label>
                   <input
                     type="number"
@@ -552,7 +554,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nəfər sayı
+                    {t('booking.hotel.guests')}
                   </label>
                   <input
                     type="number"
@@ -566,7 +568,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Otel növü
+                    {t('booking.hotel.hotelType')}
                   </label>
                   <select
                     name="hotelType"
@@ -591,7 +593,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Transfer növü
+                  {t('booking.transfer.transferType')}
                 </label>
                 <select
                   name="transferType"
@@ -609,7 +611,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Haradan
+                    {t('booking.flight.from')}
                   </label>
                   <input
                     type="text"
@@ -622,7 +624,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Hara
+                    {t('booking.flight.to')}
                   </label>
                   <input
                     type="text"
@@ -637,7 +639,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tarix
+                    {t('booking.transfer.date')}
                   </label>
                   <input
                     type="date"
@@ -650,7 +652,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Vaxt
+                    {t('booking.transfer.time')}
                   </label>
                   <input
                     type="time"
@@ -662,7 +664,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nəqliyyat növü
+                    {t('booking.transfer.vehicleType')}
                   </label>
                   <select
                     name="vehicleType"
@@ -701,7 +703,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Sığorta növü
+                    {t('booking.insurance.insuranceType')}
                   </label>
                   <select
                     name="insuranceType"
@@ -718,7 +720,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Paket
+                    {t('booking.insurance.package')}
                   </label>
                   <select
                     name="package"
@@ -737,7 +739,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Başlama tarixi
+                    {t('booking.insurance.startDate')}
                   </label>
                   <input
                     type="date"
@@ -750,7 +752,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Bitmə tarixi
+                    {t('booking.insurance.endDate')}
                   </label>
                   <input
                     type="date"
@@ -764,7 +766,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Əhatə dairəsi
+                  {t('booking.insurance.coverage')}
                 </label>
                 <select
                   name="coverage"
@@ -788,7 +790,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Ölkə
+                    {t('booking.embassy.country')}
                   </label>
                   <input
                     type="text"
@@ -801,7 +803,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Viza növü
+                    {t('booking.embassy.visaType')}
                   </label>
                   <select
                     name="visaType"
@@ -828,7 +830,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                     onChange={handleChange}
                     className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                   />
-                  <span className="text-sm font-medium text-gray-700">Təcili müraciət</span>
+                  <span className="text-sm font-medium text-gray-700">{t('booking.embassy.urgent')}</span>
                 </label>
               </div>
             </>
@@ -837,7 +839,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
           {/* Notes */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Əlavə məlumat
+              {t('booking.notes')}
             </label>
             <textarea
               name="notes"
@@ -845,7 +847,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
               onChange={handleChange}
               rows={4}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none resize-none"
-              placeholder="Əlavə məlumat və ya tələbləriniz..."
+              placeholder={t('booking.notes')}
             />
           </div>
 
@@ -867,11 +869,11 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
             className="w-full px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
-              'Göndərilir...'
+              t('contactInfo.sending')
             ) : (
               <>
                 <Send className="w-5 h-5" />
-                Sorğu Göndər
+                {t('booking.submit')}
               </>
             )}
           </button>

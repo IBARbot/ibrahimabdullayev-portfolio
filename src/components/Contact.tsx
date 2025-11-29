@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Send, Mail, MapPin, Phone, Linkedin, Instagram, MessageCircle, FileText, Calendar } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import BookingForm from './BookingForm'
 
 export default function Contact() {
+  const { t } = useTranslation()
   const [showContactForm, setShowContactForm] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -45,7 +47,7 @@ export default function Contact() {
       if (data.success) {
         setSubmitStatus({
           type: 'success',
-          message: data.message || 'Mesajınız uğurla göndərildi!',
+          message: data.message || t('contact.success'),
         })
         setFormData({ name: '', email: '', subject: '', message: '' })
         setTimeout(() => {
@@ -57,13 +59,13 @@ export default function Contact() {
       } else {
         setSubmitStatus({
           type: 'error',
-          message: data.message || 'Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.',
+          message: data.message || t('contact.error'),
         })
       }
     } catch (error) {
       setSubmitStatus({
         type: 'error',
-        message: 'Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.',
+        message: t('contact.error'),
       })
     } finally {
       setIsSubmitting(false)
@@ -84,11 +86,11 @@ export default function Contact() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Əlaqə
+            {t('contact.title')}
           </h2>
           <div className="w-16 h-0.5 bg-primary-600 mx-auto mb-4"></div>
           <p className="text-base text-gray-600 max-w-2xl mx-auto">
-            Mənimlə əlaqə saxlayın
+            {t('contact.subtitle')}
           </p>
         </motion.div>
 
@@ -103,11 +105,10 @@ export default function Contact() {
           >
             <div>
               <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                Əlaqə Məlumatları
+                {t('contactInfo.title')}
               </h3>
               <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
-                Turizm xidmətləri, rezervasiya və ya sualınız varsa, mənimlə əlaqə saxlayın.
-                Cavab verməyə çalışacağam.
+                {t('contactInfo.description')}
               </p>
             </div>
 
@@ -117,7 +118,7 @@ export default function Contact() {
                   <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-primary-600" />
                 </div>
                 <div>
-                  <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-1">Email</h4>
+                  <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-1">{t('contact.email')}</h4>
                   <a
                     href="mailto:ibrahim.abdullayev1@gmail.com"
                     className="text-sm sm:text-base text-primary-600 hover:text-primary-700 break-all"
@@ -132,7 +133,7 @@ export default function Contact() {
                   <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-primary-600" />
                 </div>
                 <div>
-                  <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-1">Telefon</h4>
+                  <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-1">{t('contact.phone')}</h4>
                   <a
                     href="tel:+994555973923"
                     className="text-sm sm:text-base text-primary-600 hover:text-primary-700"
@@ -147,7 +148,7 @@ export default function Contact() {
                   <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-primary-600" />
                 </div>
                 <div>
-                  <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-1">Ünvan</h4>
+                  <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-1">{t('contact.address')}</h4>
                   <p className="text-sm sm:text-base text-gray-600">Baku, Rashid Behbudov str, Azerbaijan</p>
                 </div>
               </div>
@@ -156,7 +157,7 @@ export default function Contact() {
             {/* Social Media Links */}
             <div className="mt-6 sm:mt-8">
               <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
-                Sosial Media
+                {t('contactInfo.socialMedia')}
               </h4>
               <div className="flex flex-wrap gap-2 sm:gap-3">
                 <a
@@ -212,7 +213,7 @@ export default function Contact() {
                 }`}
               >
                 <Calendar className="w-4 h-4" />
-                Rezervasiya Sorğusu
+                {t('contact.bookingRequest')}
               </button>
               <button
                 onClick={() => setShowContactForm(true)}
@@ -223,7 +224,7 @@ export default function Contact() {
                 }`}
               >
                 <FileText className="w-4 h-4" />
-                Məktub Yaz
+                {t('contact.sendMessage')}
               </button>
             </div>
 
@@ -243,7 +244,7 @@ export default function Contact() {
                       htmlFor="name"
                       className="block text-sm font-medium text-gray-700 mb-2"
                     >
-                      Ad
+                      {t('contactInfo.name')}
                     </label>
                     <input
                       type="text"
@@ -253,7 +254,7 @@ export default function Contact() {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
-                      placeholder="Adınız"
+                      placeholder={t('contactInfo.namePlaceholder')}
                     />
                   </div>
 
@@ -262,7 +263,7 @@ export default function Contact() {
                       htmlFor="email"
                       className="block text-sm font-medium text-gray-700 mb-2"
                     >
-                      Email
+                      {t('contact.email')}
                     </label>
                     <input
                       type="email"
@@ -272,7 +273,7 @@ export default function Contact() {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
-                      placeholder="email@example.com"
+                      placeholder={t('contact.emailPlaceholder')}
                     />
                   </div>
 
@@ -281,7 +282,7 @@ export default function Contact() {
                       htmlFor="subject"
                       className="block text-sm font-medium text-gray-700 mb-2"
                     >
-                      Mövzu
+                      {t('contactInfo.subject')}
                     </label>
                     <input
                       type="text"
@@ -290,7 +291,7 @@ export default function Contact() {
                       value={formData.subject}
                       onChange={handleChange}
                       className="w-full px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
-                      placeholder="Mesajın mövzusu"
+                      placeholder={t('contactInfo.subjectPlaceholder')}
                     />
                   </div>
 
@@ -299,7 +300,7 @@ export default function Contact() {
                       htmlFor="message"
                       className="block text-sm font-medium text-gray-700 mb-2"
                     >
-                      Mesaj
+                      {t('contactInfo.message')}
                     </label>
                     <textarea
                       id="message"
@@ -309,7 +310,7 @@ export default function Contact() {
                       required
                       rows={5}
                       className="w-full px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all resize-none text-sm sm:text-base"
-                      placeholder="Mesajınızı yazın..."
+                      placeholder={t('contactInfo.messagePlaceholder')}
                     />
                   </div>
 
@@ -333,11 +334,11 @@ export default function Contact() {
                     className="w-full px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 active:bg-primary-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base touch-manipulation"
                   >
                     {isSubmitting ? (
-                      'Göndərilir...'
+                      t('contactInfo.sending')
                     ) : (
                       <>
                         <Send className="w-4 h-4 sm:w-5 sm:h-5" />
-                        Mesaj Göndər
+                        {t('contactInfo.send')}
                       </>
                     )}
                   </button>

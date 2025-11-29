@@ -1,6 +1,8 @@
 import { Linkedin, Mail, Instagram, MessageCircle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export default function Footer() {
+  const { t } = useTranslation()
   const currentYear = new Date().getFullYear()
 
   return (
@@ -12,14 +14,13 @@ export default function Footer() {
               İbrahim Abdullayev
             </h3>
             <p className="text-gray-400 text-sm sm:text-base">
-              Turizm sahəsində aparıcı mütəxəssis. Aviabilet, otel, transfer, 
-              sığorta və səfirlik xidmətləri üzrə peşəkar dəstək.
+              {t('hero.description')}
             </p>
           </div>
 
           <div>
             <h4 className="text-lg font-semibold text-white mb-4">
-              Səhifələr
+              {t('contactInfo.pages')}
             </h4>
             <ul className="space-y-2">
               <li>
@@ -27,7 +28,7 @@ export default function Footer() {
                   href="#home"
                   className="hover:text-primary-400 transition-colors"
                 >
-                  Ana Səhifə
+                  {t('nav.home')}
                 </a>
               </li>
               <li>
@@ -35,7 +36,7 @@ export default function Footer() {
                   href="#about"
                   className="hover:text-primary-400 transition-colors"
                 >
-                  Haqqımda
+                  {t('nav.about')}
                 </a>
               </li>
               <li>
@@ -43,7 +44,7 @@ export default function Footer() {
                   href="#projects"
                   className="hover:text-primary-400 transition-colors"
                 >
-                  Portfolio
+                  {t('nav.portfolio')}
                 </a>
               </li>
               <li>
@@ -51,15 +52,7 @@ export default function Footer() {
                   href="#services"
                   className="hover:text-primary-400 transition-colors"
                 >
-                  Xidmətlər
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#booking"
-                  className="hover:text-primary-400 transition-colors"
-                >
-                  Rezervasiya
+                  {t('nav.services')}
                 </a>
               </li>
               <li>
@@ -67,7 +60,7 @@ export default function Footer() {
                   href="#contact"
                   className="hover:text-primary-400 transition-colors"
                 >
-                  Əlaqə
+                  {t('nav.contact')}
                 </a>
               </li>
             </ul>
@@ -75,7 +68,7 @@ export default function Footer() {
 
           <div>
             <h4 className="text-lg font-semibold text-white mb-4">
-              Sosial Media
+              {t('contactInfo.socialMedia')}
             </h4>
             <div className="flex flex-wrap gap-3 sm:gap-4">
               <a
@@ -118,7 +111,7 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 pt-8 text-center">
           <p className="text-gray-400">
-            © {currentYear} İbrahim Abdullayev. Bütün hüquqlar qorunur.
+            © {currentYear} İbrahim Abdullayev. {t('footer.rights')}
           </p>
         </div>
       </div>

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, MessageCircle, Calendar, ArrowRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const WHATSAPP_NUMBER = '994555973923'
-const WHATSAPP_MESSAGE = 'Salam! Turizm xidmətləriniz haqqında məlumat almaq istərdim.'
 
 interface WelcomeModalProps {
   onClose: () => void
@@ -11,7 +11,17 @@ interface WelcomeModalProps {
 }
 
 export default function WelcomeModal({ onClose, onOpenBooking }: WelcomeModalProps) {
+  const { t } = useTranslation()
   const [isVisible, setIsVisible] = useState(false)
+  
+  const WHATSAPP_MESSAGES: Record<string, string> = {
+    az: 'Salam! Turizm xidmətləriniz haqqında məlumat almaq istərdim.',
+    en: 'Hello! I would like to get information about your tourism services.',
+    ru: 'Здравствуйте! Я хотел бы получить информацию о ваших туристических услугах.',
+  }
+  
+  const { i18n } = useTranslation()
+  const WHATSAPP_MESSAGE = WHATSAPP_MESSAGES[i18n.language || 'az'] || WHATSAPP_MESSAGES.az
 
   useEffect(() => {
     // Check if modal was shown before
@@ -81,10 +91,10 @@ export default function WelcomeModal({ onClose, onOpenBooking }: WelcomeModalPro
               transition={{ delay: 0.2 }}
             >
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                Xoş Gəlmisiniz!
+                {t('welcome.title')}
               </h2>
               <p className="text-gray-600 mb-8">
-                Sizə necə kömək edə bilərəm?
+                {t('welcome.message')}
               </p>
             </motion.div>
 
@@ -104,10 +114,10 @@ export default function WelcomeModal({ onClose, onOpenBooking }: WelcomeModalPro
                   </div>
                   <div className="flex-1">
                     <h3 className="font-bold text-gray-900 mb-1">
-                      Dərhal Əlaqə Saxla
+                      {t('welcome.contactWhatsApp')}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      WhatsApp-dan birbaşa mesaj göndər
+                      {t('welcome.contactWhatsAppDesc')}
                     </p>
                   </div>
                   <ArrowRight className="w-5 h-5 text-green-600 group-hover:translate-x-1 transition-transform" />
@@ -128,10 +138,10 @@ export default function WelcomeModal({ onClose, onOpenBooking }: WelcomeModalPro
                   </div>
                   <div className="flex-1">
                     <h3 className="font-bold text-gray-900 mb-1">
-                      İndi Rezerv Et
+                      {t('welcome.bookNow')}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      Birbaşa rezervasiya formunu doldur
+                      {t('welcome.bookNowDesc')}
                     </p>
                   </div>
                   <ArrowRight className="w-5 h-5 text-primary-600 group-hover:translate-x-1 transition-transform" />
@@ -146,7 +156,7 @@ export default function WelcomeModal({ onClose, onOpenBooking }: WelcomeModalPro
               transition={{ delay: 0.5 }}
               className="mt-6 text-xs text-gray-500"
             >
-              Bu mesaj yalnız bir dəfə göstəriləcək
+              {t('welcome.footer')}
             </motion.p>
           </div>
         </motion.div>

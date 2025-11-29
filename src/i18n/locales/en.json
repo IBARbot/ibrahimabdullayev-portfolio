@@ -150,8 +150,25 @@
   },
   "welcome": {
     "title": "Welcome!",
-    "message": "I provide the best solutions for your travel",
-    "contactWhatsApp": "Contact via WhatsApp",
-    "bookNow": "Book Now"
+    "message": "How can I help you?",
+    "contactWhatsApp": "Contact Immediately",
+    "contactWhatsAppDesc": "Send a direct message via WhatsApp",
+    "bookNow": "Book Now",
+    "bookNowDesc": "Fill out the booking form directly",
+    "footer": "This message will only be shown once"
+  },
+  "contactInfo": {
+    "title": "Contact Information",
+    "description": "If you have questions about tourism services, reservations, or any inquiries, please contact me. I will try to respond.",
+    "socialMedia": "Social Media",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "subject": "Subject",
+    "subjectPlaceholder": "Message subject",
+    "message": "Message",
+    "messagePlaceholder": "Write your message...",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "pages": "Pages"
   }
 }
