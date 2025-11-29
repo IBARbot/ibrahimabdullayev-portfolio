@@ -29,6 +29,14 @@ export default async function handler(req, res) {
   const pathArray = Array.isArray(path) ? path : [path];
   const route = pathArray.join('/');
 
+  console.log('=== ADMIN API REQUEST ===');
+  console.log('Method:', req.method);
+  console.log('URL:', req.url);
+  console.log('Query path:', path);
+  console.log('Path array:', pathArray);
+  console.log('Route:', route);
+  console.log('Headers:', JSON.stringify(req.headers, null, 2));
+
   try {
     // Login route
     if (route === 'login' && req.method === 'POST') {
@@ -50,6 +58,7 @@ export default async function handler(req, res) {
 
     // Forgot Password route (NO AUTHENTICATION REQUIRED)
     if (route === 'forgot-password' && req.method === 'POST') {
+      console.log('✅ FORGOT PASSWORD ROUTE MATCHED');
       const { email } = req.body;
       const adminEmail = process.env.ADMIN_EMAIL || process.env.CONTACT_EMAIL || process.env.EMAIL_USER;
 
@@ -58,7 +67,7 @@ export default async function handler(req, res) {
       const securityMessage = 'Əgər bu email ünvanı qeydiyyatdan keçibsə, şifrə sıfırlama linki email-ə göndəriləcək. Zəhmət olmasa email-ınızın gələnlər qutusunu və spam qovluğunu yoxlayın. Link 1 saat müddətində etibarlıdır.';
 
       // Only send email if email matches admin email
-      console.log('Forgot password request received');
+      console.log('=== FORGOT PASSWORD REQUEST ===');
       console.log('Requested email:', email);
       console.log('Admin email from env:', adminEmail);
       console.log('EMAIL_USER exists:', !!process.env.EMAIL_USER);
