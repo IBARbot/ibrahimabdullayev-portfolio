@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Send, Plane, Hotel, Car, Shield, Building2 } from 'lucide-react'
+import { analytics } from '../utils/analytics'
 
 type BookingType = 'flight' | 'hotel' | 'transfer' | 'insurance' | 'embassy'
 type TripType = 'one-way' | 'round-trip' | 'multi-city'
@@ -143,6 +144,9 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
       const data = await response.json()
 
       if (data.success) {
+        // Track successful form submission
+        analytics.trackFormSubmit(`booking_${bookingType}`, true)
+        
         setSubmitStatus({
           type: 'success',
           message: data.message || 'Sorğunuz uğurla göndərildi!',
@@ -158,6 +162,9 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
           setTimeout(() => onBookingSuccess(), 2000)
         }
       } else {
+        // Track failed form submission
+        analytics.trackFormSubmit(`booking_${bookingType}`, false)
+        
         setSubmitStatus({
           type: 'error',
           message: data.message || 'Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.',

@@ -13,6 +13,7 @@ import AdminPanel from './components/AdminPanel'
 import WelcomeModal from './components/WelcomeModal'
 import FloatingWhatsApp from './components/FloatingWhatsApp'
 import BookingModal from './components/BookingModal'
+import { analytics } from './utils/analytics'
 
 type BookingType = 'flight' | 'hotel' | 'transfer' | 'insurance' | 'embassy'
 

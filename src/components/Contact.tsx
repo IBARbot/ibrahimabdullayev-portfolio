@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Send, Mail, MapPin, Phone, Linkedin, Instagram, MessageCircle, FileText, Calendar } from 'lucide-react'
 import BookingForm from './BookingForm'
+import { analytics } from '../utils/analytics'
 
 export default function Contact() {
   const [showContactForm, setShowContactForm] = useState(false)
@@ -43,6 +44,9 @@ export default function Contact() {
       const data = await response.json()
 
       if (data.success) {
+        // Track successful form submission
+        analytics.trackFormSubmit('contact', true)
+        
         setSubmitStatus({
           type: 'success',
           message: data.message || 'Mesajınız uğurla göndərildi!',
@@ -55,6 +59,9 @@ export default function Contact() {
           }
         }, 100)
       } else {
+        // Track failed form submission
+        analytics.trackFormSubmit('contact', false)
+        
         setSubmitStatus({
           type: 'error',
           message: data.message || 'Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.',
