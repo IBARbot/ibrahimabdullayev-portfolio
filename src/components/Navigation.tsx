@@ -14,7 +14,7 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'about', 'services', 'projects', 'booking', 'contact']
+      const sections = ['home', 'about', 'services', 'projects', 'contact']
       const current = sections.find(section => {
         const element = document.getElementById(section)
         if (element) {
@@ -31,11 +31,6 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
   }, [])
 
   const scrollToSection = (id: string) => {
-    if (id === 'booking' && onOpenBooking) {
-      onOpenBooking()
-      setIsOpen(false)
-      return
-    }
     const element = document.getElementById(id)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
@@ -48,7 +43,6 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
     { id: 'about', label: 'Haqqımda' },
     { id: 'services', label: 'Xidmətlər' },
     { id: 'projects', label: 'Portfolio' },
-    { id: 'booking', label: 'Rezervasiya' },
     { id: 'contact', label: 'Əlaqə' },
   ]
 
