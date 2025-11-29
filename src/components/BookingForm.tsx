@@ -1226,6 +1226,134 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                   <option value="custom">{t('booking.insurance.coverageOptions.custom')}</option>
                 </select>
               </div>
+
+              {/* Insurance Traveler Details */}
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <h4 className="text-sm font-semibold text-gray-900 mb-4">{t('booking.insurance.travelerDetails')}</h4>
+                <div className="grid md:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.insurance.adults')} (18+)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={insuranceTravelerInfo.adults}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        setInsuranceTravelerInfo({ ...insuranceTravelerInfo, adults: val })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.insurance.children')} (2-17)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={insuranceTravelerInfo.children}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        const newAges = Array(val).fill(0).map((_, i) => insuranceTravelerInfo.childAges?.[i] || 5)
+                        setInsuranceTravelerInfo({ ...insuranceTravelerInfo, children: val, childAges: newAges })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.insurance.infants')} (0-23 ay)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={insuranceTravelerInfo.infants}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        const newAges = Array(val).fill(0).map((_, i) => insuranceTravelerInfo.infantAges?.[i] || 6)
+                        setInsuranceTravelerInfo({ ...insuranceTravelerInfo, infants: val, infantAges: newAges })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.insurance.seniors')} (65+)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={insuranceTravelerInfo.seniors || 0}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0
+                        setInsuranceTravelerInfo({ ...insuranceTravelerInfo, seniors: val })
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                    />
+                  </div>
+                </div>
+                {insuranceTravelerInfo.children > 0 && (
+                  <div className="mt-4">
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.insurance.childAge')}
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {Array(insuranceTravelerInfo.children).fill(0).map((_, i) => (
+                        <input
+                          key={i}
+                          type="number"
+                          min="2"
+                          max="17"
+                          value={insuranceTravelerInfo.childAges?.[i] || 5}
+                          onChange={(e) => {
+                            const newAges = [...(insuranceTravelerInfo.childAges || [])]
+                            newAges[i] = parseInt(e.target.value) || 5
+                            setInsuranceTravelerInfo({ ...insuranceTravelerInfo, childAges: newAges })
+                          }}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
+                          placeholder={`${t('booking.insurance.child')} ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {insuranceTravelerInfo.infants > 0 && (
+                  <div className="mt-4">
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      {t('booking.insurance.infantAge')}
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {Array(insuranceTravelerInfo.infants).fill(0).map((_, i) => (
+                        <input
+                          key={i}
+                          type="number"
+                          min="0"
+                          max="23"
+                          value={insuranceTravelerInfo.infantAges?.[i] || 6}
+                          onChange={(e) => {
+                            const newAges = [...(insuranceTravelerInfo.infantAges || [])]
+                            newAges[i] = parseInt(e.target.value) || 6
+                            setInsuranceTravelerInfo({ ...insuranceTravelerInfo, infantAges: newAges })
+                          }}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
+                          placeholder={`${t('booking.insurance.infant')} ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <p className="text-sm font-medium text-gray-900">
+                    {t('booking.insurance.totalTravelers')}: {insuranceTravelerInfo.adults + insuranceTravelerInfo.children + insuranceTravelerInfo.infants + (insuranceTravelerInfo.seniors || 0)}
+                  </p>
+                </div>
+              </div>
             </>
           )}
 
