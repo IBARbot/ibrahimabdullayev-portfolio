@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { LogOut, Save, Upload, Image as ImageIcon, FileText, Mail, Phone, MapPin, BarChart3, Eye, MousePointer, TrendingUp, Download } from 'lucide-react'
+import { LogOut, Save, FileText, Mail, Phone, MapPin, BarChart3, Eye, MousePointer, TrendingUp, Download } from 'lucide-react'
 
 interface Content {
   hero: {
