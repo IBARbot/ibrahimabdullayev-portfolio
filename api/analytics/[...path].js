@@ -142,7 +142,8 @@ export default async function handler(req, res) {
           // Get access token using Service Account
           if (serviceAccountKey) {
             try {
-              const jwt = (await import('jsonwebtoken')).default;
+              const jwtModule = await import('jsonwebtoken');
+              const jwt = jwtModule.default;
               const serviceAccountJson = Buffer.from(serviceAccountKey, 'base64').toString('utf-8');
               const serviceAccount = JSON.parse(serviceAccountJson);
 
