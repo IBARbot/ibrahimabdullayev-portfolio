@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ChevronDown, Linkedin, Mail, Loader2, Instagram, MessageCircle } from 'lucide-react'
+import { ChevronDown, Linkedin, Mail, Instagram, MessageCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 const PROFILE_IMAGE = 'https://i.imgur.com/64oQNiZ.jpeg'
@@ -12,21 +12,18 @@ interface HeroProps {
 export default function Hero({ onOpenBooking }: HeroProps) {
   const { t, i18n } = useTranslation()
   const [heroImage, setHeroImage] = useState<string>(PROFILE_IMAGE)
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Load hero image from backend (if available)
+    // Load hero image from backend (if available) - non-blocking
     fetch('/api/content')
       .then((res) => res.json())
       .then((data) => {
         if (data.hero?.image) {
           setHeroImage(data.hero.image)
         }
-        setLoading(false)
       })
-      .catch((err) => {
-        console.error('Content yüklənərkən xəta:', err)
-        setLoading(false)
+      .catch(() => {
+        // Keep default image
       })
   }, [])
 
@@ -51,15 +48,7 @@ export default function Hero({ onOpenBooking }: HeroProps) {
     }
   }
 
-  if (loading) {
-    return (
-      <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-primary-50">
-        <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
-      </section>
-    )
-  }
-
-  // Use translations for all text content
+  // Use translations for all text content - these will update automatically when language changes
   const heroTitle = t('hero.title')
   const heroSubtitle = t('hero.subtitle')
   const heroDescription = t('hero.description')
