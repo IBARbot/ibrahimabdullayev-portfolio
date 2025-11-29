@@ -1,5 +1,6 @@
 // Vercel Serverless Function - Google Sheets Integration
 // This function appends booking data to Google Sheets
+import jwt from 'jsonwebtoken';
 
 export default async function handler(req, res) {
   // CORS
@@ -52,7 +53,6 @@ export default async function handler(req, res) {
         const serviceAccount = JSON.parse(serviceAccountJson);
 
         // Get access token using Service Account
-        const jwt = require('jsonwebtoken');
         const now = Math.floor(Date.now() / 1000);
         const token = jwt.sign(
           {
@@ -79,7 +79,7 @@ export default async function handler(req, res) {
 
         const tokenData = await tokenResponse.json();
         if (!tokenData.access_token) {
-          throw new Error('Access token alınamadı');
+          throw new Error('Access token alınamadı: ' + JSON.stringify(tokenData));
         }
 
         // Append to Google Sheets using access token
@@ -144,4 +144,3 @@ export default async function handler(req, res) {
     return res.status(200).json({ success: true, message: 'Sorğu qeydə alındı, amma Google Sheets-ə yazılmadı' });
   }
 }
-
