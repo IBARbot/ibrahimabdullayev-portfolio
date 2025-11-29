@@ -150,3 +150,4 @@ Bütün dəyişikliklər GitHub-a push edildi. Vercel avtomatik olaraq yeni depl
 
 **Deployment URL:** `https://ibrahimabdullayev-portfolio.vercel.app`
 
+

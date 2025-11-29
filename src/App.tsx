@@ -7,7 +7,6 @@ import About from './components/About'
 import Skills from './components/Skills'
 import Services from './components/Services'
 import Projects from './components/Projects'
-import BookingForm from './components/BookingForm'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import AdminPanel from './components/AdminPanel'
@@ -53,7 +52,6 @@ function HomePage() {
         <Skills />
         <Services onOpenBooking={openBookingModal} />
         <Projects onOpenBooking={openBookingModal} />
-        <BookingForm />
         <Contact />
       </main>
       <Footer />

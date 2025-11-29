@@ -52,3 +52,4 @@ git push -u origin main
 - Pulsuz plan kifayətdir
 - SSL avtomatik
 
+

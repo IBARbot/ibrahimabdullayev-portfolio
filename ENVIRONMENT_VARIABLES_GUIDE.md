@@ -243,3 +243,4 @@ Deployment-dan sonra:
 2. Browser Console-u yoxlayın (F12)
 3. Network tab-da API request-ləri yoxlayın
 
+

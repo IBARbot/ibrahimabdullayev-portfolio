@@ -46,3 +46,4 @@ git push -u origin main
 
 **Production üçün:** Database (MongoDB, PostgreSQL) tövsiyə olunur, amma email notification kifayətdir.
 
+

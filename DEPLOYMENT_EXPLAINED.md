@@ -285,3 +285,4 @@ A Record: www → your-server-ip
 
 **Qeyd:** Hər iki seçim də işləyir. Öz təcrübənizə və ehtiyaclarınıza görə seçin.
 
+

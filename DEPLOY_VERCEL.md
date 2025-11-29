@@ -44,3 +44,4 @@ git push -u origin main
 - Bookings: Email-də saxlanır
 - Content: Default (admin panel-dən dəyişdirmək mümkündür)
 
+

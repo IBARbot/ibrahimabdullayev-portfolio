@@ -69,3 +69,4 @@
 - Vercel Dashboard-da deployment status-u yoxla
 - Build logs-u yoxla
 
+

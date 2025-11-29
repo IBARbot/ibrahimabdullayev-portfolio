@@ -108,6 +108,16 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validation: Email və ya telefon-dan ən azı biri mütləq olmalıdır
+    if (!formData.email && !formData.phone) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Zəhmət olmasa email və ya telefon nömrəsindən ən azı birini daxil edin.',
+      })
+      return
+    }
+
     setIsSubmitting(true)
     setSubmitStatus({ type: null, message: '' })
 
@@ -229,14 +239,13 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email *
+                Email <span className="text-gray-500 text-xs">(və ya telefon)</span>
               </label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                 placeholder="email@example.com"
               />
@@ -245,14 +254,13 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Telefon *
+              Telefon <span className="text-gray-500 text-xs">(və ya email)</span>
             </label>
             <input
               type="tel"
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
               placeholder="+994 50 123 45 67"
             />

@@ -435,3 +435,4 @@ Problem yaşayırsınızsa:
 **Son yeniləmə:** 2024
 **Versiya:** 1.0.0
 
+
