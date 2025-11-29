@@ -58,3 +58,4 @@ Bu xəta normaldır! O deməkdir ki:
 - Hər push yeni deployment yaradır
 - Köhnə deployment-ları redeploy etmək lazım deyil
 
+

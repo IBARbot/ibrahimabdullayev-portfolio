@@ -1,12 +1,21 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageCircle, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const WHATSAPP_NUMBER = '994555973923'
-const WHATSAPP_MESSAGE = 'Salam! Turizm xidmətləriniz haqqında məlumat almaq istərdim.'
 
 export default function FloatingWhatsApp() {
+  const { t, i18n } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
+  
+  const WHATSAPP_MESSAGES: Record<string, string> = {
+    az: 'Salam! Turizm xidmətləriniz haqqında məlumat almaq istərdim.',
+    en: 'Hello! I would like to get information about your tourism services.',
+    ru: 'Здравствуйте! Я хотел бы получить информацию о ваших туристических услугах.',
+  }
+  
+  const WHATSAPP_MESSAGE = WHATSAPP_MESSAGES[i18n.language || 'az'] || WHATSAPP_MESSAGES.az
 
   const handleWhatsApp = () => {
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`
@@ -24,7 +33,7 @@ export default function FloatingWhatsApp() {
             exit={{ opacity: 0, x: 10 }}
             className="absolute bottom-20 right-0 mb-2 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg whitespace-nowrap"
           >
-            <p className="text-sm font-medium">WhatsApp-dan yazın</p>
+            <p className="text-sm font-medium">{t('welcome.contactWhatsAppDesc')}</p>
             <div className="absolute bottom-0 right-4 transform translate-y-full">
               <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
             </div>

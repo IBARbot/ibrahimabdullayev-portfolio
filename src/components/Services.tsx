@@ -48,49 +48,57 @@ const services: Service[] = [
   },
 ]
 
+type BookingType = 'flight' | 'hotel' | 'transfer' | 'insurance' | 'embassy'
+
 interface ServicesProps {
-  onOpenBooking?: () => void
+  onOpenBooking?: (type: BookingType) => void
 }
 
 export default function Services({ onOpenBooking }: ServicesProps) {
   const { t } = useTranslation()
   
-  const services = [
+  const services: (Service & { bookingType: BookingType })[] = [
     {
       icon: Plane,
       title: t('services.flight.title'),
       description: t('services.flight.description'),
       features: t('services.flight.features', { returnObjects: true }) as string[],
+      bookingType: 'flight',
     },
     {
       icon: Hotel,
       title: t('services.hotel.title'),
       description: t('services.hotel.description'),
       features: t('services.hotel.features', { returnObjects: true }) as string[],
+      bookingType: 'hotel',
     },
     {
       icon: Car,
       title: t('services.transfer.title'),
       description: t('services.transfer.description'),
       features: t('services.transfer.features', { returnObjects: true }) as string[],
+      bookingType: 'transfer',
     },
     {
       icon: Shield,
       title: t('services.insurance.title'),
       description: t('services.insurance.description'),
       features: t('services.insurance.features', { returnObjects: true }) as string[],
+      bookingType: 'insurance',
     },
     {
       icon: Building2,
       title: t('services.embassy.title'),
       description: t('services.embassy.description'),
       features: t('services.embassy.features', { returnObjects: true }) as string[],
+      bookingType: 'embassy',
     },
     {
       icon: MapPin,
       title: t('services.planning.title'),
       description: t('services.planning.description'),
       features: t('services.planning.features', { returnObjects: true }) as string[],
+      bookingType: 'flight', // Səyahət planlaşdırması üçün default olaraq flight
     },
   ]
   
@@ -145,7 +153,7 @@ export default function Services({ onOpenBooking }: ServicesProps) {
                   ))}
                 </div>
                 <button
-                  onClick={() => onOpenBooking?.()}
+                  onClick={() => onOpenBooking?.(service.bookingType)}
                   className="w-full px-4 py-2.5 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 active:bg-primary-800 transition-all flex items-center justify-center gap-2 text-sm sm:text-base touch-manipulation"
                 >
                   <Calendar className="w-4 h-4" />

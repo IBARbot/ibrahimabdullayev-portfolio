@@ -114,3 +114,4 @@ Yeni bir rezervasiya sorğusu göndərdikdən sonra:
 2. Müvafiq sahələr doldurulmalıdır
 3. Boş sahələr boş qalmalıdır
 
+

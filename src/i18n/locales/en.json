@@ -101,6 +101,9 @@
       "to": "To",
       "fromPlaceholder": "Baku (GYD)",
       "toPlaceholder": "Istanbul (IST)",
+      "airportPlaceholder": "Airport or address",
+      "hotelPlaceholder": "Hotel or address",
+      "countryPlaceholder": "Turkey"
       "departureDate": "Departure Date",
       "returnDate": "Return Date",
       "passengers": "Passengers",
@@ -108,7 +111,21 @@
       "stops": "Stops",
       "addSegment": "Add",
       "removeSegment": "Remove",
-      "segment": "Segment"
+      "segment": "Segment",
+      "addFlightSegment": "+ Add flight segment",
+      "select": "Select",
+      "classOptions": {
+        "economy": "Economy",
+        "premiumEconomy": "Premium Economy",
+        "business": "Business",
+        "first": "First Class"
+      },
+      "stopsOptions": {
+        "any": "Any",
+        "nonstop": "Non-stop",
+        "1stop": "1 stop",
+        "2stops": "2+ stops"
+      }
     },
     "hotel": {
       "destination": "Destination",
@@ -116,25 +133,70 @@
       "checkOut": "Check-out Date",
       "rooms": "Rooms",
       "guests": "Guests",
-      "hotelType": "Hotel Type"
+      "hotelType": "Hotel Type",
+      "hotelTypeOptions": {
+        "budget": "Budget",
+        "3star": "3 Star",
+        "4star": "4 Star",
+        "5star": "5 Star",
+        "luxury": "Luxury"
+      }
     },
     "transfer": {
       "transferType": "Transfer Type",
       "date": "Date",
       "time": "Time",
-      "vehicleType": "Vehicle Type"
+      "vehicleType": "Vehicle Type",
+      "transferTypeOptions": {
+        "airportHotel": "Airport → Hotel",
+        "hotelAirport": "Hotel → Airport",
+        "airportAirport": "Airport → Airport",
+        "city": "City Transfer"
+      },
+      "vehicleTypeOptions": {
+        "sedan": "Sedan (1-3 people)",
+        "suv": "SUV (4-6 people)",
+        "van": "Van (7-8 people)",
+        "bus": "Bus (9+ people)"
+      }
     },
     "insurance": {
       "insuranceType": "Insurance Type",
       "package": "Package",
       "startDate": "Start Date",
       "endDate": "End Date",
-      "coverage": "Coverage"
+      "coverage": "Coverage",
+      "insuranceTypeOptions": {
+        "travel": "Travel Insurance",
+        "health": "Health Insurance",
+        "life": "Life Insurance",
+        "baggage": "Baggage Insurance"
+      },
+      "packageOptions": {
+        "basic": "Basic",
+        "standard": "Standard",
+        "premium": "Premium",
+        "custom": "Custom"
+      },
+      "coverageOptions": {
+        "europe": "Europe",
+        "worldwide": "Worldwide",
+        "schengen": "Schengen",
+        "custom": "Custom"
+      }
     },
     "embassy": {
       "country": "Country",
       "visaType": "Visa Type",
-      "urgent": "Urgent"
+      "urgent": "Urgent",
+      "visaTypeOptions": {
+        "tourist": "Tourist Visa",
+        "business": "Business Visa",
+        "student": "Student Visa",
+        "work": "Work Visa",
+        "transit": "Transit Visa",
+        "medical": "Medical Visa"
+      }
     },
     "types": {
       "flight": "Flight",
@@ -142,6 +204,14 @@
       "transfer": "Transfer",
       "insurance": "Insurance",
       "embassy": "Embassy"
+    },
+    "success": {
+      "title": "Request Sent Successfully!",
+      "message": "We will contact you soon."
+    },
+    "success": {
+      "title": "Request Sent Successfully!",
+      "message": "We will contact you soon."
     }
   },
   "footer": {
@@ -174,5 +244,10 @@
     "send": "Send Message",
     "sending": "Sending...",
     "pages": "Pages"
+  },
+  "projects": {
+    "title": "Portfolio",
+    "loading": "Loading projects...",
+    "subtitle": "Services I offer and customer success stories"
   }
 }

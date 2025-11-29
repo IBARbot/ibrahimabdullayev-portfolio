@@ -49,12 +49,12 @@ interface BookingFormData {
   notes?: string
 }
 
-export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: () => void }) {
+export default function BookingForm({ initialType = 'flight', onBookingSuccess }: { initialType?: BookingType; onBookingSuccess?: () => void }) {
   const { t } = useTranslation()
-  const [bookingType, setBookingType] = useState<BookingType>('flight')
+  const [bookingType, setBookingType] = useState<BookingType>(initialType)
   const [tripType, setTripType] = useState<TripType>('one-way')
   const [formData, setFormData] = useState<BookingFormData>({
-    type: 'flight',
+    type: initialType,
     name: '',
     email: '',
     phone: '',
@@ -391,7 +391,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                           value={segment.from}
                           onChange={(e) => updateMultiCitySegment(index, 'from', e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-                          placeholder="Bakı"
+                          placeholder={t('booking.flight.fromPlaceholder')}
                         />
                       </div>
                       <div>
@@ -403,7 +403,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                           value={segment.to}
                           onChange={(e) => updateMultiCitySegment(index, 'to', e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
-                          placeholder="İstanbul"
+                          placeholder={t('booking.flight.toPlaceholder')}
                         />
                       </div>
                       <div>
@@ -466,11 +466,11 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   >
-                    <option value="">Seçin</option>
-                    <option value="economy">Economy</option>
-                    <option value="premium-economy">Premium Economy</option>
-                    <option value="business">Business</option>
-                    <option value="first">First Class</option>
+                    <option value="">{t('booking.flight.select')}</option>
+                    <option value="economy">{t('booking.flight.classOptions.economy')}</option>
+                    <option value="premium-economy">{t('booking.flight.classOptions.premiumEconomy')}</option>
+                    <option value="business">{t('booking.flight.classOptions.business')}</option>
+                    <option value="first">{t('booking.flight.classOptions.first')}</option>
                   </select>
                 </div>
                 <div>
@@ -483,10 +483,10 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   >
-                    <option value="">Fərq etmir</option>
-                    <option value="nonstop">Birbaşa</option>
-                    <option value="1-stop">1 stop</option>
-                    <option value="2-stops">2+ stops</option>
+                    <option value="">{t('booking.flight.stopsOptions.any')}</option>
+                    <option value="nonstop">{t('booking.flight.stopsOptions.nonstop')}</option>
+                    <option value="1-stop">{t('booking.flight.stopsOptions.1stop')}</option>
+                    <option value="2-stops">{t('booking.flight.stopsOptions.2stops')}</option>
                   </select>
                 </div>
               </div>
@@ -506,7 +506,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                   value={formData.destination || ''}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                  placeholder="İstanbul, Türkiyə"
+                  placeholder={t('booking.hotel.destination')}
                 />
               </div>
               <div className="grid md:grid-cols-2 gap-6">
@@ -601,11 +601,11 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                 >
-                  <option value="">Seçin</option>
-                  <option value="airport-hotel">Hava limanı → Otel</option>
-                  <option value="hotel-airport">Otel → Hava limanı</option>
-                  <option value="airport-airport">Hava limanı → Hava limanı</option>
-                  <option value="city">Şəhər daxili</option>
+                  <option value="">{t('booking.flight.select')}</option>
+                  <option value="airport-hotel">{t('booking.transfer.transferTypeOptions.airportHotel')}</option>
+                  <option value="hotel-airport">{t('booking.transfer.transferTypeOptions.hotelAirport')}</option>
+                  <option value="airport-airport">{t('booking.transfer.transferTypeOptions.airportAirport')}</option>
+                  <option value="city">{t('booking.transfer.transferTypeOptions.city')}</option>
                 </select>
               </div>
               <div className="grid md:grid-cols-2 gap-6">
@@ -619,7 +619,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                     value={formData.from || ''}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                    placeholder="Hava limanı və ya ünvan"
+                    placeholder={t('booking.flight.airportPlaceholder')}
                   />
                 </div>
                 <div>
@@ -632,7 +632,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                     value={formData.to || ''}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                    placeholder="Otel və ya ünvan"
+                    placeholder={t('booking.flight.hotelPlaceholder')}
                   />
                 </div>
               </div>
@@ -672,11 +672,11 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   >
-                    <option value="">Seçin</option>
-                    <option value="sedan">Sedan (1-3 nəfər)</option>
-                    <option value="suv">SUV (4-6 nəfər)</option>
-                    <option value="van">Van (7-8 nəfər)</option>
-                    <option value="bus">Avtobus (9+ nəfər)</option>
+                    <option value="">{t('booking.flight.select')}</option>
+                    <option value="sedan">{t('booking.transfer.vehicleTypeOptions.sedan')}</option>
+                    <option value="suv">{t('booking.transfer.vehicleTypeOptions.suv')}</option>
+                    <option value="van">{t('booking.transfer.vehicleTypeOptions.van')}</option>
+                    <option value="bus">{t('booking.transfer.vehicleTypeOptions.bus')}</option>
                   </select>
                 </div>
               </div>
@@ -711,11 +711,11 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   >
-                    <option value="">Seçin</option>
-                    <option value="travel">Səyahət sığortası</option>
-                    <option value="health">Sağlamlıq sığortası</option>
-                    <option value="life">Həyat sığortası</option>
-                    <option value="baggage">Baqaj sığortası</option>
+                    <option value="">{t('booking.flight.select')}</option>
+                    <option value="travel">{t('booking.insurance.insuranceTypeOptions.travel')}</option>
+                    <option value="health">{t('booking.insurance.insuranceTypeOptions.health')}</option>
+                    <option value="life">{t('booking.insurance.insuranceTypeOptions.life')}</option>
+                    <option value="baggage">{t('booking.insurance.insuranceTypeOptions.baggage')}</option>
                   </select>
                 </div>
                 <div>
@@ -728,11 +728,11 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   >
-                    <option value="">Seçin</option>
-                    <option value="basic">Əsas</option>
-                    <option value="standard">Standart</option>
-                    <option value="premium">Premium</option>
-                    <option value="custom">Fərdi</option>
+                    <option value="">{t('booking.flight.select')}</option>
+                    <option value="basic">{t('booking.insurance.packageOptions.basic')}</option>
+                    <option value="standard">{t('booking.insurance.packageOptions.standard')}</option>
+                    <option value="premium">{t('booking.insurance.packageOptions.premium')}</option>
+                    <option value="custom">{t('booking.insurance.packageOptions.custom')}</option>
                   </select>
                 </div>
               </div>
@@ -774,11 +774,11 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                 >
-                  <option value="">Seçin</option>
-                  <option value="europe">Avropa</option>
-                  <option value="worldwide">Dünya üzrə</option>
-                  <option value="schengen">Şengen</option>
-                  <option value="custom">Fərdi</option>
+                  <option value="">{t('booking.flight.select')}</option>
+                  <option value="europe">{t('booking.insurance.coverageOptions.europe')}</option>
+                  <option value="worldwide">{t('booking.insurance.coverageOptions.worldwide')}</option>
+                  <option value="schengen">{t('booking.insurance.coverageOptions.schengen')}</option>
+                  <option value="custom">{t('booking.insurance.coverageOptions.custom')}</option>
                 </select>
               </div>
             </>
@@ -798,7 +798,7 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                     value={formData.embassyCountry || ''}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                    placeholder="Türkiyə"
+                    placeholder={t('booking.flight.countryPlaceholder')}
                   />
                 </div>
                 <div>
@@ -811,13 +811,13 @@ export default function BookingForm({ onBookingSuccess }: { onBookingSuccess?: (
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                   >
-                    <option value="">Seçin</option>
-                    <option value="tourist">Turist viza</option>
-                    <option value="business">Biznes viza</option>
-                    <option value="student">Tələbə viza</option>
-                    <option value="work">İş viza</option>
-                    <option value="transit">Tranzit viza</option>
-                    <option value="medical">Tibbi viza</option>
+                    <option value="">{t('booking.flight.select')}</option>
+                    <option value="tourist">{t('booking.embassy.visaTypeOptions.tourist')}</option>
+                    <option value="business">{t('booking.embassy.visaTypeOptions.business')}</option>
+                    <option value="student">{t('booking.embassy.visaTypeOptions.student')}</option>
+                    <option value="work">{t('booking.embassy.visaTypeOptions.work')}</option>
+                    <option value="transit">{t('booking.embassy.visaTypeOptions.transit')}</option>
+                    <option value="medical">{t('booking.embassy.visaTypeOptions.medical')}</option>
                   </select>
                 </div>
               </div>

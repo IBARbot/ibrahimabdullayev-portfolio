@@ -101,6 +101,9 @@
       "to": "Куда",
       "fromPlaceholder": "Баку (GYD)",
       "toPlaceholder": "Стамбул (IST)",
+      "airportPlaceholder": "Аэропорт или адрес",
+      "hotelPlaceholder": "Отель или адрес",
+      "countryPlaceholder": "Турция"
       "departureDate": "Дата вылета",
       "returnDate": "Дата возврата",
       "passengers": "Пассажиры",
@@ -108,7 +111,21 @@
       "stops": "Остановки",
       "addSegment": "Добавить",
       "removeSegment": "Удалить",
-      "segment": "Сегмент"
+      "segment": "Сегмент",
+      "addFlightSegment": "+ Добавить сегмент полета",
+      "select": "Выбрать",
+      "classOptions": {
+        "economy": "Эконом",
+        "premiumEconomy": "Премиум эконом",
+        "business": "Бизнес",
+        "first": "Первый класс"
+      },
+      "stopsOptions": {
+        "any": "Неважно",
+        "nonstop": "Прямой",
+        "1stop": "1 остановка",
+        "2stops": "2+ остановки"
+      }
     },
     "hotel": {
       "destination": "Место",
@@ -116,25 +133,70 @@
       "checkOut": "Дата выезда",
       "rooms": "Номера",
       "guests": "Гости",
-      "hotelType": "Тип отеля"
+      "hotelType": "Тип отеля",
+      "hotelTypeOptions": {
+        "budget": "Бюджетный",
+        "3star": "3 звезды",
+        "4star": "4 звезды",
+        "5star": "5 звезд",
+        "luxury": "Люкс"
+      }
     },
     "transfer": {
       "transferType": "Тип трансфера",
       "date": "Дата",
       "time": "Время",
-      "vehicleType": "Тип транспорта"
+      "vehicleType": "Тип транспорта",
+      "transferTypeOptions": {
+        "airportHotel": "Аэропорт → Отель",
+        "hotelAirport": "Отель → Аэропорт",
+        "airportAirport": "Аэропорт → Аэропорт",
+        "city": "Городской"
+      },
+      "vehicleTypeOptions": {
+        "sedan": "Седан (1-3 чел.)",
+        "suv": "SUV (4-6 чел.)",
+        "van": "Фургон (7-8 чел.)",
+        "bus": "Автобус (9+ чел.)"
+      }
     },
     "insurance": {
       "insuranceType": "Тип страхования",
       "package": "Пакет",
       "startDate": "Дата начала",
       "endDate": "Дата окончания",
-      "coverage": "Покрытие"
+      "coverage": "Покрытие",
+      "insuranceTypeOptions": {
+        "travel": "Страхование путешествий",
+        "health": "Медицинское страхование",
+        "life": "Страхование жизни",
+        "baggage": "Страхование багажа"
+      },
+      "packageOptions": {
+        "basic": "Базовый",
+        "standard": "Стандартный",
+        "premium": "Премиум",
+        "custom": "Индивидуальный"
+      },
+      "coverageOptions": {
+        "europe": "Европа",
+        "worldwide": "По всему миру",
+        "schengen": "Шенген",
+        "custom": "Индивидуальный"
+      }
     },
     "embassy": {
       "country": "Страна",
       "visaType": "Тип визы",
-      "urgent": "Срочно"
+      "urgent": "Срочно",
+      "visaTypeOptions": {
+        "tourist": "Туристическая виза",
+        "business": "Бизнес виза",
+        "student": "Студенческая виза",
+        "work": "Рабочая виза",
+        "transit": "Транзитная виза",
+        "medical": "Медицинская виза"
+      }
     },
     "types": {
       "flight": "Авиабилеты",
@@ -142,6 +204,10 @@
       "transfer": "Трансфер",
       "insurance": "Страхование",
       "embassy": "Консульство"
+    },
+    "success": {
+      "title": "Запрос успешно отправлен!",
+      "message": "Мы свяжемся с вами в ближайшее время."
     }
   },
   "footer": {
@@ -174,5 +240,10 @@
     "send": "Отправить сообщение",
     "sending": "Отправка...",
     "pages": "Страницы"
+  },
+  "projects": {
+    "title": "Портфолио",
+    "loading": "Загрузка проектов...",
+    "subtitle": "Услуги, которые я предлагаю, и истории успеха клиентов"
   }
 }

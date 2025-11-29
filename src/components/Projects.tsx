@@ -64,11 +64,11 @@ export default function Projects({ onOpenBooking }: ProjectsProps) {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Portfolio
+            {t('projects.title')}
           </h2>
           <div className="w-16 h-0.5 bg-primary-600 mx-auto mb-4"></div>
           <p className="text-base text-gray-600 max-w-2xl mx-auto">
-            Təqdim etdiyim xidmətlər və müştəri uğur hekayələri
+            {t('projects.subtitle')}
           </p>
         </motion.div>
 
@@ -108,7 +108,7 @@ export default function Projects({ onOpenBooking }: ProjectsProps) {
                     className="px-4 py-2 sm:px-5 sm:py-2.5 bg-white rounded-lg hover:bg-primary-50 active:bg-primary-100 transition-all flex items-center gap-2 text-sm font-semibold text-gray-900 shadow-lg touch-manipulation"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    Sifariş Ver
+                    {t('nav.bookNow')}
                   </button>
                 </div>
               </div>

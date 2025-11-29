@@ -76,3 +76,4 @@ Analytics məlumatlarını mövcud Google Sheets faylında "Analytics" adlı yen
 **Problem:** "Analytics" səhifəsi tapılmır
 - **Həll:** Səhifə adının düzgün "Analytics" olduğunu yoxlayın (böyük/kiçik hərf vacibdir)
 
+

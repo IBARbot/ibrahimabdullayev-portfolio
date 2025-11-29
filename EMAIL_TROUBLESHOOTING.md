@@ -75,3 +75,4 @@
 4. Vercel Logs-ı yoxlayın
 5. Email-ı yoxlayın (gələnlər, spam, all mail)
 
+

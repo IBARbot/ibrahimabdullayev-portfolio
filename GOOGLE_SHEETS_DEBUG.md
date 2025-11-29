@@ -104,3 +104,4 @@ Sizin cədvəlinizdə **5 sütun** olmalıdır (1-ci sətirdə):
 
 Əgər sayt statistikaları istəyirsinizsə, ayrıca bir endpoint və database lazımdır.
 
+

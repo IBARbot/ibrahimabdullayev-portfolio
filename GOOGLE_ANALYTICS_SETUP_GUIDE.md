@@ -117,3 +117,4 @@ ibrahimabdullayev.com & .az
 **Problem:** Real-time data görünmür
 - **Həll:** Bir neçə dəqiqə gözləyin, bəzən gecikmə ola bilər
 
+

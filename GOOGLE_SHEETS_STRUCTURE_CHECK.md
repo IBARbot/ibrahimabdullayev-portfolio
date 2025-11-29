@@ -63,3 +63,4 @@ Düzəltmədən sonra:
 2. A sütununda başlıq olmamalıdır
 3. Yeni məlumatlar 2-ci sətirdən başlayaraq əlavə olunacaq
 
+

@@ -108,7 +108,20 @@
       "stops": "Stopla",
       "addSegment": "Əlavə et",
       "removeSegment": "Sil",
-      "segment": "Seqment"
+      "segment": "Seqment",
+      "select": "Seçin",
+      "classOptions": {
+        "economy": "Economy",
+        "premiumEconomy": "Premium Economy",
+        "business": "Business",
+        "first": "First Class"
+      },
+      "stopsOptions": {
+        "any": "Fərq etmir",
+        "nonstop": "Birbaşa",
+        "1stop": "1 stop",
+        "2stops": "2+ stops"
+      }
     },
     "hotel": {
       "destination": "Məkan",
@@ -116,25 +129,70 @@
       "checkOut": "Çıxış tarixi",
       "rooms": "Otaq sayı",
       "guests": "Nəfər sayı",
-      "hotelType": "Otel növü"
+      "hotelType": "Otel növü",
+      "hotelTypeOptions": {
+        "budget": "Budget",
+        "3star": "3 Ulduz",
+        "4star": "4 Ulduz",
+        "5star": "5 Ulduz",
+        "luxury": "Luxury"
+      }
     },
     "transfer": {
       "transferType": "Transfer növü",
       "date": "Tarix",
       "time": "Vaxt",
-      "vehicleType": "Nəqliyyat növü"
+      "vehicleType": "Nəqliyyat növü",
+      "transferTypeOptions": {
+        "airportHotel": "Hava limanı → Otel",
+        "hotelAirport": "Otel → Hava limanı",
+        "airportAirport": "Hava limanı → Hava limanı",
+        "city": "Şəhər daxili"
+      },
+      "vehicleTypeOptions": {
+        "sedan": "Sedan (1-3 nəfər)",
+        "suv": "SUV (4-6 nəfər)",
+        "van": "Van (7-8 nəfər)",
+        "bus": "Avtobus (9+ nəfər)"
+      }
     },
     "insurance": {
       "insuranceType": "Sığorta növü",
       "package": "Paket",
       "startDate": "Başlama tarixi",
       "endDate": "Bitmə tarixi",
-      "coverage": "Əhatə dairəsi"
+      "coverage": "Əhatə dairəsi",
+      "insuranceTypeOptions": {
+        "travel": "Səyahət sığortası",
+        "health": "Sağlamlıq sığortası",
+        "life": "Həyat sığortası",
+        "baggage": "Baqaj sığortası"
+      },
+      "packageOptions": {
+        "basic": "Əsas",
+        "standard": "Standart",
+        "premium": "Premium",
+        "custom": "Fərdi"
+      },
+      "coverageOptions": {
+        "europe": "Avropa",
+        "worldwide": "Dünya üzrə",
+        "schengen": "Şengen",
+        "custom": "Fərdi"
+      }
     },
     "embassy": {
       "country": "Ölkə",
       "visaType": "Viza növü",
-      "urgent": "Təcili"
+      "urgent": "Təcili",
+      "visaTypeOptions": {
+        "tourist": "Turist viza",
+        "business": "Biznes viza",
+        "student": "Tələbə viza",
+        "work": "İş viza",
+        "transit": "Tranzit viza",
+        "medical": "Tibbi viza"
+      }
     },
     "types": {
       "flight": "Aviabilet",
@@ -142,6 +200,10 @@
       "transfer": "Transfer",
       "insurance": "Sığorta",
       "embassy": "Səfirlik"
+    },
+    "success": {
+      "title": "Sorğunuz Uğurla Göndərildi!",
+      "message": "Tezliklə sizinlə əlaqə saxlayacağıq."
     }
   },
   "footer": {
@@ -170,5 +232,10 @@
     "send": "Mesaj Göndər",
     "sending": "Göndərilir...",
     "pages": "Səhifələr"
+  },
+  "projects": {
+    "title": "Portfolio",
+    "loading": "Layihələr yüklənir...",
+    "subtitle": "Təqdim etdiyim xidmətlər və müştəri uğur hekayələri"
   }
 }

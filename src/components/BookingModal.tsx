@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import BookingForm from './BookingForm'
 
 interface BookingModalProps {
@@ -10,6 +11,7 @@ interface BookingModalProps {
 }
 
 export default function BookingModal({ isOpen, onClose, initialType = 'flight' }: BookingModalProps) {
+  const { t } = useTranslation()
   const [showSuccess, setShowSuccess] = useState(false)
 
   useEffect(() => {
@@ -83,15 +85,15 @@ export default function BookingModal({ isOpen, onClose, initialType = 'flight' }
                 ></motion.path>
               </motion.svg>
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Sorğunuz Uğurla Göndərildi!
+                {t('booking.success.title')}
               </h2>
               <p className="text-lg text-gray-600">
-                Tezliklə sizinlə əlaqə saxlayacağıq.
+                {t('booking.success.message')}
               </p>
             </div>
           ) : (
             <div className="p-4 sm:p-6">
-              <BookingForm onBookingSuccess={handleBookingSuccess} />
+              <BookingForm initialType={initialType} onBookingSuccess={handleBookingSuccess} />
             </div>
           )}
         </motion.div>
