@@ -20,9 +20,10 @@ export default async function handler(req, res) {
     const bookingData = req.body;
     const sheetId = process.env.GOOGLE_SHEET_ID;
     const apiKey = process.env.GOOGLE_SHEETS_API_KEY;
+    const serviceAccountKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
 
-    if (!sheetId || !apiKey) {
-      console.log('Google Sheets konfiqurasiyası yoxdur, skip edilir');
+    if (!sheetId) {
+      console.log('Google Sheets ID konfiqurasiya edilməyib, skip edilir');
       return res.status(200).json({ success: true, message: 'Google Sheets konfiqurasiya edilməyib' });
     }
 
@@ -41,18 +42,93 @@ export default async function handler(req, res) {
       bookingData.notes || '',
     ];
 
-    // Append to Google Sheets using Google Sheets API v4
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:append?valueInputOption=RAW&key=${apiKey}`;
-    
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        values: [rowData],
-      }),
-    });
+    let response;
+
+    // Method 1: Service Account (Preferred)
+    if (serviceAccountKey) {
+      try {
+        // Decode base64 service account key
+        const serviceAccountJson = Buffer.from(serviceAccountKey, 'base64').toString('utf-8');
+        const serviceAccount = JSON.parse(serviceAccountJson);
+
+        // Get access token using Service Account
+        const jwt = require('jsonwebtoken');
+        const now = Math.floor(Date.now() / 1000);
+        const token = jwt.sign(
+          {
+            iss: serviceAccount.client_email,
+            sub: serviceAccount.client_email,
+            aud: 'https://oauth2.googleapis.com/token',
+            exp: now + 3600,
+            iat: now,
+            scope: 'https://www.googleapis.com/auth/spreadsheets',
+          },
+          serviceAccount.private_key,
+          { algorithm: 'RS256' }
+        );
+
+        // Exchange JWT for access token
+        const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            assertion: token,
+          }),
+        });
+
+        const tokenData = await tokenResponse.json();
+        if (!tokenData.access_token) {
+          throw new Error('Access token alınamadı');
+        }
+
+        // Append to Google Sheets using access token
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:append?valueInputOption=RAW`;
+        response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${tokenData.access_token}`,
+          },
+          body: JSON.stringify({
+            values: [rowData],
+          }),
+        });
+      } catch (serviceAccountError) {
+        console.error('Service Account xətası:', serviceAccountError);
+        // Fallback to API Key method if Service Account fails
+        if (apiKey) {
+          const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:append?valueInputOption=RAW&key=${apiKey}`;
+          response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              values: [rowData],
+            }),
+          });
+        } else {
+          throw serviceAccountError;
+        }
+      }
+    }
+    // Method 2: API Key (Fallback)
+    else if (apiKey) {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:append?valueInputOption=RAW&key=${apiKey}`;
+      response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          values: [rowData],
+        }),
+      });
+    } else {
+      console.log('Google Sheets konfiqurasiyası yoxdur, skip edilir');
+      return res.status(200).json({ success: true, message: 'Google Sheets konfiqurasiya edilməyib' });
+    }
 
     if (!response.ok) {
       const errorData = await response.text();
