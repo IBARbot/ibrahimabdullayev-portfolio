@@ -12,6 +12,77 @@ const createTransporter = () => {
   });
 };
 
+// Google Sheets API function
+async function addToGoogleSheets(bookingData) {
+  try {
+    const GOOGLE_SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL;
+    if (!GOOGLE_SCRIPT_URL) {
+      console.log('Google Script URL not configured');
+      return null;
+    }
+
+    // Prepare data for Google Sheets
+    const rowData = {
+      timestamp: new Date().toISOString(),
+      type: bookingData.type || '',
+      name: bookingData.name || '',
+      email: bookingData.email || '',
+      phone: bookingData.phone || '',
+      // Flight data
+      tripType: bookingData.tripType || '',
+      from: bookingData.from || '',
+      to: bookingData.to || '',
+      departureDate: bookingData.departureDate || '',
+      returnDate: bookingData.returnDate || '',
+      passengers: bookingData.passengers || '',
+      class: bookingData.class || '',
+      stops: bookingData.stops || '',
+      // Hotel data
+      destination: bookingData.destination || '',
+      checkIn: bookingData.checkIn || '',
+      checkOut: bookingData.checkOut || '',
+      rooms: bookingData.rooms || '',
+      guests: bookingData.guests || '',
+      hotelType: bookingData.hotelType || '',
+      // Transfer data
+      transferType: bookingData.transferType || '',
+      date: bookingData.date || '',
+      time: bookingData.time || '',
+      vehicleType: bookingData.vehicleType || '',
+      // Insurance data
+      insuranceType: bookingData.insuranceType || '',
+      package: bookingData.package || '',
+      startDate: bookingData.startDate || '',
+      endDate: bookingData.endDate || '',
+      coverage: bookingData.coverage || '',
+      // Embassy data
+      embassyCountry: bookingData.embassyCountry || '',
+      visaType: bookingData.visaType || '',
+      urgent: bookingData.urgent || false,
+      // Common
+      notes: bookingData.notes || '',
+    };
+
+    const response = await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(rowData),
+    });
+
+    if (!response.ok) {
+      console.error('Google Sheets API error:', response.statusText);
+      return null;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Google Sheets error:', error);
+    return null;
+  }
+}
+
 export default async function handler(req, res) {
   // CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -29,8 +100,14 @@ export default async function handler(req, res) {
 
   try {
     const bookingData = req.body;
-    if (!bookingData.type || !bookingData.name || !bookingData.email || !bookingData.phone) {
-      return res.status(400).json({ success: false, message: 'Lütfən bütün tələb olunan sahələri doldurun' });
+    
+    // Validation: Type və email/phone-dan ən azı biri mütləq olmalıdır
+    if (!bookingData.type) {
+      return res.status(400).json({ success: false, message: 'Xidmət növü seçilməlidir' });
+    }
+    
+    if (!bookingData.email && !bookingData.phone) {
+      return res.status(400).json({ success: false, message: 'Zəhmət olmasa email və ya telefon nömrəsindən ən azı birini daxil edin' });
     }
     
     const newBooking = { 
@@ -40,11 +117,16 @@ export default async function handler(req, res) {
       createdAt: new Date().toISOString() 
     };
     
+    // Add to Google Sheets (async, don't wait)
+    addToGoogleSheets(bookingData).catch(err => {
+      console.error('Google Sheets error (non-blocking):', err);
+    });
+    
     const transporter = createTransporter();
     if (transporter) {
       const adminEmail = process.env.CONTACT_EMAIL || process.env.EMAIL_USER;
       let emailSubject = `Yeni Rezervasiya Sorğusu - ${bookingData.type}`;
-      let emailContent = `<h2>Yeni Rezervasiya Sorğusu</h2><p><strong>Ad:</strong> ${bookingData.name}</p><p><strong>Email:</strong> ${bookingData.email}</p><p><strong>Telefon:</strong> ${bookingData.phone}</p><p><strong>Növ:</strong> ${bookingData.type}</p>`;
+      let emailContent = `<h2>Yeni Rezervasiya Sorğusu</h2><p><strong>Ad:</strong> ${bookingData.name || 'Təyin edilməyib'}</p><p><strong>Email:</strong> ${bookingData.email || 'Təyin edilməyib'}</p><p><strong>Telefon:</strong> ${bookingData.phone || 'Təyin edilməyib'}</p><p><strong>Növ:</strong> ${bookingData.type}</p>`;
       
       if (bookingData.type === 'flight') {
         emailSubject = `Yeni Aviabilet Sorğusu`;
@@ -106,7 +188,7 @@ export default async function handler(req, res) {
           to: adminEmail, 
           subject: emailSubject, 
           html: emailContent, 
-          replyTo: bookingData.email 
+          replyTo: bookingData.email || bookingData.phone 
         });
       } catch (emailError) {
         console.error('Email xətası:', emailError);
