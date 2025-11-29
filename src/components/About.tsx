@@ -1,13 +1,11 @@
-import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Award, Coffee, Heart, Loader2 } from 'lucide-react'
+import { Award, Coffee, Heart } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 const PROFILE_IMAGE = 'https://i.imgur.com/64oQNiZ.jpeg'
 
 export default function About() {
   const { t } = useTranslation()
-  const [loading, setLoading] = useState(false)
 
   // Use translations directly instead of backend content
   const aboutTitle = t('about.title')
@@ -87,7 +85,7 @@ export default function About() {
               {t('about.specialist')}
             </h3>
             <div className="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line">
-              {content.content}
+              {aboutContent}
             </div>
           </motion.div>
 
