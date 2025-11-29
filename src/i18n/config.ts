@@ -49,7 +49,7 @@ i18n
     },
   })
 
-// IP əsaslı ölkə detection (async)
+// IP əsaslı ölkə detection (async) - App.tsx-də istifadə olunur
 export const detectCountryLanguage = async (): Promise<string | null> => {
   try {
     // Free geolocation API
@@ -93,6 +93,42 @@ export const detectBrowserLanguage = (): string => {
   if (browserLang.startsWith('ru')) return 'ru'
   
   return 'az' // Default
+}
+
+// App.tsx-də istifadə üçün: IP detection-i aktivləşdir
+export const initializeLanguage = async () => {
+  // Əgər localStorage-dan dil seçilibsə, onu istifadə et
+  const savedLang = localStorage.getItem('i18nextLng')
+  if (savedLang && ['az', 'en', 'ru'].includes(savedLang)) {
+    await i18n.changeLanguage(savedLang)
+    return savedLang
+  }
+  
+  // URL-dən dil parametri
+  const urlParams = new URLSearchParams(window.location.search)
+  const urlLang = urlParams.get('lang')
+  if (urlLang && ['az', 'en', 'ru'].includes(urlLang)) {
+    await i18n.changeLanguage(urlLang)
+    return urlLang
+  }
+  
+  // Browser dili
+  const browserLang = detectBrowserLanguage()
+  if (browserLang) {
+    await i18n.changeLanguage(browserLang)
+    return browserLang
+  }
+  
+  // IP əsaslı detection (async)
+  const countryLang = await detectCountryLanguage()
+  if (countryLang) {
+    await i18n.changeLanguage(countryLang)
+    return countryLang
+  }
+  
+  // Default: az
+  await i18n.changeLanguage('az')
+  return 'az'
 }
 
 // Dil seçimini tətbiq et

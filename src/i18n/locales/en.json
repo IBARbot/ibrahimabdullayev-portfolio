@@ -157,6 +157,10 @@
     "bookNowDesc": "Fill out the booking form directly",
     "footer": "This message will only be shown once"
   },
+  "projects": {
+    "title": "Portfolio",
+    "loading": "Loading projects..."
+  },
   "contactInfo": {
     "title": "Contact Information",
     "description": "If you have questions about tourism services, reservations, or any inquiries, please contact me. I will try to respond.",

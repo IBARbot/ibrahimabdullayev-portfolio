@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ExternalLink } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface ProjectsProps {
   onOpenBooking?: () => void
@@ -17,6 +18,7 @@ interface Project {
 }
 
 export default function Projects({ onOpenBooking }: ProjectsProps) {
+  const { t } = useTranslation()
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -76,7 +78,7 @@ export default function Projects({ onOpenBooking }: ProjectsProps) {
           </div>
         ) : projects.length === 0 ? (
           <div className="text-center py-20 text-gray-500">
-            Layihələr yüklənir...
+            {t('projects.loading')}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">

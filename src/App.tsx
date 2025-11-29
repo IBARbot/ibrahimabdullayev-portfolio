@@ -14,6 +14,7 @@ import WelcomeModal from './components/WelcomeModal'
 import FloatingWhatsApp from './components/FloatingWhatsApp'
 import BookingModal from './components/BookingModal'
 import Analytics from './components/Analytics'
+import { initializeLanguage } from './i18n/config'
 
 type BookingType = 'flight' | 'hotel' | 'transfer' | 'insurance' | 'embassy'
 
@@ -22,6 +23,14 @@ function HomePage() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false)
   const [showBookingModal, setShowBookingModal] = useState(false)
   const [bookingType, setBookingType] = useState<BookingType>('flight')
+  const [languageInitialized, setLanguageInitialized] = useState(false)
+
+  // Dil detection-i aktivləşdir
+  useEffect(() => {
+    initializeLanguage().then(() => {
+      setLanguageInitialized(true)
+    })
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,10 +43,10 @@ function HomePage() {
   useEffect(() => {
     // Check if modal was shown before
     const hasSeenModal = localStorage.getItem('hasSeenWelcomeModal')
-    if (!hasSeenModal) {
+    if (!hasSeenModal && languageInitialized) {
       setShowWelcomeModal(true)
     }
-  }, [])
+  }, [languageInitialized])
 
   const openBookingModal = (type: BookingType = 'flight') => {
     setBookingType(type)
