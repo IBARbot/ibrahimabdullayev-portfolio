@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronDown, Linkedin, Mail, Loader2, Instagram, MessageCircle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface HeroContent {
   title: string
@@ -16,6 +17,7 @@ interface HeroProps {
 }
 
 export default function Hero({ onOpenBooking }: HeroProps) {
+  const { t, i18n } = useTranslation()
   const [content, setContent] = useState<HeroContent | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -31,9 +33,9 @@ export default function Hero({ onOpenBooking }: HeroProps) {
       .catch((err) => {
         console.error('Content yüklənərkən xəta:', err)
         setContent({
-          title: 'Salam, mən İbrahim Abdullayev',
-          subtitle: 'Turizm Sahəsində Aparıcı Mütəxəssis',
-          description: 'Aviabilet rezervasiyası, otel booking, transfer xidmətləri, sığorta və səfirlik işləri üzrə peşəkar məsləhətçi',
+          title: t('hero.title'),
+          subtitle: t('hero.subtitle'),
+          description: t('hero.description'),
           image: '',
         })
         setLoading(false)
@@ -144,13 +146,13 @@ export default function Hero({ onOpenBooking }: HeroProps) {
               onClick={() => scrollToSection('services')}
               className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 active:bg-primary-800 transition-all shadow-lg hover:shadow-xl active:scale-95 touch-manipulation text-sm sm:text-base"
             >
-              Xidmətlərimə Bax
+              {t('hero.viewServices')}
             </button>
             <button
               onClick={() => onOpenBooking?.()}
               className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-white text-primary-600 border-2 border-primary-600 rounded-lg font-semibold hover:bg-primary-50 active:bg-primary-100 transition-all active:scale-95 touch-manipulation text-sm sm:text-base"
             >
-              İndi Rezerv Et
+              {t('hero.contact')}
             </button>
           </motion.div>
 

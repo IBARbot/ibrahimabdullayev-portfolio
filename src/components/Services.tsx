@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Plane, Hotel, Car, Shield, Building2, MapPin, Calendar } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface Service {
   icon: React.ElementType
@@ -52,6 +53,47 @@ interface ServicesProps {
 }
 
 export default function Services({ onOpenBooking }: ServicesProps) {
+  const { t } = useTranslation()
+  
+  const services = [
+    {
+      icon: Plane,
+      title: t('services.flight.title'),
+      description: t('services.flight.description'),
+      features: t('services.flight.features', { returnObjects: true }) as string[],
+    },
+    {
+      icon: Hotel,
+      title: t('services.hotel.title'),
+      description: t('services.hotel.description'),
+      features: t('services.hotel.features', { returnObjects: true }) as string[],
+    },
+    {
+      icon: Car,
+      title: t('services.transfer.title'),
+      description: t('services.transfer.description'),
+      features: t('services.transfer.features', { returnObjects: true }) as string[],
+    },
+    {
+      icon: Shield,
+      title: t('services.insurance.title'),
+      description: t('services.insurance.description'),
+      features: t('services.insurance.features', { returnObjects: true }) as string[],
+    },
+    {
+      icon: Building2,
+      title: t('services.embassy.title'),
+      description: t('services.embassy.description'),
+      features: t('services.embassy.features', { returnObjects: true }) as string[],
+    },
+    {
+      icon: MapPin,
+      title: t('services.planning.title'),
+      description: t('services.planning.description'),
+      features: t('services.planning.features', { returnObjects: true }) as string[],
+    },
+  ]
+  
   return (
     <section id="services" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -63,11 +105,11 @@ export default function Services({ onOpenBooking }: ServicesProps) {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Xidmətlərim
+            {t('services.title')}
           </h2>
           <div className="w-16 h-0.5 bg-primary-600 mx-auto mb-4"></div>
           <p className="text-base text-gray-600 max-w-2xl mx-auto">
-            Turizm sahəsində hərtərəfli xidmətlər və peşəkar məsləhət
+            {t('services.subtitle')}
           </p>
         </motion.div>
 
@@ -107,7 +149,7 @@ export default function Services({ onOpenBooking }: ServicesProps) {
                   className="w-full px-4 py-2.5 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 active:bg-primary-800 transition-all flex items-center justify-center gap-2 text-sm sm:text-base touch-manipulation"
                 >
                   <Calendar className="w-4 h-4" />
-                  İndi Rezerv Et
+                  {t('services.bookNow')}
                 </button>
               </motion.div>
             )

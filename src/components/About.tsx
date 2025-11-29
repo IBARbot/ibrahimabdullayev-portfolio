@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Award, Coffee, Heart, Loader2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const PROFILE_IMAGE = 'https://i.imgur.com/64oQNiZ.jpeg'
 
@@ -10,6 +11,7 @@ interface AboutContent {
 }
 
 export default function About() {
+  const { t } = useTranslation()
   const [content, setContent] = useState<AboutContent | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -25,8 +27,8 @@ export default function About() {
       .catch((err) => {
         console.error('Content yüklənərkən xəta:', err)
         setContent({
-          title: 'Haqqımda',
-          content: 'Mən turizm sahəsində aparıcı mütəxəssisəm və səyahətçilərə ən yaxşı xidməti təqdim etmək üçün çalışıram. İllər boyu hava yolu sistemləri, otel rezervasiyaları, transfer xidmətləri, sığorta və səfirlik işləri üzrə təcrübə toplamışam.',
+          title: t('about.title'),
+          content: t('about.content'),
         })
         setLoading(false)
       })
@@ -76,7 +78,7 @@ export default function About() {
           </h2>
           <div className="w-16 h-0.5 bg-primary-600 mx-auto mb-4"></div>
           <p className="text-base text-gray-600 max-w-2xl mx-auto">
-            Turizm sahəsində təcrübəli mütəxəssis kimi səyahətçilərə ən yaxşı xidməti təqdim edirəm
+            {t('about.subtitle')}
           </p>
         </motion.div>
 
@@ -115,7 +117,7 @@ export default function About() {
             className="order-1 md:order-2"
           >
             <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
-              Turizm Mütəxəssisi
+              {t('about.specialist')}
             </h3>
             <div className="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line">
               {content.content}
@@ -135,10 +137,10 @@ export default function About() {
             >
               <Award className="w-7 h-7 sm:w-8 sm:h-8 text-primary-600 mb-3 sm:mb-4" />
               <h4 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
-                Peşəkar Xidmət
+                {t('about.professional')}
               </h4>
               <p className="text-sm sm:text-base text-gray-600">
-                Hər müştəriyə fərdi yanaşaraq ən yaxşı həlli təqdim edirəm
+                {t('about.professionalDesc')}
               </p>
             </motion.div>
 
@@ -148,10 +150,10 @@ export default function About() {
             >
               <Coffee className="w-7 h-7 sm:w-8 sm:h-8 text-primary-600 mb-3 sm:mb-4" />
               <h4 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
-                Geniş Təcrübə
+                {t('about.experience')}
               </h4>
               <p className="text-sm sm:text-base text-gray-600">
-                İllər boyu turizm sahəsində təcrübə toplamışam və daim öyrənirəm
+                {t('about.experienceDesc')}
               </p>
             </motion.div>
 
@@ -161,10 +163,10 @@ export default function About() {
             >
               <Heart className="w-7 h-7 sm:w-8 sm:h-8 text-primary-600 mb-3 sm:mb-4" />
               <h4 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
-                Müştəri Məmnuniyyəti
+                {t('about.satisfaction')}
               </h4>
               <p className="text-sm sm:text-base text-gray-600">
-                Müştərilərin məmnuniyyəti mənim üçün ən vacibdir
+                {t('about.satisfactionDesc')}
               </p>
             </motion.div>
           </motion.div>
