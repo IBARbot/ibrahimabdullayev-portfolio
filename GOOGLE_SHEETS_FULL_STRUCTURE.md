@@ -115,3 +115,4 @@ Yeni bir rezervasiya sorğusu göndərdikdən sonra:
 3. Boş sahələr boş qalmalıdır
 
 
+

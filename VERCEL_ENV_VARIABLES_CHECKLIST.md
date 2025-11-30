@@ -59,3 +59,4 @@
 **GOOGLE_SHEET_ID** olmadan Google Sheets inteqrasiyası işləməyəcək. Bu dəyişkəni mutlaka əlavə edin!
 
 
+

@@ -64,3 +64,4 @@ Düzəltmədən sonra:
 3. Yeni məlumatlar 2-ci sətirdən başlayaraq əlavə olunacaq
 
 
+

@@ -357,5 +357,32 @@
       "success": "If this email address is registered, a password reset link will be sent to your email. Please check your inbox and spam folder. The link is valid for 1 hour."
     },
     "loading": "Loading..."
+  },
+  "datePicker": {
+    "selectDate": "Select date",
+    "today": "Today",
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "weekDays": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    }
   }
 }

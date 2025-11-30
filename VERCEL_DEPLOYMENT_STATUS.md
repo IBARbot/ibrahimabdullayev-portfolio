@@ -59,3 +59,4 @@ Bu xəta normaldır! O deməkdir ki:
 - Köhnə deployment-ları redeploy etmək lazım deyil
 
 
+

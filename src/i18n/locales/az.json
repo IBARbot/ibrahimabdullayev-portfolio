@@ -92,6 +92,12 @@
     "success": "Sorğunuz uğurla göndərildi!",
     "error": "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.",
     "validationError": "Zəhmət olmasa email və ya telefon nömrəsindən ən azı birini daxil edin.",
+    "dateValidation": {
+      "returnBeforeDeparture": "Qayıdış tarixi gediş tarixindən əvvəl ola bilməz",
+      "checkOutBeforeCheckIn": "Çıxış tarixi giriş tarixindən sonra olmalıdır",
+      "endBeforeStart": "Bitmə tarixi başlama tarixindən sonra olmalıdır",
+      "multiCityChronology": "Multi-city uçuşlarda tarixlər kronoloji ardıcıllıqla olmalıdır"
+    },
     "flight": {
       "tripType": "Səyahət növü",
       "oneWay": "Tək gediş",
@@ -355,5 +361,32 @@
       "success": "Əgər bu email ünvanı qeydiyyatdan keçibsə, şifrə sıfırlama linki email-ə göndəriləcək. Zəhmət olmasa email-ınızın gələnlər qutusunu və spam qovluğunu yoxlayın. Link 1 saat müddətində etibarlıdır."
     },
     "loading": "Yüklənir..."
+  },
+  "datePicker": {
+    "selectDate": "Tarix seçin",
+    "today": "Bu gün",
+    "months": {
+      "january": "Yanvar",
+      "february": "Fevral",
+      "march": "Mart",
+      "april": "Aprel",
+      "may": "May",
+      "june": "İyun",
+      "july": "İyul",
+      "august": "Avqust",
+      "september": "Sentyabr",
+      "october": "Oktyabr",
+      "november": "Noyabr",
+      "december": "Dekabr"
+    },
+    "weekDays": {
+      "monday": "Bazar ertəsi",
+      "tuesday": "Çərşənbə axşamı",
+      "wednesday": "Çərşənbə",
+      "thursday": "Cümə axşamı",
+      "friday": "Cümə",
+      "saturday": "Şənbə",
+      "sunday": "Bazar"
+    }
   }
 }

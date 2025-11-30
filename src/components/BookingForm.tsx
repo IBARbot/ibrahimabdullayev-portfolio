@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Send, Plane, Hotel, Car, Shield, Building2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import DatePicker from './DatePicker'
 
 type BookingType = 'flight' | 'hotel' | 'transfer' | 'insurance' | 'embassy'
 type TripType = 'one-way' | 'round-trip' | 'multi-city'
@@ -192,6 +193,52 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
         message: t('booking.validationError'),
       })
       return
+    }
+
+    // Date validation - kronologiya yoxlaması
+    if (bookingType === 'flight' && tripType === 'round-trip') {
+      if (formData.departureDate && formData.returnDate && formData.returnDate < formData.departureDate) {
+        setSubmitStatus({
+          type: 'error',
+          message: t('booking.dateValidation.returnBeforeDeparture'),
+        })
+        return
+      }
+    }
+
+    if (bookingType === 'hotel') {
+      if (formData.checkIn && formData.checkOut && formData.checkOut <= formData.checkIn) {
+        setSubmitStatus({
+          type: 'error',
+          message: t('booking.dateValidation.checkOutBeforeCheckIn'),
+        })
+        return
+      }
+    }
+
+    if (bookingType === 'insurance') {
+      if (formData.startDate && formData.endDate && formData.endDate <= formData.startDate) {
+        setSubmitStatus({
+          type: 'error',
+          message: t('booking.dateValidation.endBeforeStart'),
+        })
+        return
+      }
+    }
+
+    // Multi-city date validation
+    if (bookingType === 'flight' && tripType === 'multi-city') {
+      for (let i = 1; i < multiCitySegments.length; i++) {
+        const prevDate = multiCitySegments[i - 1].date
+        const currDate = multiCitySegments[i].date
+        if (prevDate && currDate && currDate < prevDate) {
+          setSubmitStatus({
+            type: 'error',
+            message: t('booking.dateValidation.multiCityChronology'),
+          })
+          return
+        }
+      }
     }
 
     setIsSubmitting(true)
@@ -450,33 +497,27 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('booking.flight.departureDate')}
-                      </label>
-                      <input
-                        type="date"
-                        name="departureDate"
-                        value={formData.departureDate || ''}
-                        onChange={handleChange}
-                        min={new Date().toISOString().split('T')[0]}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                      />
-                    </div>
+                    <DatePicker
+                      value={formData.departureDate || ''}
+                      onChange={(date) => {
+                        setFormData({ ...formData, departureDate: date })
+                        // If return date is before new departure date, clear it
+                        if (formData.returnDate && date && formData.returnDate < date) {
+                          setFormData(prev => ({ ...prev, returnDate: '' }))
+                        }
+                      }}
+                      min={new Date().toISOString().split('T')[0]}
+                      label={t('booking.flight.departureDate')}
+                      required
+                    />
                     {tripType === 'round-trip' && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          {t('booking.flight.returnDate')}
-                        </label>
-                        <input
-                          type="date"
-                          name="returnDate"
-                          value={formData.returnDate || ''}
-                          onChange={handleChange}
-                          min={formData.departureDate || new Date().toISOString().split('T')[0]}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                        />
-                      </div>
+                      <DatePicker
+                        value={formData.returnDate || ''}
+                        onChange={(date) => setFormData({ ...formData, returnDate: date })}
+                        min={formData.departureDate || new Date().toISOString().split('T')[0]}
+                        label={t('booking.flight.returnDate')}
+                        required
+                      />
                     )}
                   </div>
                 </>
@@ -515,11 +556,11 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                         <label className="block text-xs font-medium text-gray-700 mb-1">
                           {t('booking.transfer.date')}
                         </label>
-                        <input
-                          type="date"
+                        <DatePicker
                           value={segment.date}
-                          onChange={(e) => updateMultiCitySegment(index, 'date', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                          onChange={(date) => updateMultiCitySegment(index, 'date', date)}
+                          min={index > 0 && multiCitySegments[index - 1].date ? multiCitySegments[index - 1].date : new Date().toISOString().split('T')[0]}
+                          className="text-sm"
                         />
                       </div>
                       <div className="flex items-end">
@@ -728,32 +769,26 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                 />
               </div>
               <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('booking.hotel.checkIn')}
-                  </label>
-                  <input
-                    type="date"
-                    name="checkIn"
-                    value={formData.checkIn || ''}
-                    onChange={handleChange}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('booking.hotel.checkOut')}
-                  </label>
-                  <input
-                    type="date"
-                    name="checkOut"
-                    value={formData.checkOut || ''}
-                    onChange={handleChange}
-                    min={formData.checkIn || new Date().toISOString().split('T')[0]}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                  />
-                </div>
+                <DatePicker
+                  value={formData.checkIn || ''}
+                  onChange={(date) => {
+                    setFormData({ ...formData, checkIn: date })
+                    // If check-out is before new check-in, clear it
+                    if (formData.checkOut && date && formData.checkOut < date) {
+                      setFormData(prev => ({ ...prev, checkOut: '' }))
+                    }
+                  }}
+                  min={new Date().toISOString().split('T')[0]}
+                  label={t('booking.hotel.checkIn')}
+                  required
+                />
+                <DatePicker
+                  value={formData.checkOut || ''}
+                  onChange={(date) => setFormData({ ...formData, checkOut: date })}
+                  min={formData.checkIn || new Date().toISOString().split('T')[0]}
+                  label={t('booking.hotel.checkOut')}
+                  required
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1182,32 +1217,26 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                 </div>
               </div>
               <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('booking.insurance.startDate')}
-                  </label>
-                  <input
-                    type="date"
-                    name="startDate"
-                    value={formData.startDate || ''}
-                    onChange={handleChange}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('booking.insurance.endDate')}
-                  </label>
-                  <input
-                    type="date"
-                    name="endDate"
-                    value={formData.endDate || ''}
-                    onChange={handleChange}
-                    min={formData.startDate || new Date().toISOString().split('T')[0]}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                  />
-                </div>
+                <DatePicker
+                  value={formData.startDate || ''}
+                  onChange={(date) => {
+                    setFormData({ ...formData, startDate: date })
+                    // If end date is before new start date, clear it
+                    if (formData.endDate && date && formData.endDate < date) {
+                      setFormData(prev => ({ ...prev, endDate: '' }))
+                    }
+                  }}
+                  min={new Date().toISOString().split('T')[0]}
+                  label={t('booking.insurance.startDate')}
+                  required
+                />
+                <DatePicker
+                  value={formData.endDate || ''}
+                  onChange={(date) => setFormData({ ...formData, endDate: date })}
+                  min={formData.startDate || new Date().toISOString().split('T')[0]}
+                  label={t('booking.insurance.endDate')}
+                  required
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

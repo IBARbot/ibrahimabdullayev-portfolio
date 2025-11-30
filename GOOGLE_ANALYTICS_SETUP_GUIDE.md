@@ -118,3 +118,4 @@ ibrahimabdullayev.com & .az
 - **Həll:** Bir neçə dəqiqə gözləyin, bəzən gecikmə ola bilər
 
 
+

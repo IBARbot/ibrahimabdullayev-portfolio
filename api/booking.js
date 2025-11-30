@@ -1,5 +1,6 @@
 // Vercel Serverless Function - Booking API
 import nodemailer from 'nodemailer';
+import { sanitizeBookingData } from './utils/validation.js';
 
 const createTransporter = () => {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return null;
@@ -28,11 +29,21 @@ export default async function handler(req, res) {
   }
 
   try {
-    const bookingData = req.body;
+    let bookingData = req.body;
     
     // Validation: Email və ya telefon-dan ən azı biri mütləq olmalıdır
     if (!bookingData.type || (!bookingData.email && !bookingData.phone)) {
       return res.status(400).json({ success: false, message: 'Zəhmət olmasa email və ya telefon nömrəsindən ən azı birini daxil edin.' });
+    }
+    
+    // Sanitize and validate booking data
+    try {
+      bookingData = sanitizeBookingData(bookingData);
+    } catch (validationError) {
+      return res.status(400).json({ 
+        success: false, 
+        message: validationError.message || 'Validation error' 
+      });
     }
     
     const newBooking = { 
@@ -164,7 +175,7 @@ export default async function handler(req, res) {
         }
       }
       
-      emailContent += `<p><strong>Əlavə məlumat:</strong> ${bookingData.notes || 'Yoxdur'}</p>`;
+        emailContent += `<p><strong>Əlavə məlumat:</strong> ${escapeHtml(bookingData.notes || 'Yoxdur')}</p>`;
       
       try {
         await transporter.sendMail({ 
