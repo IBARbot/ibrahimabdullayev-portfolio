@@ -92,6 +92,12 @@
     "success": "Your request has been sent successfully!",
     "error": "An error occurred. Please try again.",
     "validationError": "Please enter at least email or phone number.",
+    "dateValidation": {
+      "returnBeforeDeparture": "Return date cannot be before departure date",
+      "checkOutBeforeCheckIn": "Check-out date must be after check-in date",
+      "endBeforeStart": "End date must be after start date",
+      "multiCityChronology": "Multi-city flight dates must be in chronological order"
+    },
     "flight": {
       "tripType": "Trip Type",
       "oneWay": "One-way",
