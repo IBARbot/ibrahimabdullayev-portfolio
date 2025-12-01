@@ -368,7 +368,65 @@
       "upload": "Upload",
       "remove": "Remove",
       "saved": "Content saved!",
-      "error": "An error occurred"
+      "error": "An error occurred",
+      "portfolio": {
+        "title": "Portfolio",
+        "description": "Manage your personal portfolio here – key specializations, mentoring work and air cargo experience.",
+        "fields": {
+          "title": "Title",
+          "description": "Short description",
+          "technologies": "Keywords / focus areas",
+          "technologiesPlaceholder": "E.g. Ticketing, GDS, Cargo",
+          "link": "Main link (section on site or URL)",
+          "github": "Extra link (optional)"
+        },
+        "actions": {
+          "add": "Add new portfolio item",
+          "remove": "Remove item"
+        }
+      },
+      "certificates": {
+        "title": "Certificates",
+        "description": "Manage your IATA and other professional certificates here and display them as images on the site.",
+        "fields": {
+          "title": "Certificate title",
+          "subtitle": "Subtitle (optional)",
+          "provider": "Issuer / organization",
+          "date": "Date",
+          "image": "Certificate image"
+        },
+        "actions": {
+          "add": "Add new certificate",
+          "remove": "Remove certificate"
+        }
+      },
+      "videos": {
+        "title": "Video / Media",
+        "description": "Add video links from YouTube, Instagram, TikTok and other platforms. When possible, the video will be embedded directly on the site.",
+        "fields": {
+          "title": "Video title",
+          "url": "Video URL",
+          "platform": "Platform"
+        },
+        "actions": {
+          "add": "Add new video",
+          "remove": "Remove video"
+        }
+      },
+      "socialDynamic": {
+        "title": "Dynamic Social Links",
+        "description": "Add, edit and remove social media links (YouTube, TikTok, WeChat etc.). In the icon field, enter a simple key such as youtube, tiktok, wechat.",
+        "fields": {
+          "platform": "Platform name",
+          "label": "Display label",
+          "icon": "Icon key",
+          "url": "URL"
+        },
+        "actions": {
+          "add": "Add new social link",
+          "remove": "Remove link"
+        }
+      }
     },
     "stats": {
       "download": "Download CSV",

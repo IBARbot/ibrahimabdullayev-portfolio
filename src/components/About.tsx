@@ -1,11 +1,23 @@
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Award, Coffee, Heart } from 'lucide-react'
+import { Award, Coffee, Heart, ZoomIn } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 const PROFILE_IMAGE = 'https://i.imgur.com/64oQNiZ.jpeg'
 
+interface CertificateItem {
+  id: string
+  title: string
+  subtitle?: string
+  provider?: string
+  date?: string
+  image: string
+}
+
 export default function About() {
   const { t } = useTranslation()
+  const [certificates, setCertificates] = useState<CertificateItem[]>([])
+  const [selectedCert, setSelectedCert] = useState<CertificateItem | null>(null)
 
   // Use translations directly instead of backend content
   const aboutTitle = t('about.title')
@@ -24,6 +36,20 @@ export default function About() {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
   }
+
+  useEffect(() => {
+    fetch('/api/content')
+      .then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok')
+        return res.json()
+      })
+      .then((data) => {
+        setCertificates((data.certificates || []) as CertificateItem[])
+      })
+      .catch((err) => {
+        console.error('Certificates yüklənərkən xəta:', err)
+      })
+  }, [])
 
   return (
     <section
@@ -110,6 +136,52 @@ export default function About() {
                 </ul>
               </div>
             </div>
+
+            {certificates.length > 0 && (
+              <div className="mt-6">
+                <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3">
+                  {t('about.certifications.galleryTitle')}
+                </h4>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {certificates.map((cert) => (
+                    <button
+                      key={cert.id}
+                      type="button"
+                      onClick={() => setSelectedCert(cert)}
+                      className="group relative w-full text-left bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-all"
+                    >
+                      {cert.image && (
+                        <div className="relative h-40 bg-gray-100 overflow-hidden">
+                          <img
+                            src={cert.image}
+                            alt={cert.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <ZoomIn className="w-8 h-8 text-white" />
+                          </div>
+                        </div>
+                      )}
+                      <div className="p-3">
+                        <p className="text-xs text-primary-600 font-semibold mb-1">
+                          {cert.provider}
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">{cert.title}</p>
+                        {cert.subtitle && (
+                          <p className="text-xs text-gray-600 mt-1">{cert.subtitle}</p>
+                        )}
+                        {cert.date && (
+                          <p className="text-xs text-gray-400 mt-1">
+                            {new Date(cert.date).toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </motion.div>
 
           <motion.div
@@ -160,6 +232,45 @@ export default function About() {
           </motion.div>
         </div>
       </div>
+      {selectedCert && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-40 p-4"
+          onClick={() => setSelectedCert(null)}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-lg overflow-hidden max-w-4xl w-full max-h-[90vh] shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {selectedCert.image && (
+              <div className="bg-black flex items-center justify-center max-h-[80vh]">
+                <img
+                  src={selectedCert.image}
+                  alt={selectedCert.title}
+                  className="max-h-[80vh] w-auto object-contain"
+                />
+              </div>
+            )}
+            <div className="p-4">
+              <h3 className="text-lg font-semibold text-gray-900">{selectedCert.title}</h3>
+              {selectedCert.subtitle && (
+                <p className="text-sm text-gray-700 mt-1">{selectedCert.subtitle}</p>
+              )}
+              {selectedCert.provider && (
+                <p className="text-xs text-gray-500 mt-1">{selectedCert.provider}</p>
+              )}
+              {selectedCert.date && (
+                <p className="text-xs text-gray-400 mt-1">
+                  {new Date(selectedCert.date).toLocaleDateString()}
+                </p>
+              )}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </section>
   )
 }

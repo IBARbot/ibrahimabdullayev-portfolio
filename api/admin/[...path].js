@@ -2,6 +2,7 @@
 // Handles all admin routes: login, content, bookings, forgot-password, reset-password
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
+import { getContent, updateContent } from '../utils/contentStore.js';
 
 const createTransporter = () => {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return null;
@@ -279,37 +280,19 @@ export default async function handler(req, res) {
 
     // Content route
     if (route === 'content') {
-      // In-memory storage
-      let contentData = {
-        hero: {
-          title: 'Salam, mən İbrahim Abdullayev',
-          subtitle: 'Turizm Sahəsində Aparıcı Mütəxəssis',
-          description: 'Aviabilet rezervasiyası, otel booking, transfer xidmətləri, sığorta və səfirlik işləri üzrə peşəkar məsləhətçi. İllər boyu təcrübəmlə səyahətçilərə ən yaxşı həlləri təqdim edirəm.',
-          image: 'https://i.imgur.com/64oQNiZ.jpeg'
-        },
-        about: {
-          title: 'Haqqımda',
-          content: 'Mən turizm sahəsində aparıcı mütəxəssisəm və səyahətçilərə ən yaxşı xidməti təqdim etmək üçün çalışıram.\n\nİllər boyu hava yolu sistemləri, otel rezervasiyaları, transfer xidmətləri, sığorta və səfirlik işləri üzrə təcrübə toplamışam. Hər müştəriyə fərdi yanaşaraq onun ehtiyaclarına ən uyğun həlli təqdim edirəm.\n\nMəqsədim səyahəti daha əlçatan etmək və hər müştəriyə keyfiyyətli xidmət göstərməkdir. Ağıllı səyahət ağıllı planlaşdırma ilə başlayır.'
-        },
-        contact: {
-          email: 'ibrahim.abdullayev1@gmail.com',
-          phone: '+994 55 597 39 23',
-          address: 'Baku, Rashid Behbudov str, Azerbaijan',
-          linkedin: 'https://linkedin.com/in/ibrahim-abdullayev-7bb887152',
-          instagram: 'https://instagram.com/ibrahim_abdullar',
-          whatsapp: 'https://wa.me/994555973923'
-        }
-      };
-
       if (req.method === 'GET') {
-        return res.status(200).json(contentData);
+        const current = getContent();
+        return res.status(200).json(current);
       }
 
       if (req.method === 'PUT') {
         try {
-          contentData = { ...contentData, ...req.body };
-          return res.status(200).json({ success: true, message: 'Məzmun yeniləndi', content: contentData });
+          const updated = updateContent(req.body || {});
+          return res
+            .status(200)
+            .json({ success: true, message: 'Məzmun yeniləndi', content: updated });
         } catch (error) {
+          console.error('Content update error:', error);
           return res.status(500).json({ success: false, message: 'Xəta baş verdi' });
         }
       }

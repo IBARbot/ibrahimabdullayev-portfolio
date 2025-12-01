@@ -366,7 +366,65 @@
       "remove": "Sil",
       "saved": "Kontent saxlanıldı!",
       "error": "Xəta baş verdi",
-      "socialMedia": "Sosial Media Linkləri"
+      "socialMedia": "Sosial Media Linkləri",
+      "portfolio": {
+        "title": "Portfolio",
+        "description": "Bu bölmədə şəxsi portfelinizi – əsas xidmət sahələri, mentorluq və cargo üzrə təcrübənizi idarə edə bilərsiniz.",
+        "fields": {
+          "title": "Başlıq",
+          "description": "Qısa təsvir",
+          "technologies": "Açar sözlər / istiqamətlər",
+          "technologiesPlaceholder": "Məs: Aviabilet, GDS, Cargo",
+          "link": "Əsas keçid (məs: saytda aid bölmə və ya link)",
+          "github": "Əlavə link (istəyə görə)"
+        },
+        "actions": {
+          "add": "Yeni portfolio elementi əlavə et",
+          "remove": "Elementi sil"
+        }
+      },
+      "certificates": {
+        "title": "Sertifikatlar",
+        "description": "IATA və digər peşəkar sertifikatlarınızı burada idarə edə və saytda şəkil şəklində göstərə bilərsiniz.",
+        "fields": {
+          "title": "Sertifikatın adı",
+          "subtitle": "Ətraflı başlıq (istəyə görə)",
+          "provider": "Təşkilat",
+          "date": "Tarix",
+          "image": "Sertifikat şəkli"
+        },
+        "actions": {
+          "add": "Yeni sertifikat əlavə et",
+          "remove": "Sertifikatı sil"
+        }
+      },
+      "videos": {
+        "title": "Video / Media",
+        "description": "YouTube, Instagram, TikTok və digər platformalardan video linkləri əlavə edin. Mümkün olduqda video birbaşa saytda göstəriləcək.",
+        "fields": {
+          "title": "Video başlığı",
+          "url": "Video URL",
+          "platform": "Platforma"
+        },
+        "actions": {
+          "add": "Yeni video əlavə et",
+          "remove": "Videonu sil"
+        }
+      },
+      "socialDynamic": {
+        "title": "Dinamik Sosial Linklər",
+        "description": "Buradan yeni sosial şəbəkə linkləri (YouTube, TikTok, WeChat və s.) əlavə edə, redaktə edə və silə bilərsiniz. Icon adı sahəsində uyğun ikon açar sözünü yazın (məs: youtube, tiktok, wechat).",
+        "fields": {
+          "platform": "Platforma adı",
+          "label": "Görünəcək ad",
+          "icon": "Icon açar sözü",
+          "url": "Keçid URL"
+        },
+        "actions": {
+          "add": "Yeni sosial link əlavə et",
+          "remove": "Linki sil"
+        }
+      }
     },
     "stats": {
       "download": "CSV Yüklə",

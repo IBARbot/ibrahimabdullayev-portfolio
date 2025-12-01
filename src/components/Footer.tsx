@@ -1,9 +1,83 @@
-import { Linkedin, Mail, Instagram, MessageCircle } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import {
+  Linkedin,
+  Mail,
+  Instagram,
+  MessageCircle,
+  Youtube,
+  Globe2,
+  MessageCircleMore,
+} from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+
+interface SocialLink {
+  id: string
+  platform: string
+  label: string
+  url: string
+  icon?: string
+}
 
 export default function Footer() {
   const { t } = useTranslation()
   const currentYear = new Date().getFullYear()
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([])
+
+  useEffect(() => {
+    fetch('/api/content')
+      .then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok')
+        return res.json()
+      })
+      .then((data) => {
+        setSocialLinks((data.socialLinks || []) as SocialLink[])
+      })
+      .catch(() => {
+        // Fallback to default static links
+        setSocialLinks([
+          {
+            id: 'linkedin',
+            platform: 'LinkedIn',
+            label: 'LinkedIn',
+            url: 'https://linkedin.com/in/ibrahim-abdullayev-7bb887152',
+            icon: 'linkedin',
+          },
+          {
+            id: 'instagram',
+            platform: 'Instagram',
+            label: 'Instagram',
+            url: 'https://instagram.com/ibrahim_abdullar',
+            icon: 'instagram',
+          },
+          {
+            id: 'whatsapp',
+            platform: 'WhatsApp',
+            label: 'WhatsApp',
+            url: 'https://wa.me/994555973923',
+            icon: 'whatsapp',
+          },
+          {
+            id: 'email',
+            platform: 'Email',
+            label: 'Email',
+            url: 'mailto:ibrahim.abdullayev1@gmail.com',
+            icon: 'mail',
+          },
+        ])
+      })
+  }, [])
+
+  const renderIcon = (icon?: string, platform?: string) => {
+    const key = (icon || platform || '').toLowerCase()
+    if (key.includes('linkedin')) return <Linkedin className="w-5 h-5 sm:w-6 sm:h-6" />
+    if (key.includes('instagram')) return <Instagram className="w-5 h-5 sm:w-6 sm:h-6" />
+    if (key.includes('whatsapp')) return <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+    if (key.includes('mail') || key.includes('email')) return <Mail className="w-5 h-5 sm:w-6 sm:h-6" />
+    if (key.includes('youtube')) return <Youtube className="w-5 h-5 sm:w-6 sm:h-6" />
+    if (key.includes('wechat')) return <MessageCircleMore className="w-5 h-5 sm:w-6 sm:h-6" />
+    if (key.includes('tiktok')) return <Globe2 className="w-5 h-5 sm:w-6 sm:h-6" />
+    return <Globe2 className="w-5 h-5 sm:w-6 sm:h-6" />
+  }
 
   return (
     <footer className="bg-gray-900 text-gray-300 py-12">
@@ -71,40 +145,18 @@ export default function Footer() {
               {t('contactInfo.socialMedia')}
             </h4>
             <div className="flex flex-wrap gap-3 sm:gap-4">
-              <a
-                href="https://linkedin.com/in/ibrahim-abdullayev-7bb887152"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2.5 sm:p-3 bg-gray-800 rounded-lg hover:bg-primary-600 active:bg-primary-700 transition-colors touch-manipulation"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="w-5 h-5 sm:w-6 sm:h-6" />
-              </a>
-              <a
-                href="https://instagram.com/ibrahim_abdullar"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2.5 sm:p-3 bg-gray-800 rounded-lg hover:bg-primary-600 active:bg-primary-700 transition-colors touch-manipulation"
-                aria-label="Instagram"
-              >
-                <Instagram className="w-5 h-5 sm:w-6 sm:h-6" />
-              </a>
-              <a
-                href="https://wa.me/994555973923"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2.5 sm:p-3 bg-gray-800 rounded-lg hover:bg-primary-600 active:bg-primary-700 transition-colors touch-manipulation"
-                aria-label="WhatsApp"
-              >
-                <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
-              </a>
-              <a
-                href="mailto:ibrahim.abdullayev1@gmail.com"
-                className="p-2.5 sm:p-3 bg-gray-800 rounded-lg hover:bg-primary-600 active:bg-primary-700 transition-colors touch-manipulation"
-                aria-label="Email"
-              >
-                <Mail className="w-5 h-5 sm:w-6 sm:h-6" />
-              </a>
+              {socialLinks.map((link) => (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 sm:p-3 bg-gray-800 rounded-lg hover:bg-primary-600 active:bg-primary-700 transition-colors touch-manipulation"
+                  aria-label={link.label || link.platform}
+                >
+                  {renderIcon(link.icon, link.platform)}
+                </a>
+              ))}
             </div>
           </div>
         </div>

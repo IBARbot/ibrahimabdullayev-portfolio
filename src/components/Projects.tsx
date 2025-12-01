@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, PlayCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 interface ProjectsProps {
@@ -8,7 +8,7 @@ interface ProjectsProps {
 }
 
 interface Project {
-  id: number
+  id: string
   title: string
   description: string
   technologies: string[]
@@ -17,38 +17,50 @@ interface Project {
   github: string
 }
 
+interface VideoItem {
+  id: string
+  title: string
+  url: string
+  platform?: string
+}
+
 export default function Projects({ onOpenBooking }: ProjectsProps) {
   const { t } = useTranslation()
   const [projects, setProjects] = useState<Project[]>([])
+  const [videos, setVideos] = useState<VideoItem[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/projects')
+    fetch('/api/content')
       .then((res) => {
         if (!res.ok) throw new Error('Network response was not ok')
         return res.json()
       })
       .then((data) => {
-        setProjects(data)
+        setProjects((data.portfolio || []) as Project[])
+        setVideos((data.videos || []) as VideoItem[])
         setLoading(false)
       })
       .catch((err) => {
         console.error('Projects yüklənərkən xəta:', err)
-        // Fallback data - Tourism services
-        setProjects([
-          {
-            id: 1,
-            title: 'Aviabilet Rezervasiya Xidməti',
-            description: 'Dünyanın istənilən nöqtəsinə ən sərfəli aviabiletlərin tapılması və rezervasiyası',
-            technologies: ['Aviabilet', 'Rezervasiya', 'Səyahət Planlaşdırması'],
-            image: 'https://via.placeholder.com/400x300/0ea5e9/ffffff?text=Aviabilet',
-            link: '#booking',
-            github: '',
-          },
-        ])
         setLoading(false)
       })
   }, [])
+
+  const getYoutubeEmbedUrl = (url: string) => {
+    try {
+      if (!url) return ''
+      const ytMatch =
+        url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/) ||
+        url.match(/youtube\.com\/embed\/([A-Za-z0-9_-]+)/)
+      if (ytMatch && ytMatch[1]) {
+        return `https://www.youtube.com/embed/${ytMatch[1]}`
+      }
+      return url
+    } catch {
+      return url
+    }
+  }
 
   return (
     <section
@@ -81,8 +93,9 @@ export default function Projects({ onOpenBooking }: ProjectsProps) {
             {t('projects.loading')}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {projects.map((project, index) => (
+          <div className="space-y-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              {projects.map((project, index) => (
             <motion.div
               key={project.id}
               initial={{ opacity: 0, y: 20 }}
@@ -128,8 +141,55 @@ export default function Projects({ onOpenBooking }: ProjectsProps) {
                   ))}
                 </div>
               </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
+            </div>
+
+            {videos.length > 0 && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                    {t('projects.videosTitle')}
+                  </h3>
+                  <p className="text-sm text-gray-600 max-w-2xl mx-auto">
+                    {t('projects.videosSubtitle')}
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {videos.map((video, index) => (
+                    <motion.div
+                      key={video.id || index}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: index * 0.1 }}
+                      className="bg-gray-900 rounded-xl overflow-hidden shadow-md"
+                    >
+                      <div className="relative pt-[56.25%]">
+                        <iframe
+                          src={getYoutubeEmbedUrl(video.url)}
+                          title={video.title}
+                          className="absolute inset-0 w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                        />
+                        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                          <PlayCircle className="w-16 h-16 text-white/70 drop-shadow-lg" />
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <h4 className="text-white font-semibold mb-1">{video.title}</h4>
+                        {video.platform && (
+                          <p className="text-xs text-gray-400">
+                            {video.platform}
+                          </p>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

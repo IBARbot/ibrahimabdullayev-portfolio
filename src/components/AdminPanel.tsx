@@ -2,7 +2,60 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { LogOut, Save, FileText, Mail, Phone, MapPin, BarChart3, Eye, MousePointer, TrendingUp, Download } from 'lucide-react'
+import {
+  LogOut,
+  Save,
+  FileText,
+  Mail,
+  Phone,
+  MapPin,
+  BarChart3,
+  Eye,
+  MousePointer,
+  TrendingUp,
+  Download,
+  Plus,
+  Trash2,
+  Link as LinkIcon,
+  Video,
+  Globe2,
+  Award,
+} from 'lucide-react'
+
+interface PortfolioItem {
+  id: string
+  title: string
+  description: string
+  technologies: string[]
+  image: string
+  link: string
+  github: string
+}
+
+interface CertificateItem {
+  id: string
+  title: string
+  subtitle?: string
+  provider?: string
+  date?: string
+  image: string
+}
+
+interface VideoItem {
+  id: string
+  title: string
+  url: string
+  platform?: string
+  thumbnail?: string
+}
+
+interface SocialLink {
+  id: string
+  platform: string
+  label: string
+  url: string
+  icon?: string
+}
 
 interface Content {
   hero: {
@@ -23,6 +76,10 @@ interface Content {
     instagram?: string
     whatsapp?: string
   }
+  portfolio?: PortfolioItem[]
+  certificates?: CertificateItem[]
+  videos?: VideoItem[]
+  socialLinks?: SocialLink[]
 }
 
 interface AnalyticsStats {
@@ -297,20 +354,54 @@ export default function AdminPanel() {
     }
   }
 
-  const handleImageUpload = (_field: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (
+    section: 'hero' | 'portfolio' | 'certificates',
+    e: React.ChangeEvent<HTMLInputElement>,
+    index?: number,
+  ) => {
     const file = e.target.files?.[0]
     if (!file) return
 
     const reader = new FileReader()
     reader.onloadend = () => {
       const base64String = reader.result as string
-      if (content) {
+      if (!content) return
+
+      if (section === 'hero') {
         setContent({
           ...content,
           hero: {
             ...content.hero,
             image: base64String,
           },
+        })
+      } else if (section === 'portfolio' && typeof index === 'number') {
+        const items = content.portfolio || []
+        const updated = items.map((item, idx) =>
+          idx === index
+            ? {
+                ...item,
+                image: base64String,
+              }
+            : item,
+        )
+        setContent({
+          ...content,
+          portfolio: updated,
+        })
+      } else if (section === 'certificates' && typeof index === 'number') {
+        const items = content.certificates || []
+        const updated = items.map((item, idx) =>
+          idx === index
+            ? {
+                ...item,
+                image: base64String,
+              }
+            : item,
+        )
+        setContent({
+          ...content,
+          certificates: updated,
         })
       }
     }
@@ -1008,6 +1099,525 @@ export default function AdminPanel() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Portfolio Section */}
+          <div className="bg-white p-6 rounded-lg shadow-md md:col-span-2">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              {t('admin.content.portfolio.title')}
+            </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              {t('admin.content.portfolio.description')}
+            </p>
+            <div className="space-y-4">
+              {(content.portfolio || []).map((item, index) => (
+                <div
+                  key={item.id || index}
+                  className="border border-gray-200 rounded-lg p-4 grid md:grid-cols-4 gap-4"
+                >
+                  <div className="md:col-span-3 space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t('admin.content.portfolio.fields.title')}
+                      </label>
+                      <input
+                        type="text"
+                        value={item.title}
+                        onChange={(e) => {
+                          const updated = [...(content.portfolio || [])]
+                          updated[index] = { ...item, title: e.target.value }
+                          setContent({ ...content, portfolio: updated })
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t('admin.content.portfolio.fields.description')}
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={item.description}
+                        onChange={(e) => {
+                          const updated = [...(content.portfolio || [])]
+                          updated[index] = { ...item, description: e.target.value }
+                          setContent({ ...content, portfolio: updated })
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none resize-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t('admin.content.portfolio.fields.technologies')}
+                      </label>
+                      <input
+                        type="text"
+                        value={(item.technologies || []).join(', ')}
+                        onChange={(e) => {
+                          const techs = e.target.value
+                            .split(',')
+                            .map((t) => t.trim())
+                            .filter(Boolean)
+                          const updated = [...(content.portfolio || [])]
+                          updated[index] = { ...item, technologies: techs }
+                          setContent({ ...content, portfolio: updated })
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                        placeholder={t('admin.content.portfolio.fields.technologiesPlaceholder')}
+                      />
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {t('admin.content.portfolio.fields.link')}
+                        </label>
+                        <input
+                          type="text"
+                          value={item.link}
+                          onChange={(e) => {
+                            const updated = [...(content.portfolio || [])]
+                            updated[index] = { ...item, link: e.target.value }
+                            setContent({ ...content, portfolio: updated })
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                          placeholder="https://"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {t('admin.content.portfolio.fields.github')}
+                        </label>
+                        <input
+                          type="text"
+                          value={item.github}
+                          onChange={(e) => {
+                            const updated = [...(content.portfolio || [])]
+                            updated[index] = { ...item, github: e.target.value }
+                            setContent({ ...content, portfolio: updated })
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                          placeholder="https://"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t('admin.content.portfolio.fields.image')}
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload('portfolio', e, index)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                      />
+                      {item.image && (
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="mt-2 w-full h-28 object-cover rounded-md border border-gray-200"
+                        />
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updated = (content.portfolio || []).filter((_, idx) => idx !== index)
+                        setContent({ ...content, portfolio: updated })
+                      }}
+                      className="w-full flex items-center justify-center gap-2 px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      {t('admin.content.portfolio.actions.remove')}
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={() => {
+                  const list = content.portfolio || []
+                  const newItem: PortfolioItem = {
+                    id: `portfolio-${Date.now()}`,
+                    title: '',
+                    description: '',
+                    technologies: [],
+                    image: '',
+                    link: '',
+                    github: '',
+                  }
+                  setContent({ ...content, portfolio: [...list, newItem] })
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 border border-dashed border-primary-400 text-primary-600 rounded-lg hover:bg-primary-50 text-sm"
+              >
+                <Plus className="w-4 h-4" />
+                {t('admin.content.portfolio.actions.add')}
+              </button>
+            </div>
+          </div>
+
+          {/* Certificates & Videos Section */}
+          <div className="bg-white p-6 rounded-lg shadow-md md:col-span-2 space-y-8">
+            {/* Certificates */}
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Award className="w-5 h-5" />
+                {t('admin.content.certificates.title')}
+              </h2>
+              <p className="text-sm text-gray-600 mb-4">
+                {t('admin.content.certificates.description')}
+              </p>
+              <div className="space-y-4">
+                {(content.certificates || []).map((cert, index) => (
+                  <div
+                    key={cert.id || index}
+                    className="border border-gray-200 rounded-lg p-4 grid md:grid-cols-4 gap-4"
+                  >
+                    <div className="md:col-span-3 space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {t('admin.content.certificates.fields.title')}
+                        </label>
+                        <input
+                          type="text"
+                          value={cert.title}
+                          onChange={(e) => {
+                            const updated = [...(content.certificates || [])]
+                            updated[index] = { ...cert, title: e.target.value }
+                            setContent({ ...content, certificates: updated })
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                        />
+                      </div>
+                      <div className="grid sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {t('admin.content.certificates.fields.subtitle')}
+                          </label>
+                          <input
+                            type="text"
+                            value={cert.subtitle || ''}
+                            onChange={(e) => {
+                              const updated = [...(content.certificates || [])]
+                              updated[index] = { ...cert, subtitle: e.target.value }
+                              setContent({ ...content, certificates: updated })
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {t('admin.content.certificates.fields.provider')}
+                          </label>
+                          <input
+                            type="text"
+                            value={cert.provider || ''}
+                            onChange={(e) => {
+                              const updated = [...(content.certificates || [])]
+                              updated[index] = { ...cert, provider: e.target.value }
+                              setContent({ ...content, certificates: updated })
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {t('admin.content.certificates.fields.date')}
+                          </label>
+                          <input
+                            type="date"
+                            value={cert.date || ''}
+                            onChange={(e) => {
+                              const updated = [...(content.certificates || [])]
+                              updated[index] = { ...cert, date: e.target.value }
+                              setContent({ ...content, certificates: updated })
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {t('admin.content.certificates.fields.image')}
+                        </label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload('certificates', e, index)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                        />
+                        {cert.image && (
+                          <img
+                            src={cert.image}
+                            alt={cert.title}
+                            className="mt-2 w-full h-28 object-cover rounded-md border border-gray-200"
+                          />
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = (content.certificates || []).filter(
+                            (_c, idx) => idx !== index,
+                          )
+                          setContent({ ...content, certificates: updated })
+                        }}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        {t('admin.content.certificates.actions.remove')}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const list = content.certificates || []
+                    const newItem: CertificateItem = {
+                      id: `cert-${Date.now()}`,
+                      title: '',
+                      image: '',
+                    }
+                    setContent({ ...content, certificates: [...list, newItem] })
+                  }}
+                  className="inline-flex items-center gap-2 px-4 py-2 border border-dashed border-primary-400 text-primary-600 rounded-lg hover:bg-primary-50 text-sm"
+                >
+                  <Plus className="w-4 h-4" />
+                  {t('admin.content.certificates.actions.add')}
+                </button>
+              </div>
+            </div>
+
+            {/* Videos / Media */}
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Video className="w-5 h-5" />
+                {t('admin.content.videos.title')}
+              </h2>
+              <p className="text-sm text-gray-600 mb-4">{t('admin.content.videos.description')}</p>
+              <div className="space-y-4">
+                {(content.videos || []).map((video, index) => (
+                  <div
+                    key={video.id || index}
+                    className="border border-gray-200 rounded-lg p-4 grid md:grid-cols-4 gap-4"
+                  >
+                    <div className="md:col-span-3 space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {t('admin.content.videos.fields.title')}
+                        </label>
+                        <input
+                          type="text"
+                          value={video.title}
+                          onChange={(e) => {
+                            const updated = [...(content.videos || [])]
+                            updated[index] = { ...video, title: e.target.value }
+                            setContent({ ...content, videos: updated })
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                        />
+                      </div>
+                      <div className="grid sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {t('admin.content.videos.fields.url')}
+                          </label>
+                          <input
+                            type="text"
+                            value={video.url}
+                            onChange={(e) => {
+                              const updated = [...(content.videos || [])]
+                              updated[index] = { ...video, url: e.target.value }
+                              setContent({ ...content, videos: updated })
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                            placeholder="https://youtube.com/..."
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {t('admin.content.videos.fields.platform')}
+                          </label>
+                          <input
+                            type="text"
+                            value={video.platform || ''}
+                            onChange={(e) => {
+                              const updated = [...(content.videos || [])]
+                              updated[index] = { ...video, platform: e.target.value }
+                              setContent({ ...content, videos: updated })
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                            placeholder="YouTube, Instagram, TikTok..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = (content.videos || []).filter((_v, idx) => idx !== index)
+                          setContent({ ...content, videos: updated })
+                        }}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        {t('admin.content.videos.actions.remove')}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const list = content.videos || []
+                    const newItem: VideoItem = {
+                      id: `video-${Date.now()}`,
+                      title: '',
+                      url: '',
+                    }
+                    setContent({ ...content, videos: [...list, newItem] })
+                  }}
+                  className="inline-flex items-center gap-2 px-4 py-2 border border-dashed border-primary-400 text-primary-600 rounded-lg hover:bg-primary-50 text-sm"
+                >
+                  <Plus className="w-4 h-4" />
+                  {t('admin.content.videos.actions.add')}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Dynamic Social Links */}
+          <div className="bg-white p-6 rounded-lg shadow-md md:col-span-2">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Globe2 className="w-5 h-5" />
+              {t('admin.content.socialDynamic.title')}
+            </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              {t('admin.content.socialDynamic.description')}
+            </p>
+            <div className="space-y-4">
+              {(content.socialLinks || []).map((link, index) => (
+                <div
+                  key={link.id || index}
+                  className="border border-gray-200 rounded-lg p-4 grid md:grid-cols-4 gap-4"
+                >
+                  <div className="md:col-span-3 grid sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t('admin.content.socialDynamic.fields.platform')}
+                      </label>
+                      <input
+                        type="text"
+                        value={link.platform}
+                        onChange={(e) => {
+                          const updated = [...(content.socialLinks || [])]
+                          updated[index] = { ...link, platform: e.target.value }
+                          setContent({ ...content, socialLinks: updated })
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                        placeholder="YouTube, TikTok, WeChat..."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t('admin.content.socialDynamic.fields.label')}
+                      </label>
+                      <input
+                        type="text"
+                        value={link.label}
+                        onChange={(e) => {
+                          const updated = [...(content.socialLinks || [])]
+                          updated[index] = { ...link, label: e.target.value }
+                          setContent({ ...content, socialLinks: updated })
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t('admin.content.socialDynamic.fields.icon')}
+                      </label>
+                      <input
+                        type="text"
+                        value={link.icon || ''}
+                        onChange={(e) => {
+                          const updated = [...(content.socialLinks || [])]
+                          updated[index] = { ...link, icon: e.target.value }
+                          setContent({ ...content, socialLinks: updated })
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                        placeholder="linkedin, instagram, youtube..."
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t('admin.content.socialDynamic.fields.url')}
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-400">
+                          <LinkIcon className="w-4 h-4" />
+                        </span>
+                        <input
+                          type="text"
+                          value={link.url}
+                          onChange={(e) => {
+                            const updated = [...(content.socialLinks || [])]
+                            updated[index] = { ...link, url: e.target.value }
+                            setContent({ ...content, socialLinks: updated })
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                          placeholder="https://"
+                        />
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updated = (content.socialLinks || []).filter(
+                          (_l, idx) => idx !== index,
+                        )
+                        setContent({ ...content, socialLinks: updated })
+                      }}
+                      className="w-full flex items-center justify-center gap-2 px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      {t('admin.content.socialDynamic.actions.remove')}
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={() => {
+                  const list = content.socialLinks || []
+                  const newItem: SocialLink = {
+                    id: `social-${Date.now()}`,
+                    platform: '',
+                    label: '',
+                    url: '',
+                  }
+                  setContent({ ...content, socialLinks: [...list, newItem] })
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 border border-dashed border-primary-400 text-primary-600 rounded-lg hover:bg-primary-50 text-sm"
+              >
+                <Plus className="w-4 h-4" />
+                {t('admin.content.socialDynamic.actions.add')}
+              </button>
             </div>
           </div>
 

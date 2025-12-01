@@ -14,7 +14,7 @@ interface PassengerInfo {
   seniors?: number
   childAges?: number[] // Array of ages for children
   infantAges?: number[] // Array of ages for infants (months)
-}
+}i
 
 interface BookingFormData {
   type: BookingType
