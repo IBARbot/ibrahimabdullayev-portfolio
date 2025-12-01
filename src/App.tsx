@@ -15,6 +15,7 @@ import FloatingWhatsApp from './components/FloatingWhatsApp'
 import BookingModal from './components/BookingModal'
 import Analytics from './components/Analytics'
 import { initializeLanguage } from './i18n/config'
+import CookieConsent from './components/CookieConsent'
 
 type BookingType = 'flight' | 'hotel' | 'transfer' | 'insurance' | 'embassy'
 
@@ -68,6 +69,8 @@ function HomePage() {
       
       {/* Floating WhatsApp Button */}
       <FloatingWhatsApp />
+      {/* Cookie / Privacy banner */}
+      <CookieConsent />
       
       {/* Welcome Modal */}
       {showWelcomeModal && (

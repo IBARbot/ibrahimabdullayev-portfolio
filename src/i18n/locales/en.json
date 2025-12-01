@@ -26,6 +26,12 @@
     "satisfactionDesc": "Customer satisfaction is most important to me",
     "specialist": "Tourism Specialist"
   },
+  "welcome": {
+    "title": "A smart start for your journey",
+    "contactWhatsApp": "Contact Immediately",
+    "contactWhatsAppDesc": "Send a direct message via WhatsApp",
+    "whatsappLabel": "Message on WhatsApp"
+  },
   "services": {
     "title": "My Services",
     "subtitle": "Comprehensive services and professional advice in tourism",
@@ -261,7 +267,16 @@
   },
   "footer": {
     "rights": "All rights reserved",
-    "madeWith": "Made with love"
+    "madeWith": "Made with love",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use"
+  },
+  "cookie": {
+    "title": "Privacy and cookies",
+    "description": "This website uses minimal cookies and anonymous analytics to improve your experience and understand how the site is used.",
+    "details": "No sensitive personal data is collected and no separate advertising trackers are installed. GA4 and internal analytics are used only to measure site performance.",
+    "accept": "Accept",
+    "reject": "Only necessary"
   },
   "welcome": {
     "title": "Welcome!",

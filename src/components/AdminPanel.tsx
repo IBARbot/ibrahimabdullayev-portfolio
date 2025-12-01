@@ -69,6 +69,10 @@ export default function AdminPanel() {
   const [content, setContent] = useState<Content | null>(null)
   const [loading, setLoading] = useState(false)
   const [stats, setStats] = useState<AnalyticsStats | null>(null)
+  const [statsLoading, setStatsLoading] = useState(false)
+  const [selectedMetric, setSelectedMetric] = useState<
+    'pageViews' | 'clicks' | 'users' | 'scrolls' | 'devices' | 'referrers' | null
+  >(null)
   const [activeTab, setActiveTab] = useState<'content' | 'stats'>('content')
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('')
@@ -91,6 +95,7 @@ export default function AdminPanel() {
     if (!token) return
 
     try {
+      setStatsLoading(true)
       const response = await fetch('/api/analytics/stats', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -102,8 +107,17 @@ export default function AdminPanel() {
       }
     } catch (error) {
       console.error('Stats yüklənərkən xəta:', error)
+    } finally {
+      setStatsLoading(false)
     }
   }
+
+  // Stats tab açılarkən avtomatik yüklə (əgər stats yoxdur)
+  useEffect(() => {
+    if (activeTab === 'stats' && !stats && !statsLoading) {
+      loadStats()
+    }
+  }, [activeTab, stats, statsLoading])
 
   const downloadStats = () => {
     if (!stats) return
@@ -189,6 +203,7 @@ export default function AdminPanel() {
         localStorage.setItem('adminToken', data.token)
         setIsAuthenticated(true)
         loadContent()
+        loadStats()
         setMessage({ type: 'success', text: 'Giriş uğurlu!' })
       } else {
         setMessage({ type: 'error', text: data.message || 'Giriş uğursuz oldu' })
@@ -509,7 +524,11 @@ export default function AdminPanel() {
         {activeTab === 'stats' ? (
           <div className="space-y-6">
             {/* Download Button */}
-            <div className="flex justify-end">
+            <div className="flex justify-between items-center">
+              <div className="text-sm text-gray-500">
+                {statsLoading && <span>{t('admin.stats.loading')}</span>}
+                {!statsLoading && !stats && <span>{t('admin.stats.noData')}</span>}
+              </div>
               <button
                 onClick={downloadStats}
                 disabled={!stats}
@@ -522,7 +541,13 @@ export default function AdminPanel() {
 
             {/* Stats Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-white p-6 rounded-lg shadow-md">
+              <button
+                type="button"
+                onClick={() => setSelectedMetric('pageViews')}
+                className={`bg-white p-6 rounded-lg shadow-md text-left transition-all ${
+                  selectedMetric === 'pageViews' ? 'ring-2 ring-primary-500 shadow-lg' : 'hover:shadow-lg'
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600">{t('admin.stats.totalViews')}</p>
@@ -532,8 +557,14 @@ export default function AdminPanel() {
                   </div>
                   <Eye className="w-8 h-8 text-primary-600" />
                 </div>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-md">
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedMetric('pageViews')}
+                className={`bg-white p-6 rounded-lg shadow-md text-left transition-all ${
+                  selectedMetric === 'pageViews' ? 'ring-2 ring-primary-500 shadow-lg' : 'hover:shadow-lg'
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600">{t('admin.stats.today')}</p>
@@ -543,8 +574,14 @@ export default function AdminPanel() {
                   </div>
                   <TrendingUp className="w-8 h-8 text-green-600" />
                 </div>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-md">
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedMetric('clicks')}
+                className={`bg-white p-6 rounded-lg shadow-md text-left transition-all ${
+                  selectedMetric === 'clicks' ? 'ring-2 ring-primary-500 shadow-lg' : 'hover:shadow-lg'
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600">{t('admin.stats.clicks')}</p>
@@ -554,8 +591,14 @@ export default function AdminPanel() {
                   </div>
                   <MousePointer className="w-8 h-8 text-blue-600" />
                 </div>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-md">
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedMetric('users')}
+                className={`bg-white p-6 rounded-lg shadow-md text-left transition-all ${
+                  selectedMetric === 'users' ? 'ring-2 ring-primary-500 shadow-lg' : 'hover:shadow-lg'
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600">{t('admin.stats.uniqueUsers')}</p>
@@ -565,61 +608,200 @@ export default function AdminPanel() {
                   </div>
                   <BarChart3 className="w-8 h-8 text-purple-600" />
                 </div>
-              </div>
+              </button>
             </div>
 
-            {/* Detailed Stats */}
+            {/* Detailed Stats - Interactive Panel */}
             <div className="grid md:grid-cols-2 gap-6">
+              {/* Left panel */}
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.stats.pageViews')}</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">{t('admin.stats.thisWeek')}</span>
-                    <span className="font-semibold">{stats?.pageViews.thisWeek || 0}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">{t('admin.stats.thisMonth')}</span>
-                    <span className="font-semibold">{stats?.pageViews.thisMonth || 0}</span>
-                  </div>
-                </div>
-              </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {selectedMetric
+                    ? t(`admin.stats.detailTitle.${selectedMetric}`)
+                    : t('admin.stats.detailTitle.default')}
+                </h3>
+                <p className="text-xs text-gray-500 mb-4">
+                  {t('admin.stats.detailHint')}
+                </p>
 
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.stats.scrollDepth')}</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">25%</span>
-                    <span className="font-semibold">{stats?.scrolls.byDepth[25] || 0}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">50%</span>
-                    <span className="font-semibold">{stats?.scrolls.byDepth[50] || 0}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">75%</span>
-                    <span className="font-semibold">{stats?.scrolls.byDepth[75] || 0}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">100%</span>
-                    <span className="font-semibold">{stats?.scrolls.byDepth[100] || 0}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.stats.topElements')}</h3>
-              <div className="space-y-2">
-                {stats?.clicks.topElements && stats.clicks.topElements.length > 0 ? (
-                  stats.clicks.topElements.map((item, index) => (
-                    <div key={index} className="flex justify-between items-center p-2 hover:bg-gray-50 rounded">
-                      <span className="text-gray-700">{item.element}</span>
-                      <span className="font-semibold text-primary-600">{item.count}</span>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-gray-500 text-center py-4">{t('admin.stats.noData')}</p>
+                {!stats && !statsLoading && (
+                  <p className="text-gray-500 text-sm">{t('admin.stats.noData')}</p>
                 )}
+
+                {stats && selectedMetric === 'pageViews' && (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">{t('admin.stats.thisWeek')}</span>
+                        <span className="font-semibold">{stats.pageViews.thisWeek}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">{t('admin.stats.thisMonth')}</span>
+                        <span className="font-semibold">{stats.pageViews.thisMonth}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                        {t('admin.stats.pageViewsByPath')}
+                      </h4>
+                      <div className="space-y-1 max-h-48 overflow-auto">
+                        {Object.entries(stats.pageViews.byPath || {})
+                          .sort((a, b) => Number(b[1]) - Number(a[1]))
+                          .map(([path, count]) => (
+                            <div key={path} className="flex items-center justify-between text-xs py-1">
+                              <span className="text-gray-600 truncate mr-2">{path}</span>
+                              <span className="font-semibold text-primary-600">{count as number}</span>
+                            </div>
+                          ))}
+                        {Object.keys(stats.pageViews.byPath || {}).length === 0 && (
+                          <p className="text-gray-400 text-xs">{t('admin.stats.noData')}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {stats && selectedMetric === 'clicks' && (
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">{t('admin.stats.clicks')}</span>
+                      <span className="font-semibold">{stats.clicks.total}</span>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                        {t('admin.stats.topElements')}
+                      </h4>
+                      <div className="space-y-1 max-h-48 overflow-auto">
+                        {stats.clicks.topElements && stats.clicks.topElements.length > 0 ? (
+                          stats.clicks.topElements.map((item, index) => (
+                            <div
+                              key={index}
+                              className="flex justify-between items-center text-xs py-1 px-2 rounded hover:bg-gray-50"
+                            >
+                              <span className="text-gray-700 truncate mr-2">{item.element}</span>
+                              <span className="font-semibold text-primary-600">{item.count}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-gray-400 text-xs">{t('admin.stats.noData')}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {stats && selectedMetric === 'users' && (
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">{t('admin.stats.uniqueUsers')}</span>
+                      <span className="font-semibold">{stats.users.unique}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">{t('admin.stats.newUsers')}</span>
+                      <span className="font-semibold">{stats.users.new}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">{t('admin.stats.returningUsers')}</span>
+                      <span className="font-semibold">{stats.users.returning}</span>
+                    </div>
+                  </div>
+                )}
+
+                {stats && selectedMetric === 'scrolls' && (
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-gray-600">{t('admin.stats.averageScroll')}</span>
+                      <span className="font-semibold">{stats.scrolls.averageDepth}%</span>
+                    </div>
+                    {[25, 50, 75, 100].map((depth) => (
+                      <div key={depth} className="space-y-1">
+                        <div className="flex justify-between text-xs">
+                          <span className="text-gray-600">{depth}%</span>
+                          <span className="font-semibold">{stats.scrolls.byDepth[depth as 25 | 50 | 75 | 100]}</span>
+                        </div>
+                        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-2 bg-primary-500 rounded-full"
+                            style={{
+                              width: `${Math.min(
+                                100,
+                                (stats.scrolls.byDepth[depth as 25 | 50 | 75 | 100] /
+                                  (stats.pageViews.total || 1)) * 100,
+                              )}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {stats && selectedMetric === 'devices' && (
+                  <div className="space-y-3">
+                    {(['desktop', 'mobile', 'tablet'] as const).map((device) => {
+                      const total =
+                        stats.devices.desktop + stats.devices.mobile + stats.devices.tablet || 1
+                      const value = stats.devices[device]
+                      const percent = Math.round((value / total) * 100)
+                      return (
+                        <div key={device} className="space-y-1">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-gray-600">{t(`admin.stats.devices.${device}`)}</span>
+                            <span className="font-semibold">
+                              {value} ({percent}%)
+                            </span>
+                          </div>
+                          <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                              className="h-2 bg-primary-500 rounded-full"
+                              style={{ width: `${percent}%` }}
+                            />
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {stats && selectedMetric === 'referrers' && (
+                  <div className="space-y-2 max-h-56 overflow-auto">
+                    {Object.entries(stats.referrers || {})
+                      .sort((a, b) => Number(b[1]) - Number(a[1]))
+                      .map(([ref, count]) => (
+                        <div
+                          key={ref}
+                          className="flex justify-between items-center text-xs py-1 px-2 rounded hover:bg-gray-50"
+                        >
+                          <span className="text-gray-700 truncate mr-2">{ref || '(direct)'}</span>
+                          <span className="font-semibold text-primary-600">{count as number}</span>
+                        </div>
+                      ))}
+                    {Object.keys(stats.referrers || {}).length === 0 && (
+                      <p className="text-gray-400 text-xs">{t('admin.stats.noData')}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Right panel – quick overview (static as əvvəlki) */}
+              <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {t('admin.stats.quickOverview')}
+                </h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">{t('admin.stats.totalViews')}</span>
+                    <span className="font-semibold">{stats?.pageViews.total || 0}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">{t('admin.stats.clicks')}</span>
+                    <span className="font-semibold">{stats?.clicks.total || 0}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">{t('admin.stats.uniqueUsers')}</span>
+                    <span className="font-semibold">{stats?.users.unique || 0}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

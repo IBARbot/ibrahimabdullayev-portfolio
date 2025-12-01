@@ -109,10 +109,19 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 pt-8 text-center">
-          <p className="text-gray-400">
+        <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+          <p className="text-gray-400 text-sm">
             © {currentYear} İbrahim Abdullayev. {t('footer.rights')}
           </p>
+          <div className="flex items-center gap-4 text-xs sm:text-sm text-gray-400 justify-center">
+            <a href="#privacy" className="hover:text-primary-400 transition-colors">
+              {t('footer.privacy')}
+            </a>
+            <span className="h-3 w-px bg-gray-700" />
+            <a href="#terms" className="hover:text-primary-400 transition-colors">
+              {t('footer.terms')}
+            </a>
+          </div>
         </div>
       </div>
     </footer>

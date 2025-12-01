@@ -26,6 +26,12 @@
     "satisfactionDesc": "Müştərilərin məmnuniyyəti mənim üçün ən vacibdir",
     "specialist": "Turizm Mütəxəssisi"
   },
+  "welcome": {
+    "title": "Səyahətiniz üçün ağıllı başlanğıc",
+    "contactWhatsApp": "Dərhal Əlaqə Saxla",
+    "contactWhatsAppDesc": "WhatsApp-dan birbaşa mesaj göndər",
+    "whatsappLabel": "WhatsApp-la yaz"
+  },
   "services": {
     "title": "Xidmətlərim",
     "subtitle": "Turizm sahəsində hərtərəfli xidmətlər və peşəkar məsləhət",
@@ -263,7 +269,16 @@
   },
   "footer": {
     "rights": "Bütün hüquqlar qorunur",
-    "madeWith": "Sevgi ilə hazırlanıb"
+    "madeWith": "Sevgi ilə hazırlanıb",
+    "privacy": "Məxfilik siyasəti",
+    "terms": "İstifadə şərtləri"
+  },
+  "cookie": {
+    "title": "Məxfilik və cookie-lər",
+    "description": "Bu saytda istifadə təcrübənizi yaxşılaşdırmaq və analitika üçün minimal ölçüdə cookie və anonim statistika istifadə olunur.",
+    "details": "Heç bir həssas şəxsi məlumat toplanmır və reklam üçün ayrı izləmə sistemi əlavə edilməyib. GA4 və daxili analitika yalnız saytın performansını ölçmək üçündür.",
+    "accept": "Qəbul edirəm",
+    "reject": "Yalnız zəruri olanlar"
   },
   "welcome": {
     "title": "Xoş Gəlmisiniz!",
