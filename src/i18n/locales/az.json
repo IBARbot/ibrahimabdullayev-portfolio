@@ -9,22 +9,36 @@
   },
   "hero": {
     "title": "Salam, mən İbrahim Abdullayev",
-    "subtitle": "Turizm Sahəsində Aparıcı Mütəxəssis",
-    "description": "Aviabilet rezervasiyası, otel booking, transfer xidmətləri, sığorta və səfirlik işləri üzrə peşəkar məsləhətçi. İllər boyu təcrübəmlə səyahətçilərə ən yaxşı həlləri təqdim edirəm.",
+    "subtitle": "Aviabilet və Rezervasiya Sistemləri üzrə Mütəxəssis",
+    "description": "Aviabiletlər, sığorta, paket turlar, transfer və rezervasiya sistemləri üzrə işləyən ticketing mütəxəssisiyəm. GDS, NDC və birbaşa satış interfeyslərində (direct sell UI) uzunillik təcrübə ilə həm fərdi səyahətçilərə, həm də şirkətlərə ən uyğun həlləri təklif edirəm.",
     "viewServices": "Xidmətlərimə Bax",
     "contact": "Əlaqə Saxla"
   },
   "about": {
     "title": "Haqqımda",
-    "subtitle": "Turizm sahəsində təcrübəli mütəxəssis kimi səyahətçilərə ən yaxşı xidməti təqdim edirəm",
-    "content": "Mən turizm sahəsində aparıcı mütəxəssisəm və səyahətçilərə ən yaxşı xidməti təqdim etmək üçün çalışıram.\n\nİllər boyu hava yolu sistemləri, otel rezervasiyaları, transfer xidmətləri, sığorta və səfirlik işləri üzrə təcrübə toplamışam. Hər müştəriyə fərdi yanaşaraq onun ehtiyaclarına ən uyğun həlli təqdim edirəm.\n\nMəqsədim səyahəti daha əlçatan etmək və hər müştəriyə keyfiyyətli xidmət göstərməkdir. Ağıllı səyahət ağıllı planlaşdırma ilə başlayır.",
+    "subtitle": "Aviabilet satışları və rezervasiya sistemləri üzrə ixtisaslaşmış turizm mütəxəssisi",
+    "content": "Səyahət və aviasiya sahəsində illərdir çalışan ticketing mütəxəssisiyəm. Gündəlik işimdə aviabiletlərin düzgün qiymətləndirilməsi, marşrut seçimi, tarif qaydalarının tətbiqi və sərnişinlər üçün real ehtiyaca uyğun həllərin tapılması ilə məşğulam.\n\nGDS sistemləri (Galileo və s.), NDC və aviaşirkətlərin birbaşa satış interfeyslərində (direct sell UI) işləyərək həm fərdi müştərilər, həm də korporativ müştərilər üçün uçuşların, sığorta və əlavə xidmətlərin optimallaşdırılmasını həyata keçirirəm. Bundan əlavə, hava yükləri (air cargo) üzrə tarif yoxlanışı, marşrut qurulması və yerlərin təsdiqi (space confirmation) sahəsində də məsləhət verirəm.\n\nMəqsədim, şişirtmədən və lazımsız seçimlər təqdim etmədən, müştərinin vaxtını və büdcəsini qoruyaraq ən aydın və səmərəli səyahət həllini hazırlamaqdır.",
     "professional": "Peşəkar Xidmət",
-    "professionalDesc": "Hər müştəriyə fərdi yanaşaraq ən yaxşı həlli təqdim edirəm",
+    "professionalDesc": "Hər müştəri üçün ehtiyaca uyğun, izahlı və şəffaf ticketing həlləri təqdim edirəm",
     "experience": "Geniş Təcrübə",
-    "experienceDesc": "İllər boyu turizm sahəsində təcrübə toplamışam və daim öyrənirəm",
+    "experienceDesc": "GDS, NDC və aviaşirkət sistemlərində uzunillik əməliyyat təcrübəm var",
     "satisfaction": "Müştəri Məmnuniyyəti",
-    "satisfactionDesc": "Müştərilərin məmnuniyyəti mənim üçün ən vacibdir",
-    "specialist": "Turizm Mütəxəssisi"
+    "satisfactionDesc": "Məqsədim müştərinin rahat qərar verməsi və aldığı xidmətə güvənməsidir",
+    "specialist": "Aviabilet və Rezervasiya Sistemləri üzrə Mütəxəssis",
+    "expertise": {
+      "title": "İxtisaslaşdığım sahələr",
+      "items": {
+        "ticketing": "Aviabilet satışları, tarif qaydaları və fare construction üzrə gündəlik əməliyyat işi",
+        "gds": "GDS sistemlərində (xüsusən Galileo) rezervasiya, tarif yoxlanışı və marşrut optimallaşdırılması",
+        "cargo": "Aviation & Air Cargo sahəsində rate check, routing və space confirmation üzrə məsləhət",
+        "mentoring": "\"GDS / NDC / Direct sell UI\" üzrə fərdi mentorluq və komanda təlimləri"
+      }
+    },
+    "certifications": {
+      "title": "Sertifikatlar",
+      "fareTicketing": "IATA Global Distribution Systems Fares and Ticketing (GALILEO)",
+      "dgr": "IATA DGR 7.3 – Dangerous Goods by Air (initial, supervised assessment)"
+    }
   },
   "welcome": {
     "title": "Səyahətiniz üçün ağıllı başlanğıc",

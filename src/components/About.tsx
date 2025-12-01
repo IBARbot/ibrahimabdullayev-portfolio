@@ -79,13 +79,36 @@ export default function About() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="order-1 md:order-2"
+            className="order-1 md:order-2 space-y-6"
           >
             <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
               {t('about.specialist')}
             </h3>
             <div className="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line">
               {aboutContent}
+            </div>
+            {/* Expertise & Certifications */}
+            <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+              <div className="p-4 sm:p-5 rounded-lg border border-gray-100 bg-gray-50">
+                <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-2">
+                  {t('about.expertise.title')}
+                </h4>
+                <ul className="text-xs sm:text-sm text-gray-600 space-y-1 list-disc list-inside">
+                  <li>{t('about.expertise.items.ticketing')}</li>
+                  <li>{t('about.expertise.items.gds')}</li>
+                  <li>{t('about.expertise.items.cargo')}</li>
+                  <li>{t('about.expertise.items.mentoring')}</li>
+                </ul>
+              </div>
+              <div className="p-4 sm:p-5 rounded-lg border border-gray-100 bg-gray-50">
+                <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-2">
+                  {t('about.certifications.title')}
+                </h4>
+                <ul className="text-xs sm:text-sm text-gray-600 space-y-1 list-disc list-inside">
+                  <li>{t('about.certifications.fareTicketing')}</li>
+                  <li>{t('about.certifications.dgr')}</li>
+                </ul>
+              </div>
             </div>
           </motion.div>
 

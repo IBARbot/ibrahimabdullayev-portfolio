@@ -9,22 +9,36 @@
   },
   "hero": {
     "title": "Hello, I'm Ibrahim Abdullayev",
-    "subtitle": "Leading Specialist in Tourism",
-    "description": "Professional consultant for flight bookings, hotel reservations, transfer services, insurance, and embassy services. With years of experience, I provide the best solutions for travelers.",
+    "subtitle": "Specialist in Air Ticketing and Reservation Systems",
+    "description": "I work as a ticketing specialist across flights, insurance, package tours, transfers and reservation systems. With solid hands-on experience in GDS, NDC and direct sell UIs, I help both individual travelers and companies find clear, efficient and realistic booking solutions.",
     "viewServices": "View Services",
     "contact": "Contact Me"
   },
   "about": {
     "title": "About Me",
-    "subtitle": "As an experienced specialist in tourism, I provide the best service to travelers",
-    "content": "I am a leading specialist in tourism and work to provide the best service to travelers.\n\nOver the years, I have gained experience in airline systems, hotel reservations, transfer services, insurance, and embassy services. I approach each client individually and provide solutions that best meet their needs.\n\nMy goal is to make travel more accessible and provide quality service to every client. Smart travel starts with smart planning.",
+    "subtitle": "A travel professional focused on air ticketing and reservation systems",
+    "content": "I am a ticketing specialist with many years of experience in aviation and travel. My daily work is centred around correct fare construction, routing, rule application and choosing routes that match the real needs and budgets of travelers.\n\nI work with GDS platforms (especially Galileo), NDC connections and airline direct sell interfaces to optimise flights, insurance and ancillary services for both individual and corporate clients. In addition, I support aviation and air cargo teams with rate checks, routing and space confirmation advisory.\n\nMy goal is to provide clear and honest options without exaggeration, protect the client’s time and budget, and deliver the most transparent and efficient travel solution.",
     "professional": "Professional Service",
-    "professionalDesc": "I approach each client individually and provide the best solutions",
+    "professionalDesc": "I provide clear, tailored ticketing solutions for every client",
     "experience": "Extensive Experience",
-    "experienceDesc": "I have gained years of experience in tourism and continue to learn",
+    "experienceDesc": "Hands-on experience with GDS, NDC and airline systems",
     "satisfaction": "Customer Satisfaction",
-    "satisfactionDesc": "Customer satisfaction is most important to me",
-    "specialist": "Tourism Specialist"
+    "satisfactionDesc": "I focus on helping clients make confident and informed decisions",
+    "specialist": "Air Ticketing and Reservation Systems Specialist",
+    "expertise": {
+      "title": "Areas of Expertise",
+      "items": {
+        "ticketing": "Day-to-day work in air ticket sales, fare rules and fare construction",
+        "gds": "Reservation, fare checks and route optimisation in GDS (especially Galileo)",
+        "cargo": "Aviation & Air Cargo advisory for rate checks, routing and space confirmation",
+        "mentoring": "Mentoring on \"GDS / NDC / Direct sell UI\" for individuals and teams"
+      }
+    },
+    "certifications": {
+      "title": "Certifications",
+      "fareTicketing": "IATA Global Distribution Systems Fares and Ticketing (GALILEO)",
+      "dgr": "IATA DGR 7.3 – Transport of Dangerous Goods by Air (initial, supervised assessment)"
+    }
   },
   "welcome": {
     "title": "A smart start for your journey",
