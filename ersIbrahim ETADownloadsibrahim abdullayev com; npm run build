@@ -1,0 +1,108 @@
+warning: in the working copy of 'GOOGLE_SHEETS_TROUBLESHOOTING.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'api/admin/[...path].js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'api/analytics/[...path].js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'api/booking.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'api/content.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'api/google-sheets.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'api/utils/contentStore.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'index.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/App.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/About.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/AdminPanel.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/Analytics.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/BookingForm.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/BookingModal.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/Contact.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/FloatingWhatsApp.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/Footer.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/Hero.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/Navigation.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/Projects.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/Services.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/WelcomeModal.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/i18n/config.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/i18n/locales/az.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/i18n/locales/en.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/i18n/locales/ru.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/main.tsx', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/api/admin/[...path].js b/api/admin/[...path].js[m
+[1mindex 32c65a5..c9a68ab 100644[m
+[1m--- a/api/admin/[...path].js[m
+[1m+++ b/api/admin/[...path].js[m
+[36m@@ -259,32 +259,31 @@[m [mexport default async function handler(req, res) {[m
+       });[m
+     }[m
+ [m
+[31m-    // Check authentication for protected routes[m
+[31m-    console.log('⚠️ Route not matched as public route, checking authentication...');[m
+[31m-    console.log('Route:', route);[m
+[31m-    console.log('Method:', req.method);[m
+[31m-    const authHeader = req.headers.authorization;[m
+[31m-    console.log('Auth header exists:', !!authHeader);[m
+[31m-    if (!authHeader || !authHeader.startsWith('Bearer ')) {[m
+[31m-      console.error('❌ Unauthorized - No auth header or invalid format');[m
+[31m-      return res.status(401).json({ success: false, message: 'Unauthorized' });[m
+[31m-    }[m
+[31m-[m
+[31m-    const token = authHeader.split(' ')[1];[m
+[31m-    let decoded;[m
+[31m-    try {[m
+[31m-      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production');[m
+[31m-    } catch (error) {[m
+[31m-      return res.status(401).json({ success: false, message: 'Invalid token' });[m
+[31m-    }[m
+[31m-[m
+     // Content route[m
+     if (route === 'content') {[m
+[32m+[m[32m      // Public GET: frontend (About, Projects, Footer, Hero) oxuya bilsin[m
+       if (req.method === 'GET') {[m
+         const current = getContent();[m
+         return res.status(200).json(current);[m
+       }[m
+ [m
+[32m+[m[32m      // PUT üçün authentication tələb olunur[m
+[32m+[m[32m      console.log('⚠️ Content PUT - checking authentication...');[m
+[32m+[m[32m      const authHeader = req.headers.authorization;[m
+[32m+[m[32m      console.log('Auth header exists:', !!authHeader);[m
+[32m+[m[32m      if (!authHeader || !authHeader.startsWith('Bearer ')) {[m
+[32m+[m[32m        console.error('❌ Unauthorized - No auth header or invalid format');[m
+[32m+[m[32m        return res.status(401).json({ success: false, message: 'Unauthorized' });[m
+[32m+[m[32m      }[m
+[32m+[m
+[32m+[m[32m      const token = authHeader.split(' ')[1];[m
+[32m+[m[32m      let decoded;[m
+[32m+[m[32m      try {[m
+[32m+[m[32m        decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production');[m
+[32m+[m[32m      } catch (error) {[m
+[32m+[m[32m        return res.status(401).json({ success: false, message: 'Invalid token' });[m
+[32m+[m[32m      }[m
+[32m+[m
+       if (req.method === 'PUT') {[m
+         try {[m
+           const updated = updateContent(req.body || {});[m
+[36m@@ -300,6 +299,25 @@[m [mexport default async function handler(req, res) {[m
+       return res.status(405).json({ success: false, message: 'Method not allowed' });[m
+     }[m
+ [m
+[32m+[m[32m    // Check authentication for other protected routes (bookings, etc.)[m
+[32m+[m[32m    console.log('⚠️ Route not matched as public route, checking authentication...');[m
+[32m+[m[32m    console.log('Route:', route);[m
+[32m+[m[32m    console.log('Method:', req.method);[m
+[32m+[m[32m    const authHeader = req.headers.authorization;[m
+[32m+[m[32m    console.log('Auth header exists:', !!authHeader);[m
+[32m+[m[32m    if (!authHeader || !authHeader.startsWith('Bearer ')) {[m
+[32m+[m[32m      console.error('❌ Unauthorized - No auth header or invalid format');[m
+[32m+[m[32m      return res.status(401).json({ success: false, message: 'Unauthorized' });[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    const token = authHeader.split(' ')[1];[m
+[32m+[m[32m    let decoded;[m
+[32m+[m[32m    try {[m
+[32m+[m[32m      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production');[m
+[32m+[m[32m    } catch (error) {[m
+[32m+[m[32m      return res.status(401).json({ success: false, message: 'Invalid token' });[m
+[32m+[m[32m    }[m
+[32m+[m
+     // Bookings route[m
+     if (route === 'bookings') {[m
+       // In-memory storage[m

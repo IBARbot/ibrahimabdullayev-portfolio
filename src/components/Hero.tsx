@@ -29,7 +29,11 @@ export default function Hero({ onOpenBooking }: HeroProps) {
 
   // Update image when language changes (if backend provides different images per language)
   useEffect(() => {
-    fetch('/api/content')
+    // Public content endpoint (shared with admin content storage)
+    fetch('/api/admin/content')
+  useEffect(() => {
+    // Public content endpoint (shared with admin content storage)
+    fetch('/api/admin/content')
       .then((res) => res.json())
       .then((data) => {
         if (data.hero?.image) {

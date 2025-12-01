@@ -31,7 +31,8 @@ export default function Projects({ onOpenBooking }: ProjectsProps) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/content')
+    // Public content endpoint (shared with admin content storage)
+    fetch('/api/admin/content')
       .then((res) => {
         if (!res.ok) throw new Error('Network response was not ok')
         return res.json()

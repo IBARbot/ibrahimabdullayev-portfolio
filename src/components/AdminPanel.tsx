@@ -1689,17 +1689,23 @@ export default function AdminPanel() {
 
         {/* Save Button - Only show in content tab */}
         {activeTab === 'content' && (
-            <div className="mt-8 flex justify-end">
-              <button
-                onClick={handleSave}
-                disabled={loading}
-                className="flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+          <div className="mt-8 flex justify-end">
+            <motion.button
+              onClick={handleSave}
+              disabled={loading}
+              whileTap={{ scale: 0.96 }}
+              className="relative inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 active:bg-primary-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
+            >
+              {loading && (
+                <span className="absolute inset-0 bg-white/10 animate-pulse pointer-events-none" />
+              )}
+              <span className={loading ? 'animate-spin' : ''}>
                 <Save className="w-5 h-5" />
-                {loading ? t('admin.content.saving') : t('admin.content.save')}
-              </button>
-            </div>
-          )}
+              </span>
+              <span>{loading ? t('admin.content.saving') : t('admin.content.save')}</span>
+            </motion.button>
+          </div>
+        )}
       </div>
     </div>
   )

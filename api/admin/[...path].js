@@ -259,7 +259,47 @@ export default async function handler(req, res) {
       });
     }
 
-    // Check authentication for protected routes
+    // Content route
+    if (route === 'content') {
+      // Public GET: frontend (About, Projects, Footer, Hero) oxuya bilsin
+      if (req.method === 'GET') {
+        const current = getContent();
+        return res.status(200).json(current);
+      }
+
+      // PUT üçün authentication tələb olunur
+      console.log('⚠️ Content PUT - checking authentication...');
+      const authHeader = req.headers.authorization;
+      console.log('Auth header exists:', !!authHeader);
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.error('❌ Unauthorized - No auth header or invalid format');
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
+
+      const token = authHeader.split(' ')[1];
+      let decoded;
+      try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production');
+      } catch (error) {
+        return res.status(401).json({ success: false, message: 'Invalid token' });
+      }
+
+      if (req.method === 'PUT') {
+        try {
+          const updated = updateContent(req.body || {});
+          return res
+            .status(200)
+            .json({ success: true, message: 'Məzmun yeniləndi', content: updated });
+        } catch (error) {
+          console.error('Content update error:', error);
+          return res.status(500).json({ success: false, message: 'Xəta baş verdi' });
+        }
+      }
+
+      return res.status(405).json({ success: false, message: 'Method not allowed' });
+    }
+
+    // Check authentication for other protected routes (bookings, etc.)
     console.log('⚠️ Route not matched as public route, checking authentication...');
     console.log('Route:', route);
     console.log('Method:', req.method);
@@ -276,28 +316,6 @@ export default async function handler(req, res) {
       decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production');
     } catch (error) {
       return res.status(401).json({ success: false, message: 'Invalid token' });
-    }
-
-    // Content route
-    if (route === 'content') {
-      if (req.method === 'GET') {
-        const current = getContent();
-        return res.status(200).json(current);
-      }
-
-      if (req.method === 'PUT') {
-        try {
-          const updated = updateContent(req.body || {});
-          return res
-            .status(200)
-            .json({ success: true, message: 'Məzmun yeniləndi', content: updated });
-        } catch (error) {
-          console.error('Content update error:', error);
-          return res.status(500).json({ success: false, message: 'Xəta baş verdi' });
-        }
-      }
-
-      return res.status(405).json({ success: false, message: 'Method not allowed' });
     }
 
     // Bookings route
