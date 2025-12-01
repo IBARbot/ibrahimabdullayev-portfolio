@@ -88,9 +88,9 @@
     "name": "Ad Soyad",
     "namePlaceholder": "Adınız",
     "email": "Email",
-    "emailOrPhone": "(və ya telefon)",
+    "emailOrPhone": "və ya telefon",
     "phone": "Telefon",
-    "phoneOrEmail": "(və ya email)",
+    "phoneOrEmail": "və ya email",
     "phonePlaceholder": "+994 50 123 45 67",
     "emailPlaceholder": "email@example.com",
     "notes": "Əlavə məlumat",
@@ -287,7 +287,8 @@
     "contactWhatsAppDesc": "WhatsApp-dan birbaşa mesaj göndər",
     "bookNow": "İndi Rezerv Et",
     "bookNowDesc": "Birbaşa rezervasiya formunu doldur",
-    "footer": "Bu mesaj yalnız bir dəfə göstəriləcək"
+    "footer": "Bu mesaj yalnız bir dəfə göstəriləcək",
+    "whatsappLabel": "WhatsApp-la yaz"
   },
   "contactInfo": {
     "title": "Əlaqə Məlumatları",
@@ -365,7 +366,28 @@
       "scrollDepth": "Scroll Dərinliyi",
       "topElements": "Ən Çox Kliklənən Elementlər",
       "noData": "Hələ məlumat yoxdur",
-      "downloaded": "Statistikalar yükləndi!"
+      "downloaded": "Statistikalar yükləndi!",
+      "loading": "Statistikalar yüklənir...",
+      "detailTitle": {
+        "default": "Detallı statistika",
+        "pageViews": "Səhifə baxışları",
+        "clicks": "Kliklər",
+        "users": "İstifadəçilər",
+        "scrolls": "Scroll dərinliyi",
+        "devices": "Cihazlar",
+        "referrers": "Mənbələr"
+      },
+      "detailHint": "Yuxarıdakı kartlardan birini klikləyərək həmin metrik üzrə daha detallı statistikanı görə bilərsiniz.",
+      "pageViewsByPath": "Səhifələr üzrə baxış sayı",
+      "averageScroll": "Orta scroll dərinliyi",
+      "devices": {
+        "desktop": "Kompüter",
+        "mobile": "Mobil",
+        "tablet": "Planşet"
+      },
+      "quickOverview": "Qısa icmal",
+      "newUsers": "Yeni istifadəçilər",
+      "returningUsers": "Qayıdan istifadəçilər"
     },
     "forgotPassword": {
       "title": "Şifrəni Unutdum",

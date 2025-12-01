@@ -88,9 +88,9 @@
     "name": "ФИО",
     "namePlaceholder": "Ваше имя",
     "email": "Email",
-    "emailOrPhone": "(или телефон)",
+    "emailOrPhone": "или телефон",
     "phone": "Телефон",
-    "phoneOrEmail": "(или email)",
+    "phoneOrEmail": "или email",
     "phonePlaceholder": "+7 123 456 7890",
     "emailPlaceholder": "email@example.com",
     "notes": "Дополнительная информация",
@@ -281,7 +281,8 @@
     "contactWhatsAppDesc": "Отправить прямое сообщение через WhatsApp",
     "bookNow": "Забронировать",
     "bookNowDesc": "Заполнить форму бронирования напрямую",
-    "footer": "Это сообщение будет показано только один раз"
+    "footer": "Это сообщение будет показано только один раз",
+    "whatsappLabel": "Написать в WhatsApp"
   },
   "projects": {
     "title": "Портфолио",
@@ -361,7 +362,28 @@
       "scrollDepth": "Глубина прокрутки",
       "topElements": "Наиболее кликаемые элементы",
       "noData": "Пока нет данных",
-      "downloaded": "Статистика загружена!"
+      "downloaded": "Статистика загружена!",
+      "loading": "Загрузка статистики...",
+      "detailTitle": {
+        "default": "Подробная статистика",
+        "pageViews": "Просмотры страниц",
+        "clicks": "Клики",
+        "users": "Пользователи",
+        "scrolls": "Глубина прокрутки",
+        "devices": "Устройства",
+        "referrers": "Источники трафика"
+      },
+      "detailHint": "Нажмите на одну из карточек выше, чтобы увидеть более детальную статистику по этой метрике.",
+      "pageViewsByPath": "Просмотры по страницам",
+      "averageScroll": "Средняя глубина прокрутки",
+      "devices": {
+        "desktop": "Компьютер",
+        "mobile": "Мобильный",
+        "tablet": "Планшет"
+      },
+      "quickOverview": "Краткий обзор",
+      "newUsers": "Новые пользователи",
+      "returningUsers": "Возвращающиеся пользователи"
     },
     "forgotPassword": {
       "title": "Забыли пароль",

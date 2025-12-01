@@ -88,9 +88,9 @@
     "name": "Full Name",
     "namePlaceholder": "Your name",
     "email": "Email",
-    "emailOrPhone": "(or phone)",
+    "emailOrPhone": "or phone",
     "phone": "Phone",
-    "phoneOrEmail": "(or email)",
+    "phoneOrEmail": "or email",
     "phonePlaceholder": "+1 234 567 8900",
     "emailPlaceholder": "email@example.com",
     "notes": "Additional Information",
@@ -285,7 +285,8 @@
     "contactWhatsAppDesc": "Send a direct message via WhatsApp",
     "bookNow": "Book Now",
     "bookNowDesc": "Fill out the booking form directly",
-    "footer": "This message will only be shown once"
+    "footer": "This message will only be shown once",
+    "whatsappLabel": "Message on WhatsApp"
   },
   "projects": {
     "title": "Portfolio",
@@ -367,7 +368,28 @@
       "scrollDepth": "Scroll Depth",
       "topElements": "Most Clicked Elements",
       "noData": "No data yet",
-      "downloaded": "Statistics downloaded!"
+      "downloaded": "Statistics downloaded!",
+      "loading": "Loading statistics...",
+      "detailTitle": {
+        "default": "Detailed statistics",
+        "pageViews": "Page views",
+        "clicks": "Clicks",
+        "users": "Users",
+        "scrolls": "Scroll depth",
+        "devices": "Devices",
+        "referrers": "Traffic sources"
+      },
+      "detailHint": "Click one of the cards above to see a more detailed breakdown for that metric.",
+      "pageViewsByPath": "Page views by path",
+      "averageScroll": "Average scroll depth",
+      "devices": {
+        "desktop": "Desktop",
+        "mobile": "Mobile",
+        "tablet": "Tablet"
+      },
+      "quickOverview": "Quick overview",
+      "newUsers": "New users",
+      "returningUsers": "Returning users"
     },
     "forgotPassword": {
       "title": "Forgot Password",

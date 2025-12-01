@@ -72,7 +72,7 @@ export default function AdminPanel() {
   const [statsLoading, setStatsLoading] = useState(false)
   const [selectedMetric, setSelectedMetric] = useState<
     'pageViews' | 'clicks' | 'users' | 'scrolls' | 'devices' | 'referrers' | null
-  >(null)
+  >('pageViews')
   const [activeTab, setActiveTab] = useState<'content' | 'stats'>('content')
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('')
