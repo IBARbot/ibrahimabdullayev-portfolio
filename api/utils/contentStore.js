@@ -67,7 +67,7 @@ export let contentData = {
       subtitle: 'Transport of Dangerous Goods by Air - Initial',
       provider: 'IATA Training & Assessment Center',
       date: '2025-10-24',
-      image: '/certificates/iata-dgr-7-3.png',
+      image: 'https://images.unsplash.com/photo-1581090700227-1e37b190418e?w=1200&h=800&fit=cover',
     },
     {
       id: 'cert-fares-ticketing',
@@ -75,7 +75,7 @@ export let contentData = {
       subtitle: 'IATA Course – Fares and Ticketing',
       provider: 'International Air Transport Association (IATA)',
       date: '2022-03-01',
-      image: '/certificates/iata-fares-ticketing-galileo.png',
+      image: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92eee?w=1200&h=800&fit=cover',
     },
   ],
   // Video / media links – can be embedded on the site

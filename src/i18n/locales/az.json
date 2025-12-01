@@ -37,7 +37,8 @@
     "certifications": {
       "title": "Sertifikatlar",
       "fareTicketing": "IATA Global Distribution Systems Fares and Ticketing (GALILEO)",
-      "dgr": "IATA DGR 7.3 – Dangerous Goods by Air (initial, supervised assessment)"
+      "dgr": "IATA DGR 7.3 – Dangerous Goods by Air (initial, supervised assessment)",
+      "galleryTitle": "Sertifikat Qalereyası"
     }
   },
   "welcome": {
