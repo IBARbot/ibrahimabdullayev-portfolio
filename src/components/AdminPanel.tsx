@@ -150,8 +150,29 @@ export default function AdminPanel() {
       setIsAuthenticated(true)
       loadContent()
       loadStats()
+      // Initialize Errors sheet headers on first load
+      initializeErrorsSheetHeaders()
     }
   }, [])
+
+  const initializeErrorsSheetHeaders = async () => {
+    try {
+      const token = localStorage.getItem('adminToken')
+      const response = await fetch('/api/init-errors-sheet', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      const data = await response.json()
+      if (data.success) {
+        console.log('Errors sheet headers initialized')
+      }
+    } catch (error) {
+      console.error('Failed to initialize Errors sheet headers:', error)
+    }
+  }
 
   const loadStats = async () => {
     const token = localStorage.getItem('adminToken')

@@ -167,3 +167,64 @@ export async function logFrontendError(error, context = {}) {
   }
 }
 
+/**
+ * Initialize Errors sheet headers in Google Sheets
+ * This function writes the header row to the Errors sheet
+ */
+export async function initializeErrorsSheet() {
+  const sheetId = process.env.GOOGLE_SHEET_ID;
+  if (!sheetId) {
+    console.log('Google Sheets ID not configured');
+    return false;
+  }
+
+  try {
+    const accessToken = await getAccessToken();
+    if (!accessToken) {
+      console.log('Could not get access token');
+      return false;
+    }
+
+    // Headers for Errors sheet
+    const headers = [
+      'Timestamp',
+      'Error Type',
+      'Endpoint',
+      'Message',
+      'Stack Trace',
+      'Additional Data',
+      'User Agent',
+      'URL',
+      'Status Code',
+      'Method',
+    ];
+
+    // Write headers to Errors sheet, row 1
+    const range = 'Errors!A1:J1';
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?valueInputOption=RAW`;
+
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        values: [headers],
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error writing headers to Google Sheets:', errorText);
+      return false;
+    }
+
+    console.log('Errors sheet headers initialized successfully');
+    return true;
+  } catch (error) {
+    console.error('Error initializing Errors sheet:', error);
+    return false;
+  }
+}
+
