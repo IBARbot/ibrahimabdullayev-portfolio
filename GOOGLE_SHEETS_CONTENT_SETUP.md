@@ -53,3 +53,4 @@ Bu təlimat, saytın kontentini (sertifikat şəkilləri, portfolio, və s.) Goo
 1. `GOOGLE_SERVICE_ACCOUNT_KEY` environment variable-ının base64 formatında olduğunu yoxlayın
 2. Service Account JSON faylının düzgün formatda olduğunu yoxlayın
 
+

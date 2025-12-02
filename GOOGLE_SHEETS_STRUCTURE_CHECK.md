@@ -67,3 +67,4 @@ Düzəltmədən sonra:
 
 
 
+

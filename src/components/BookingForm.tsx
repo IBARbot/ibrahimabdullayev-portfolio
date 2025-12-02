@@ -740,9 +740,11 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                           })()}
                           onChange={(e) => {
                             const inputValue = e.target.value
-                            const newAges = [...(passengerInfo.childAges || [])]
+                            // Ensure array has correct length
+                            const currentAges = passengerInfo.childAges || []
+                            const newAges = Array(passengerInfo.children).fill(undefined).map((_, idx) => currentAges[idx])
                             
-                            // Allow empty string - store as empty string, not undefined
+                            // Allow empty string - store as empty string for controlled input
                             if (inputValue === '') {
                               newAges[i] = ''
                               setPassengerInfo(prev => ({ ...prev, childAges: newAges }))
@@ -758,29 +760,26 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                               return
                             }
                             
-                            // Store as string while typing, validate on blur
-                            const numVal = parseInt(numericValue, 10)
-                            if (!isNaN(numVal) && numVal >= 2 && numVal <= 11) {
-                              newAges[i] = numericValue // Store as string
-                              setPassengerInfo(prev => ({ ...prev, childAges: newAges }))
-                            } else {
-                              // Invalid number, but allow typing
-                              newAges[i] = numericValue
-                              setPassengerInfo(prev => ({ ...prev, childAges: newAges }))
-                            }
+                            // Store as string while typing - always allow user input
+                            newAges[i] = numericValue
+                            setPassengerInfo(prev => ({ ...prev, childAges: newAges }))
                           }}
                           onBlur={(e) => {
                             const val = e.target.value.trim()
-                            const newAges = [...(passengerInfo.childAges || [])]
+                            // Ensure array has correct length
+                            const currentAges = passengerInfo.childAges || []
+                            const newAges = Array(passengerInfo.children).fill(undefined).map((_, idx) => currentAges[idx])
                             
                             if (val === '') {
+                              // Clear the value - set to undefined for empty
                               newAges[i] = undefined
                             } else {
                               const numVal = parseInt(val, 10)
                               if (!isNaN(numVal) && numVal >= 2 && numVal <= 11) {
                                 newAges[i] = numVal // Convert to number on blur
                               } else {
-                                newAges[i] = undefined // Invalid, clear it
+                                // Invalid number - clear it
+                                newAges[i] = undefined
                               }
                             }
                             setPassengerInfo(prev => ({ ...prev, childAges: newAges }))
@@ -1006,14 +1005,18 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                           })()}
                           onChange={(e) => {
                             const inputValue = e.target.value
-                            const newAges = [...(guestInfo.childAges || [])]
+                            // Ensure array has correct length
+                            const currentAges = guestInfo.childAges || []
+                            const newAges = Array(guestInfo.children).fill(undefined).map((_, idx) => currentAges[idx])
                             
+                            // Allow empty string - store as empty string for controlled input
                             if (inputValue === '') {
                               newAges[i] = ''
                               setGuestInfo(prev => ({ ...prev, childAges: newAges }))
                               return
                             }
                             
+                            // Only allow digits
                             const numericValue = inputValue.replace(/[^\d]/g, '')
                             
                             if (numericValue === '') {
@@ -1022,26 +1025,25 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                               return
                             }
                             
-                            const numVal = parseInt(numericValue, 10)
-                            if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
-                              newAges[i] = numericValue
-                              setGuestInfo(prev => ({ ...prev, childAges: newAges }))
-                            } else {
-                              newAges[i] = numericValue
-                              setGuestInfo(prev => ({ ...prev, childAges: newAges }))
-                            }
+                            // Store as string while typing - always allow user input
+                            newAges[i] = numericValue
+                            setGuestInfo(prev => ({ ...prev, childAges: newAges }))
                           }}
                           onBlur={(e) => {
                             const val = e.target.value.trim()
-                            const newAges = [...(guestInfo.childAges || [])]
+                            // Ensure array has correct length
+                            const currentAges = guestInfo.childAges || []
+                            const newAges = Array(guestInfo.children).fill(undefined).map((_, idx) => currentAges[idx])
                             
                             if (val === '') {
+                              // Clear the value - set to undefined for empty
                               newAges[i] = undefined
                             } else {
                               const numVal = parseInt(val, 10)
                               if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
-                                newAges[i] = numVal
+                                newAges[i] = numVal // Convert to number on blur
                               } else {
+                                // Invalid number - clear it
                                 newAges[i] = undefined
                               }
                             }
@@ -1291,14 +1293,18 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                           })()}
                           onChange={(e) => {
                             const inputValue = e.target.value
-                            const newAges = [...(transferPassengerInfo.childAges || [])]
+                            // Ensure array has correct length
+                            const currentAges = transferPassengerInfo.childAges || []
+                            const newAges = Array(transferPassengerInfo.children).fill(undefined).map((_, idx) => currentAges[idx])
                             
+                            // Allow empty string - store as empty string for controlled input
                             if (inputValue === '') {
                               newAges[i] = ''
                               setTransferPassengerInfo(prev => ({ ...prev, childAges: newAges }))
                               return
                             }
                             
+                            // Only allow digits
                             const numericValue = inputValue.replace(/[^\d]/g, '')
                             
                             if (numericValue === '') {
@@ -1307,26 +1313,25 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                               return
                             }
                             
-                            const numVal = parseInt(numericValue, 10)
-                            if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
-                              newAges[i] = numericValue
-                              setTransferPassengerInfo(prev => ({ ...prev, childAges: newAges }))
-                            } else {
-                              newAges[i] = numericValue
-                              setTransferPassengerInfo(prev => ({ ...prev, childAges: newAges }))
-                            }
+                            // Store as string while typing - always allow user input
+                            newAges[i] = numericValue
+                            setTransferPassengerInfo(prev => ({ ...prev, childAges: newAges }))
                           }}
                           onBlur={(e) => {
                             const val = e.target.value.trim()
-                            const newAges = [...(transferPassengerInfo.childAges || [])]
+                            // Ensure array has correct length
+                            const currentAges = transferPassengerInfo.childAges || []
+                            const newAges = Array(transferPassengerInfo.children).fill(undefined).map((_, idx) => currentAges[idx])
                             
                             if (val === '') {
+                              // Clear the value - set to undefined for empty
                               newAges[i] = undefined
                             } else {
                               const numVal = parseInt(val, 10)
                               if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
-                                newAges[i] = numVal
+                                newAges[i] = numVal // Convert to number on blur
                               } else {
+                                // Invalid number - clear it
                                 newAges[i] = undefined
                               }
                             }
@@ -1543,14 +1548,18 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                           })()}
                           onChange={(e) => {
                             const inputValue = e.target.value
-                            const newAges = [...(insuranceTravelerInfo.childAges || [])]
+                            // Ensure array has correct length
+                            const currentAges = insuranceTravelerInfo.childAges || []
+                            const newAges = Array(insuranceTravelerInfo.children).fill(undefined).map((_, idx) => currentAges[idx])
                             
+                            // Allow empty string - store as empty string for controlled input
                             if (inputValue === '') {
                               newAges[i] = ''
                               setInsuranceTravelerInfo(prev => ({ ...prev, childAges: newAges }))
                               return
                             }
                             
+                            // Only allow digits
                             const numericValue = inputValue.replace(/[^\d]/g, '')
                             
                             if (numericValue === '') {
@@ -1559,26 +1568,25 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                               return
                             }
                             
-                            const numVal = parseInt(numericValue, 10)
-                            if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
-                              newAges[i] = numericValue
-                              setInsuranceTravelerInfo(prev => ({ ...prev, childAges: newAges }))
-                            } else {
-                              newAges[i] = numericValue
-                              setInsuranceTravelerInfo(prev => ({ ...prev, childAges: newAges }))
-                            }
+                            // Store as string while typing - always allow user input
+                            newAges[i] = numericValue
+                            setInsuranceTravelerInfo(prev => ({ ...prev, childAges: newAges }))
                           }}
                           onBlur={(e) => {
                             const val = e.target.value.trim()
-                            const newAges = [...(insuranceTravelerInfo.childAges || [])]
+                            // Ensure array has correct length
+                            const currentAges = insuranceTravelerInfo.childAges || []
+                            const newAges = Array(insuranceTravelerInfo.children).fill(undefined).map((_, idx) => currentAges[idx])
                             
                             if (val === '') {
+                              // Clear the value - set to undefined for empty
                               newAges[i] = undefined
                             } else {
                               const numVal = parseInt(val, 10)
                               if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
-                                newAges[i] = numVal
+                                newAges[i] = numVal // Convert to number on blur
                               } else {
+                                // Invalid number - clear it
                                 newAges[i] = undefined
                               }
                             }
@@ -1766,14 +1774,18 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                           })()}
                           onChange={(e) => {
                             const inputValue = e.target.value
-                            const newAges = [...(embassyTravelerInfo.childAges || [])]
+                            // Ensure array has correct length
+                            const currentAges = embassyTravelerInfo.childAges || []
+                            const newAges = Array(embassyTravelerInfo.children).fill(undefined).map((_, idx) => currentAges[idx])
                             
+                            // Allow empty string - store as empty string for controlled input
                             if (inputValue === '') {
                               newAges[i] = ''
                               setEmbassyTravelerInfo(prev => ({ ...prev, childAges: newAges }))
                               return
                             }
                             
+                            // Only allow digits
                             const numericValue = inputValue.replace(/[^\d]/g, '')
                             
                             if (numericValue === '') {
@@ -1782,26 +1794,25 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                               return
                             }
                             
-                            const numVal = parseInt(numericValue, 10)
-                            if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
-                              newAges[i] = numericValue
-                              setEmbassyTravelerInfo(prev => ({ ...prev, childAges: newAges }))
-                            } else {
-                              newAges[i] = numericValue
-                              setEmbassyTravelerInfo(prev => ({ ...prev, childAges: newAges }))
-                            }
+                            // Store as string while typing - always allow user input
+                            newAges[i] = numericValue
+                            setEmbassyTravelerInfo(prev => ({ ...prev, childAges: newAges }))
                           }}
                           onBlur={(e) => {
                             const val = e.target.value.trim()
-                            const newAges = [...(embassyTravelerInfo.childAges || [])]
+                            // Ensure array has correct length
+                            const currentAges = embassyTravelerInfo.childAges || []
+                            const newAges = Array(embassyTravelerInfo.children).fill(undefined).map((_, idx) => currentAges[idx])
                             
                             if (val === '') {
+                              // Clear the value - set to undefined for empty
                               newAges[i] = undefined
                             } else {
                               const numVal = parseInt(val, 10)
                               if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
-                                newAges[i] = numVal
+                                newAges[i] = numVal // Convert to number on blur
                               } else {
+                                // Invalid number - clear it
                                 newAges[i] = undefined
                               }
                             }

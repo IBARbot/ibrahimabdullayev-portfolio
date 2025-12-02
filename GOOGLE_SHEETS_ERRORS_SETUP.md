@@ -56,3 +56,4 @@ Hər error aşağıdakı məlumatları ehtiva edir:
 - Sensitive məlumatlar (email, telefon) log edilmir və ya maskalanır
 - Error logging sistem xətası olsa belə, əsas funksionallığı bloklamır
 
+
