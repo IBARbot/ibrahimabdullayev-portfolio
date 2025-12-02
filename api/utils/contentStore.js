@@ -316,16 +316,49 @@ function deepMerge(target, source) {
   
   if (isObject(target) && isObject(source)) {
     Object.keys(source).forEach(key => {
-      // If both are arrays, replace (don't merge arrays)
-      if (Array.isArray(source[key])) {
-        output[key] = source[key];
+      // Special handling for critical arrays: certificates, portfolio, videos
+      // If source has empty array and target has non-empty array, preserve target
+      const criticalArrays = ['certificates', 'portfolio', 'videos', 'socialLinks'];
+      
+      if (criticalArrays.includes(key)) {
+        // For critical arrays: only replace if source array has items
+        // If source is empty array and target has items, preserve target
+        if (Array.isArray(source[key]) && Array.isArray(target[key])) {
+          if (source[key].length > 0) {
+            // Source has items, use source
+            output[key] = source[key];
+          } else if (target[key].length > 0) {
+            // Source is empty but target has items, preserve target
+            output[key] = target[key];
+          } else {
+            // Both empty, use source
+            output[key] = source[key];
+          }
+        } else if (Array.isArray(source[key])) {
+          // Source is array but target is not, use source only if it has items
+          if (source[key].length > 0) {
+            output[key] = source[key];
+          }
+          // Otherwise, keep target (don't replace with empty array)
+        } else {
+          // Source is not array, use source
+          output[key] = source[key];
+        }
+      }
+      // If both are arrays (non-critical), replace only if source has items
+      else if (Array.isArray(source[key])) {
+        // Only replace if source array has items, otherwise preserve target
+        if (source[key].length > 0) {
+          output[key] = source[key];
+        }
+        // If source is empty array, keep target (don't replace)
       }
       // If both are objects (but not arrays), deep merge
       else if (isObject(source[key]) && isObject(target[key]) && !Array.isArray(target[key])) {
         output[key] = deepMerge(target[key], source[key]);
       }
-      // Otherwise, replace
-      else {
+      // Otherwise, replace (but skip undefined values)
+      else if (source[key] !== undefined) {
         output[key] = source[key];
       }
     });
@@ -346,19 +379,36 @@ export async function updateContent(partial) {
   // Deep merge with existing content to preserve nested objects and arrays
   contentData = deepMerge(latestContent, partial);
   
-  // Ensure certificates array is preserved if not in partial
-  if (!partial.certificates && latestContent.certificates) {
-    contentData.certificates = latestContent.certificates;
-  }
+  // Explicitly preserve critical arrays if they're missing or empty in partial
+  // This is a safety net in case deepMerge didn't handle it correctly
+  const criticalArrays = ['certificates', 'portfolio', 'videos', 'socialLinks'];
   
-  // Ensure portfolio array is preserved if not in partial
-  if (!partial.portfolio && latestContent.portfolio) {
-    contentData.portfolio = latestContent.portfolio;
+  criticalArrays.forEach(arrayKey => {
+    // If partial doesn't have this key, or has empty array, preserve latestContent
+    if (!partial[arrayKey] || (Array.isArray(partial[arrayKey]) && partial[arrayKey].length === 0)) {
+      if (latestContent[arrayKey] && Array.isArray(latestContent[arrayKey]) && latestContent[arrayKey].length > 0) {
+        console.log(`Preserving ${arrayKey} array from latestContent (${latestContent[arrayKey].length} items)`);
+        contentData[arrayKey] = latestContent[arrayKey];
+      }
+    } else if (Array.isArray(partial[arrayKey]) && partial[arrayKey].length > 0) {
+      // Partial has items, use it
+      console.log(`Using ${arrayKey} array from partial (${partial[arrayKey].length} items)`);
+      contentData[arrayKey] = partial[arrayKey];
+    }
+  });
+
+  // Ensure contentData has all required structure
+  if (!contentData.certificates) {
+    contentData.certificates = latestContent.certificates || [];
   }
-  
-  // Ensure videos array is preserved if not in partial
-  if (!partial.videos && latestContent.videos) {
-    contentData.videos = latestContent.videos;
+  if (!contentData.portfolio) {
+    contentData.portfolio = latestContent.portfolio || [];
+  }
+  if (!contentData.videos) {
+    contentData.videos = latestContent.videos || [];
+  }
+  if (!contentData.socialLinks) {
+    contentData.socialLinks = latestContent.socialLinks || [];
   }
 
   // Save to Google Sheets
