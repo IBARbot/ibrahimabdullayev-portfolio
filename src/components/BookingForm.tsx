@@ -657,13 +657,25 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       {t('booking.flight.adults')} (12+)
                     </label>
                     <input
-                      type="number"
-                      min="0"
-                      max="9"
-                      value={passengerInfo.adults}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={passengerInfo.adults === 0 ? '' : String(passengerInfo.adults || '')}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 0
-                        setPassengerInfo({ ...passengerInfo, adults: val })
+                        const inputValue = e.target.value
+                        if (inputValue === '') {
+                          setPassengerInfo({ ...passengerInfo, adults: 0 })
+                          return
+                        }
+                        const numericValue = inputValue.replace(/[^\d]/g, '')
+                        if (numericValue === '') {
+                          setPassengerInfo({ ...passengerInfo, adults: 0 })
+                          return
+                        }
+                        const val = parseInt(numericValue, 10)
+                        if (!isNaN(val) && val >= 0 && val <= 9) {
+                          setPassengerInfo({ ...passengerInfo, adults: val })
+                        }
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                     />
@@ -673,15 +685,26 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       {t('booking.flight.children')} (2-11)
                     </label>
                     <input
-                      type="number"
-                      min="0"
-                      max="9"
-                      value={passengerInfo.children}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={passengerInfo.children === 0 ? '' : String(passengerInfo.children || '')}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 0
-                        // Preserve existing ages, don't set default for new ones
-                        const newAges = Array(val).fill(undefined).map((_, i) => passengerInfo.childAges?.[i])
-                        setPassengerInfo({ ...passengerInfo, children: val, childAges: newAges })
+                        const inputValue = e.target.value
+                        if (inputValue === '') {
+                          setPassengerInfo({ ...passengerInfo, children: 0, childAges: [] })
+                          return
+                        }
+                        const numericValue = inputValue.replace(/[^\d]/g, '')
+                        if (numericValue === '') {
+                          setPassengerInfo({ ...passengerInfo, children: 0, childAges: [] })
+                          return
+                        }
+                        const val = parseInt(numericValue, 10)
+                        if (!isNaN(val) && val >= 0 && val <= 9) {
+                          const newAges = Array(val).fill(undefined).map((_, i) => passengerInfo.childAges?.[i])
+                          setPassengerInfo({ ...passengerInfo, children: val, childAges: newAges })
+                        }
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                     />
@@ -691,15 +714,26 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       {t('booking.flight.infants')} (0-23 ay)
                     </label>
                     <input
-                      type="number"
-                      min="0"
-                      max="9"
-                      value={passengerInfo.infants}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={passengerInfo.infants === 0 ? '' : String(passengerInfo.infants || '')}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 0
-                        // Preserve existing ages, don't set default for new ones
-                        const newAges = Array(val).fill(undefined).map((_, i) => passengerInfo.infantAges?.[i])
-                        setPassengerInfo({ ...passengerInfo, infants: val, infantAges: newAges })
+                        const inputValue = e.target.value
+                        if (inputValue === '') {
+                          setPassengerInfo({ ...passengerInfo, infants: 0, infantAges: [] })
+                          return
+                        }
+                        const numericValue = inputValue.replace(/[^\d]/g, '')
+                        if (numericValue === '') {
+                          setPassengerInfo({ ...passengerInfo, infants: 0, infantAges: [] })
+                          return
+                        }
+                        const val = parseInt(numericValue, 10)
+                        if (!isNaN(val) && val >= 0 && val <= 9) {
+                          const newAges = Array(val).fill(undefined).map((_, i) => passengerInfo.infantAges?.[i])
+                          setPassengerInfo({ ...passengerInfo, infants: val, infantAges: newAges })
+                        }
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                     />
@@ -709,13 +743,25 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       {t('booking.flight.seniors')} (65+)
                     </label>
                     <input
-                      type="number"
-                      min="0"
-                      max="9"
-                      value={passengerInfo.seniors || 0}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={passengerInfo.seniors === 0 ? '' : String(passengerInfo.seniors || '')}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 0
-                        setPassengerInfo({ ...passengerInfo, seniors: val })
+                        const inputValue = e.target.value
+                        if (inputValue === '') {
+                          setPassengerInfo({ ...passengerInfo, seniors: 0 })
+                          return
+                        }
+                        const numericValue = inputValue.replace(/[^\d]/g, '')
+                        if (numericValue === '') {
+                          setPassengerInfo({ ...passengerInfo, seniors: 0 })
+                          return
+                        }
+                        const val = parseInt(numericValue, 10)
+                        if (!isNaN(val) && val >= 0 && val <= 9) {
+                          setPassengerInfo({ ...passengerInfo, seniors: val })
+                        }
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                     />
@@ -970,13 +1016,29 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       {t('booking.hotel.adults')} (18+)
                     </label>
                     <input
-                      type="number"
-                      min="0"
-                      max="20"
-                      value={guestInfo.adults}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={guestInfo.adults || ''}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 0
-                        setGuestInfo({ ...guestInfo, adults: val })
+                        const inputValue = e.target.value
+                        if (inputValue === '') {
+                          setGuestInfo({ ...guestInfo, adults: 0 })
+                          return
+                        }
+                        const numericValue = inputValue.replace(/[^\d]/g, '')
+                        if (numericValue === '') {
+                          setGuestInfo({ ...guestInfo, adults: 0 })
+                          return
+                        }
+                        const val = parseInt(numericValue, 10)
+                        if (!isNaN(val) && val >= 0 && val <= 20) {
+                          setGuestInfo({ ...guestInfo, adults: val })
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const val = parseInt(e.target.value, 10) || 0
+                        setGuestInfo({ ...guestInfo, adults: Math.max(0, Math.min(20, val)) })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                     />
@@ -986,14 +1048,32 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       {t('booking.hotel.children')} (2-17)
                     </label>
                     <input
-                      type="number"
-                      min="0"
-                      max="20"
-                      value={guestInfo.children}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={guestInfo.children || ''}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(undefined).map((_, i) => guestInfo.childAges?.[i])
-                        setGuestInfo({ ...guestInfo, children: val, childAges: newAges })
+                        const inputValue = e.target.value
+                        if (inputValue === '') {
+                          setGuestInfo({ ...guestInfo, children: 0, childAges: [] })
+                          return
+                        }
+                        const numericValue = inputValue.replace(/[^\d]/g, '')
+                        if (numericValue === '') {
+                          setGuestInfo({ ...guestInfo, children: 0, childAges: [] })
+                          return
+                        }
+                        const val = parseInt(numericValue, 10)
+                        if (!isNaN(val) && val >= 0 && val <= 20) {
+                          const newAges = Array(val).fill(undefined).map((_, i) => guestInfo.childAges?.[i])
+                          setGuestInfo({ ...guestInfo, children: val, childAges: newAges })
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const val = parseInt(e.target.value, 10) || 0
+                        const finalVal = Math.max(0, Math.min(20, val))
+                        const newAges = Array(finalVal).fill(undefined).map((_, i) => guestInfo.childAges?.[i])
+                        setGuestInfo({ ...guestInfo, children: finalVal, childAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                     />
@@ -1003,14 +1083,32 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       {t('booking.hotel.infants')} (0-23 ay)
                     </label>
                     <input
-                      type="number"
-                      min="0"
-                      max="20"
-                      value={guestInfo.infants}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={guestInfo.infants || ''}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(undefined).map((_, i) => guestInfo.infantAges?.[i])
-                        setGuestInfo({ ...guestInfo, infants: val, infantAges: newAges })
+                        const inputValue = e.target.value
+                        if (inputValue === '') {
+                          setGuestInfo({ ...guestInfo, infants: 0, infantAges: [] })
+                          return
+                        }
+                        const numericValue = inputValue.replace(/[^\d]/g, '')
+                        if (numericValue === '') {
+                          setGuestInfo({ ...guestInfo, infants: 0, infantAges: [] })
+                          return
+                        }
+                        const val = parseInt(numericValue, 10)
+                        if (!isNaN(val) && val >= 0 && val <= 20) {
+                          const newAges = Array(val).fill(undefined).map((_, i) => guestInfo.infantAges?.[i])
+                          setGuestInfo({ ...guestInfo, infants: val, infantAges: newAges })
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const val = parseInt(e.target.value, 10) || 0
+                        const finalVal = Math.max(0, Math.min(20, val))
+                        const newAges = Array(finalVal).fill(undefined).map((_, i) => guestInfo.infantAges?.[i])
+                        setGuestInfo({ ...guestInfo, infants: finalVal, infantAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                     />
@@ -1020,13 +1118,29 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       {t('booking.hotel.seniors')} (65+)
                     </label>
                     <input
-                      type="number"
-                      min="0"
-                      max="20"
-                      value={guestInfo.seniors || 0}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={guestInfo.seniors || ''}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 0
-                        setGuestInfo({ ...guestInfo, seniors: val })
+                        const inputValue = e.target.value
+                        if (inputValue === '') {
+                          setGuestInfo({ ...guestInfo, seniors: 0 })
+                          return
+                        }
+                        const numericValue = inputValue.replace(/[^\d]/g, '')
+                        if (numericValue === '') {
+                          setGuestInfo({ ...guestInfo, seniors: 0 })
+                          return
+                        }
+                        const val = parseInt(numericValue, 10)
+                        if (!isNaN(val) && val >= 0 && val <= 20) {
+                          setGuestInfo({ ...guestInfo, seniors: val })
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const val = parseInt(e.target.value, 10) || 0
+                        setGuestInfo({ ...guestInfo, seniors: Math.max(0, Math.min(20, val)) })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                     />
@@ -1297,13 +1411,29 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       {t('booking.transfer.adults')} (18+)
                     </label>
                     <input
-                      type="number"
-                      min="0"
-                      max="20"
-                      value={transferPassengerInfo.adults}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={transferPassengerInfo.adults || ''}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 0
-                        setTransferPassengerInfo({ ...transferPassengerInfo, adults: val })
+                        const inputValue = e.target.value
+                        if (inputValue === '') {
+                          setTransferPassengerInfo({ ...transferPassengerInfo, adults: 0 })
+                          return
+                        }
+                        const numericValue = inputValue.replace(/[^\d]/g, '')
+                        if (numericValue === '') {
+                          setTransferPassengerInfo({ ...transferPassengerInfo, adults: 0 })
+                          return
+                        }
+                        const val = parseInt(numericValue, 10)
+                        if (!isNaN(val) && val >= 0 && val <= 20) {
+                          setTransferPassengerInfo({ ...transferPassengerInfo, adults: val })
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const val = parseInt(e.target.value, 10) || 0
+                        setTransferPassengerInfo({ ...transferPassengerInfo, adults: Math.max(0, Math.min(20, val)) })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                     />
@@ -1313,14 +1443,32 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       {t('booking.transfer.children')} (2-17)
                     </label>
                     <input
-                      type="number"
-                      min="0"
-                      max="20"
-                      value={transferPassengerInfo.children}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={transferPassengerInfo.children || ''}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(undefined).map((_, i) => transferPassengerInfo.childAges?.[i])
-                        setTransferPassengerInfo({ ...transferPassengerInfo, children: val, childAges: newAges })
+                        const inputValue = e.target.value
+                        if (inputValue === '') {
+                          setTransferPassengerInfo({ ...transferPassengerInfo, children: 0, childAges: [] })
+                          return
+                        }
+                        const numericValue = inputValue.replace(/[^\d]/g, '')
+                        if (numericValue === '') {
+                          setTransferPassengerInfo({ ...transferPassengerInfo, children: 0, childAges: [] })
+                          return
+                        }
+                        const val = parseInt(numericValue, 10)
+                        if (!isNaN(val) && val >= 0 && val <= 20) {
+                          const newAges = Array(val).fill(undefined).map((_, i) => transferPassengerInfo.childAges?.[i])
+                          setTransferPassengerInfo({ ...transferPassengerInfo, children: val, childAges: newAges })
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const val = parseInt(e.target.value, 10) || 0
+                        const finalVal = Math.max(0, Math.min(20, val))
+                        const newAges = Array(finalVal).fill(undefined).map((_, i) => transferPassengerInfo.childAges?.[i])
+                        setTransferPassengerInfo({ ...transferPassengerInfo, children: finalVal, childAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                     />
@@ -1330,14 +1478,32 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       {t('booking.transfer.infants')} (0-23 ay)
                     </label>
                     <input
-                      type="number"
-                      min="0"
-                      max="20"
-                      value={transferPassengerInfo.infants}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={transferPassengerInfo.infants || ''}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(undefined).map((_, i) => transferPassengerInfo.infantAges?.[i])
-                        setTransferPassengerInfo({ ...transferPassengerInfo, infants: val, infantAges: newAges })
+                        const inputValue = e.target.value
+                        if (inputValue === '') {
+                          setTransferPassengerInfo({ ...transferPassengerInfo, infants: 0, infantAges: [] })
+                          return
+                        }
+                        const numericValue = inputValue.replace(/[^\d]/g, '')
+                        if (numericValue === '') {
+                          setTransferPassengerInfo({ ...transferPassengerInfo, infants: 0, infantAges: [] })
+                          return
+                        }
+                        const val = parseInt(numericValue, 10)
+                        if (!isNaN(val) && val >= 0 && val <= 20) {
+                          const newAges = Array(val).fill(undefined).map((_, i) => transferPassengerInfo.infantAges?.[i])
+                          setTransferPassengerInfo({ ...transferPassengerInfo, infants: val, infantAges: newAges })
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const val = parseInt(e.target.value, 10) || 0
+                        const finalVal = Math.max(0, Math.min(20, val))
+                        const newAges = Array(finalVal).fill(undefined).map((_, i) => transferPassengerInfo.infantAges?.[i])
+                        setTransferPassengerInfo({ ...transferPassengerInfo, infants: finalVal, infantAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                     />
@@ -1347,13 +1513,29 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       {t('booking.transfer.seniors')} (65+)
                     </label>
                     <input
-                      type="number"
-                      min="0"
-                      max="20"
-                      value={transferPassengerInfo.seniors || 0}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={transferPassengerInfo.seniors || ''}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 0
-                        setTransferPassengerInfo({ ...transferPassengerInfo, seniors: val })
+                        const inputValue = e.target.value
+                        if (inputValue === '') {
+                          setTransferPassengerInfo({ ...transferPassengerInfo, seniors: 0 })
+                          return
+                        }
+                        const numericValue = inputValue.replace(/[^\d]/g, '')
+                        if (numericValue === '') {
+                          setTransferPassengerInfo({ ...transferPassengerInfo, seniors: 0 })
+                          return
+                        }
+                        const val = parseInt(numericValue, 10)
+                        if (!isNaN(val) && val >= 0 && val <= 20) {
+                          setTransferPassengerInfo({ ...transferPassengerInfo, seniors: val })
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const val = parseInt(e.target.value, 10) || 0
+                        setTransferPassengerInfo({ ...transferPassengerInfo, seniors: Math.max(0, Math.min(20, val)) })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
                     />

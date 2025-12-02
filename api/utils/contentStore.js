@@ -310,13 +310,56 @@ export async function getContent() {
   return contentData;
 }
 
+// Deep merge helper function
+function deepMerge(target, source) {
+  const output = { ...target };
+  
+  if (isObject(target) && isObject(source)) {
+    Object.keys(source).forEach(key => {
+      // If both are arrays, replace (don't merge arrays)
+      if (Array.isArray(source[key])) {
+        output[key] = source[key];
+      }
+      // If both are objects (but not arrays), deep merge
+      else if (isObject(source[key]) && isObject(target[key]) && !Array.isArray(target[key])) {
+        output[key] = deepMerge(target[key], source[key]);
+      }
+      // Otherwise, replace
+      else {
+        output[key] = source[key];
+      }
+    });
+  }
+  
+  return output;
+}
+
+function isObject(item) {
+  return item && typeof item === 'object' && !Array.isArray(item);
+}
+
 // Update content (saves to Google Sheets and updates cache)
 export async function updateContent(partial) {
-  // Merge with existing content
-  contentData = {
-    ...contentData,
-    ...partial,
-  };
+  // First, ensure we have the latest content from Google Sheets
+  const latestContent = await getContent();
+  
+  // Deep merge with existing content to preserve nested objects and arrays
+  contentData = deepMerge(latestContent, partial);
+  
+  // Ensure certificates array is preserved if not in partial
+  if (!partial.certificates && latestContent.certificates) {
+    contentData.certificates = latestContent.certificates;
+  }
+  
+  // Ensure portfolio array is preserved if not in partial
+  if (!partial.portfolio && latestContent.portfolio) {
+    contentData.portfolio = latestContent.portfolio;
+  }
+  
+  // Ensure videos array is preserved if not in partial
+  if (!partial.videos && latestContent.videos) {
+    contentData.videos = latestContent.videos;
+  }
 
   // Save to Google Sheets
   await saveContentToSheets(contentData);
