@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Send, Plane, Hotel, Car, Shield, Building2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Send, Plane, Hotel, Car, Shield, Building2, CheckCircle2, XCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import DatePicker from './DatePicker'
 
@@ -1874,32 +1874,150 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
             />
           </div>
 
-          {submitStatus.type && (
-            <div
-              className={`p-4 rounded-lg ${
-                submitStatus.type === 'success'
-                  ? 'bg-green-50 text-green-800 border border-green-200'
-                  : 'bg-red-50 text-red-800 border border-red-200'
-              }`}
-            >
-              {submitStatus.message}
-            </div>
-          )}
+          <AnimatePresence>
+            {submitStatus.type && (
+              <motion.div
+                initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+                className={`relative overflow-hidden p-4 rounded-lg shadow-lg ${
+                  submitStatus.type === 'success'
+                    ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-800 border-2 border-green-300'
+                    : 'bg-gradient-to-r from-red-50 to-rose-50 text-red-800 border-2 border-red-300'
+                }`}
+              >
+                {/* Success Animation */}
+                {submitStatus.type === 'success' && (
+                  <>
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ 
+                        type: 'spring',
+                        stiffness: 200,
+                        damping: 15,
+                        delay: 0.1
+                      }}
+                      className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 via-emerald-400 to-green-500"
+                    />
+                    <motion.div
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ 
+                        type: 'spring',
+                        stiffness: 200,
+                        damping: 15,
+                        delay: 0.2
+                      }}
+                      className="flex items-center gap-3"
+                    >
+                      <div className="relative">
+                        <CheckCircle2 className="w-6 h-6 text-green-600" />
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: [0, 1.2, 1] }}
+                          transition={{ 
+                            delay: 0.3,
+                            duration: 0.4,
+                            ease: 'easeOut'
+                          }}
+                          className="absolute inset-0 bg-green-400 rounded-full blur-md opacity-50"
+                        />
+                      </div>
+                      <motion.p
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.4 }}
+                        className="font-semibold text-base"
+                      >
+                        {submitStatus.message}
+                      </motion.p>
+                    </motion.div>
+                    {/* Confetti effect */}
+                    {[...Array(6)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ 
+                          opacity: 0,
+                          x: '50%',
+                          y: '50%',
+                          scale: 0
+                        }}
+                        animate={{ 
+                          opacity: [0, 1, 0],
+                          x: `${50 + (i - 2.5) * 20}%`,
+                          y: `${50 - Math.abs(i - 2.5) * 30}%`,
+                          scale: [0, 1, 0],
+                          rotate: [0, 180, 360]
+                        }}
+                        transition={{ 
+                          delay: 0.5 + i * 0.1,
+                          duration: 1.5,
+                          ease: 'easeOut'
+                        }}
+                        className="absolute w-2 h-2 bg-green-400 rounded-full"
+                        style={{
+                          top: '50%',
+                          left: '50%',
+                        }}
+                      />
+                    ))}
+                  </>
+                )}
+                
+                {/* Error Animation */}
+                {submitStatus.type === 'error' && (
+                  <motion.div
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ 
+                      type: 'spring',
+                      stiffness: 200,
+                      damping: 15
+                    }}
+                    className="flex items-center gap-3"
+                  >
+                    <XCircle className="w-6 h-6 text-red-600 flex-shrink-0" />
+                    <p className="font-semibold text-base">{submitStatus.message}</p>
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          <button
+          <motion.button
             type="submit"
-            disabled={isSubmitting}
-            className="w-full px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            disabled={isSubmitting || submitStatus.type === 'success'}
+            whileHover={!isSubmitting && submitStatus.type !== 'success' ? { scale: 1.02 } : {}}
+            whileTap={!isSubmitting && submitStatus.type !== 'success' ? { scale: 0.98 } : {}}
+            className={`w-full px-6 py-3 rounded-lg font-semibold transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
+              submitStatus.type === 'success'
+                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg'
+                : 'bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-50'
+            }`}
           >
             {isSubmitting ? (
-              t('contactInfo.sending')
+              <>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                />
+                <span>{t('contactInfo.sending')}</span>
+              </>
+            ) : submitStatus.type === 'success' ? (
+              <>
+                <CheckCircle2 className="w-5 h-5" />
+                <span>{t('booking.success')}</span>
+              </>
             ) : (
               <>
                 <Send className="w-5 h-5" />
                 {t('booking.submit')}
               </>
             )}
-          </button>
+          </motion.button>
         </div>
       </motion.form>
     </div>

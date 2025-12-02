@@ -3,6 +3,19 @@ import nodemailer from 'nodemailer';
 import { sanitizeBookingData } from './utils/validation.js';
 import { logApiError } from './utils/errorLogger.js';
 
+// Helper function to escape HTML
+function escapeHtml(text) {
+  if (!text) return '';
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return String(text).replace(/[&<>"']/g, m => map[m]);
+}
+
 const createTransporter = () => {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return null;
   return nodemailer.createTransport({
