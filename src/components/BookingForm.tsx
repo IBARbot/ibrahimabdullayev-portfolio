@@ -697,7 +697,8 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       value={passengerInfo.infants}
                       onChange={(e) => {
                         const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(0).map((_, i) => passengerInfo.infantAges?.[i] || 6)
+                        // Preserve existing ages, don't set default for new ones
+                        const newAges = Array(val).fill(undefined).map((_, i) => passengerInfo.infantAges?.[i])
                         setPassengerInfo({ ...passengerInfo, infants: val, infantAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
@@ -799,17 +800,63 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {Array(passengerInfo.infants).fill(0).map((_, i) => (
                         <input
-                          key={i}
-                          type="number"
-                          min="0"
-                          max="23"
-                          value={passengerInfo.infantAges?.[i] || 6}
+                          key={`infant-age-flight-${i}`}
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          value={(() => {
+                            const age = passengerInfo.infantAges?.[i]
+                            if (age === undefined || age === null) return ''
+                            if (typeof age === 'string') return age
+                            return String(age)
+                          })()}
                           onChange={(e) => {
-                            const newAges = [...(passengerInfo.infantAges || [])]
-                            newAges[i] = parseInt(e.target.value) || 6
-                            setPassengerInfo({ ...passengerInfo, infantAges: newAges })
+                            const inputValue = e.target.value
+                            // Ensure array has correct length
+                            const currentAges = passengerInfo.infantAges || []
+                            const newAges = Array(passengerInfo.infants).fill(undefined).map((_, idx) => currentAges[idx])
+                            
+                            // Allow empty string - store as empty string for controlled input
+                            if (inputValue === '') {
+                              newAges[i] = ''
+                              setPassengerInfo(prev => ({ ...prev, infantAges: newAges }))
+                              return
+                            }
+                            
+                            // Only allow digits
+                            const numericValue = inputValue.replace(/[^\d]/g, '')
+                            
+                            if (numericValue === '') {
+                              newAges[i] = ''
+                              setPassengerInfo(prev => ({ ...prev, infantAges: newAges }))
+                              return
+                            }
+                            
+                            // Store as string while typing - always allow user input
+                            newAges[i] = numericValue
+                            setPassengerInfo(prev => ({ ...prev, infantAges: newAges }))
                           }}
-                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
+                          onBlur={(e) => {
+                            const val = e.target.value.trim()
+                            // Ensure array has correct length
+                            const currentAges = passengerInfo.infantAges || []
+                            const newAges = Array(passengerInfo.infants).fill(undefined).map((_, idx) => currentAges[idx])
+                            
+                            if (val === '') {
+                              // Clear the value - set to undefined for empty
+                              newAges[i] = undefined
+                            } else {
+                              const numVal = parseInt(val, 10)
+                              if (!isNaN(numVal) && numVal >= 0 && numVal <= 23) {
+                                newAges[i] = numVal // Convert to number on blur
+                              } else {
+                                // Invalid number - clear it
+                                newAges[i] = undefined
+                              }
+                            }
+                            setPassengerInfo(prev => ({ ...prev, infantAges: newAges }))
+                          }}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs transition-colors"
                           placeholder={`Körpə ${i + 1}`}
                         />
                       ))}
@@ -962,7 +1009,7 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       value={guestInfo.infants}
                       onChange={(e) => {
                         const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(0).map((_, i) => guestInfo.infantAges?.[i] || 6)
+                        const newAges = Array(val).fill(undefined).map((_, i) => guestInfo.infantAges?.[i])
                         setGuestInfo({ ...guestInfo, infants: val, infantAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
@@ -1064,17 +1111,56 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {Array(guestInfo.infants).fill(0).map((_, i) => (
                         <input
-                          key={i}
-                          type="number"
-                          min="0"
-                          max="23"
-                          value={guestInfo.infantAges?.[i] || 6}
+                          key={`infant-age-hotel-${i}`}
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          value={(() => {
+                            const age = guestInfo.infantAges?.[i]
+                            if (age === undefined || age === null) return ''
+                            if (typeof age === 'string') return age
+                            return String(age)
+                          })()}
                           onChange={(e) => {
-                            const newAges = [...(guestInfo.infantAges || [])]
-                            newAges[i] = parseInt(e.target.value) || 6
-                            setGuestInfo({ ...guestInfo, infantAges: newAges })
+                            const inputValue = e.target.value
+                            const currentAges = guestInfo.infantAges || []
+                            const newAges = Array(guestInfo.infants).fill(undefined).map((_, idx) => currentAges[idx])
+                            
+                            if (inputValue === '') {
+                              newAges[i] = ''
+                              setGuestInfo(prev => ({ ...prev, infantAges: newAges }))
+                              return
+                            }
+                            
+                            const numericValue = inputValue.replace(/[^\d]/g, '')
+                            
+                            if (numericValue === '') {
+                              newAges[i] = ''
+                              setGuestInfo(prev => ({ ...prev, infantAges: newAges }))
+                              return
+                            }
+                            
+                            newAges[i] = numericValue
+                            setGuestInfo(prev => ({ ...prev, infantAges: newAges }))
                           }}
-                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
+                          onBlur={(e) => {
+                            const val = e.target.value.trim()
+                            const currentAges = guestInfo.infantAges || []
+                            const newAges = Array(guestInfo.infants).fill(undefined).map((_, idx) => currentAges[idx])
+                            
+                            if (val === '') {
+                              newAges[i] = undefined
+                            } else {
+                              const numVal = parseInt(val, 10)
+                              if (!isNaN(numVal) && numVal >= 0 && numVal <= 23) {
+                                newAges[i] = numVal
+                              } else {
+                                newAges[i] = undefined
+                              }
+                            }
+                            setGuestInfo(prev => ({ ...prev, infantAges: newAges }))
+                          }}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs transition-colors"
                           placeholder={`${t('booking.hotel.infant')} ${i + 1}`}
                         />
                       ))}
@@ -1250,7 +1336,7 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       value={transferPassengerInfo.infants}
                       onChange={(e) => {
                         const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(0).map((_, i) => transferPassengerInfo.infantAges?.[i] || 6)
+                        const newAges = Array(val).fill(undefined).map((_, i) => transferPassengerInfo.infantAges?.[i])
                         setTransferPassengerInfo({ ...transferPassengerInfo, infants: val, infantAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
@@ -1352,17 +1438,56 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {Array(transferPassengerInfo.infants).fill(0).map((_, i) => (
                         <input
-                          key={i}
-                          type="number"
-                          min="0"
-                          max="23"
-                          value={transferPassengerInfo.infantAges?.[i] || 6}
+                          key={`infant-age-transfer-${i}`}
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          value={(() => {
+                            const age = transferPassengerInfo.infantAges?.[i]
+                            if (age === undefined || age === null) return ''
+                            if (typeof age === 'string') return age
+                            return String(age)
+                          })()}
                           onChange={(e) => {
-                            const newAges = [...(transferPassengerInfo.infantAges || [])]
-                            newAges[i] = parseInt(e.target.value) || 6
-                            setTransferPassengerInfo({ ...transferPassengerInfo, infantAges: newAges })
+                            const inputValue = e.target.value
+                            const currentAges = transferPassengerInfo.infantAges || []
+                            const newAges = Array(transferPassengerInfo.infants).fill(undefined).map((_, idx) => currentAges[idx])
+                            
+                            if (inputValue === '') {
+                              newAges[i] = ''
+                              setTransferPassengerInfo(prev => ({ ...prev, infantAges: newAges }))
+                              return
+                            }
+                            
+                            const numericValue = inputValue.replace(/[^\d]/g, '')
+                            
+                            if (numericValue === '') {
+                              newAges[i] = ''
+                              setTransferPassengerInfo(prev => ({ ...prev, infantAges: newAges }))
+                              return
+                            }
+                            
+                            newAges[i] = numericValue
+                            setTransferPassengerInfo(prev => ({ ...prev, infantAges: newAges }))
                           }}
-                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
+                          onBlur={(e) => {
+                            const val = e.target.value.trim()
+                            const currentAges = transferPassengerInfo.infantAges || []
+                            const newAges = Array(transferPassengerInfo.infants).fill(undefined).map((_, idx) => currentAges[idx])
+                            
+                            if (val === '') {
+                              newAges[i] = undefined
+                            } else {
+                              const numVal = parseInt(val, 10)
+                              if (!isNaN(numVal) && numVal >= 0 && numVal <= 23) {
+                                newAges[i] = numVal
+                              } else {
+                                newAges[i] = undefined
+                              }
+                            }
+                            setTransferPassengerInfo(prev => ({ ...prev, infantAges: newAges }))
+                          }}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs transition-colors"
                           placeholder={`${t('booking.transfer.infant')} ${i + 1}`}
                         />
                       ))}
@@ -1607,17 +1732,56 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {Array(insuranceTravelerInfo.infants).fill(0).map((_, i) => (
                         <input
-                          key={i}
-                          type="number"
-                          min="0"
-                          max="23"
-                          value={insuranceTravelerInfo.infantAges?.[i] || 6}
+                          key={`infant-age-insurance-${i}`}
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          value={(() => {
+                            const age = insuranceTravelerInfo.infantAges?.[i]
+                            if (age === undefined || age === null) return ''
+                            if (typeof age === 'string') return age
+                            return String(age)
+                          })()}
                           onChange={(e) => {
-                            const newAges = [...(insuranceTravelerInfo.infantAges || [])]
-                            newAges[i] = parseInt(e.target.value) || 6
-                            setInsuranceTravelerInfo({ ...insuranceTravelerInfo, infantAges: newAges })
+                            const inputValue = e.target.value
+                            const currentAges = insuranceTravelerInfo.infantAges || []
+                            const newAges = Array(insuranceTravelerInfo.infants).fill(undefined).map((_, idx) => currentAges[idx])
+                            
+                            if (inputValue === '') {
+                              newAges[i] = ''
+                              setInsuranceTravelerInfo(prev => ({ ...prev, infantAges: newAges }))
+                              return
+                            }
+                            
+                            const numericValue = inputValue.replace(/[^\d]/g, '')
+                            
+                            if (numericValue === '') {
+                              newAges[i] = ''
+                              setInsuranceTravelerInfo(prev => ({ ...prev, infantAges: newAges }))
+                              return
+                            }
+                            
+                            newAges[i] = numericValue
+                            setInsuranceTravelerInfo(prev => ({ ...prev, infantAges: newAges }))
                           }}
-                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
+                          onBlur={(e) => {
+                            const val = e.target.value.trim()
+                            const currentAges = insuranceTravelerInfo.infantAges || []
+                            const newAges = Array(insuranceTravelerInfo.infants).fill(undefined).map((_, idx) => currentAges[idx])
+                            
+                            if (val === '') {
+                              newAges[i] = undefined
+                            } else {
+                              const numVal = parseInt(val, 10)
+                              if (!isNaN(numVal) && numVal >= 0 && numVal <= 23) {
+                                newAges[i] = numVal
+                              } else {
+                                newAges[i] = undefined
+                              }
+                            }
+                            setInsuranceTravelerInfo(prev => ({ ...prev, infantAges: newAges }))
+                          }}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs transition-colors"
                           placeholder={`${t('booking.insurance.infant')} ${i + 1}`}
                         />
                       ))}
@@ -1833,17 +1997,56 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {Array(embassyTravelerInfo.infants).fill(0).map((_, i) => (
                         <input
-                          key={i}
-                          type="number"
-                          min="0"
-                          max="23"
-                          value={embassyTravelerInfo.infantAges?.[i] || 6}
+                          key={`infant-age-embassy-${i}`}
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          value={(() => {
+                            const age = embassyTravelerInfo.infantAges?.[i]
+                            if (age === undefined || age === null) return ''
+                            if (typeof age === 'string') return age
+                            return String(age)
+                          })()}
                           onChange={(e) => {
-                            const newAges = [...(embassyTravelerInfo.infantAges || [])]
-                            newAges[i] = parseInt(e.target.value) || 6
-                            setEmbassyTravelerInfo({ ...embassyTravelerInfo, infantAges: newAges })
+                            const inputValue = e.target.value
+                            const currentAges = embassyTravelerInfo.infantAges || []
+                            const newAges = Array(embassyTravelerInfo.infants).fill(undefined).map((_, idx) => currentAges[idx])
+                            
+                            if (inputValue === '') {
+                              newAges[i] = ''
+                              setEmbassyTravelerInfo(prev => ({ ...prev, infantAges: newAges }))
+                              return
+                            }
+                            
+                            const numericValue = inputValue.replace(/[^\d]/g, '')
+                            
+                            if (numericValue === '') {
+                              newAges[i] = ''
+                              setEmbassyTravelerInfo(prev => ({ ...prev, infantAges: newAges }))
+                              return
+                            }
+                            
+                            newAges[i] = numericValue
+                            setEmbassyTravelerInfo(prev => ({ ...prev, infantAges: newAges }))
                           }}
-                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
+                          onBlur={(e) => {
+                            const val = e.target.value.trim()
+                            const currentAges = embassyTravelerInfo.infantAges || []
+                            const newAges = Array(embassyTravelerInfo.infants).fill(undefined).map((_, idx) => currentAges[idx])
+                            
+                            if (val === '') {
+                              newAges[i] = undefined
+                            } else {
+                              const numVal = parseInt(val, 10)
+                              if (!isNaN(numVal) && numVal >= 0 && numVal <= 23) {
+                                newAges[i] = numVal
+                              } else {
+                                newAges[i] = undefined
+                              }
+                            }
+                            setEmbassyTravelerInfo(prev => ({ ...prev, infantAges: newAges }))
+                          }}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs transition-colors"
                           placeholder={`${t('booking.embassy.infant')} ${i + 1}`}
                         />
                       ))}
