@@ -1,5 +1,5 @@
-// API endpoint for logging frontend errors to Google Sheets
-import { logErrorToSheets } from './utils/errorLogger.js';
+// Combined API endpoint for error logging and initialization
+import { logErrorToSheets, initializeErrorsSheet } from './utils/errorLogger.js';
 
 export default async function handler(req, res) {
   // CORS
@@ -17,8 +17,26 @@ export default async function handler(req, res) {
   }
 
   try {
-    const errorInfo = req.body;
-    
+    const { action, ...errorInfo } = req.body;
+
+    // Handle initialization request
+    if (action === 'init') {
+      const initialized = await initializeErrorsSheet();
+      
+      if (initialized) {
+        return res.status(200).json({ 
+          success: true,
+          message: 'Errors sheet headers initialized successfully'
+        });
+      } else {
+        return res.status(500).json({ 
+          success: false, 
+          message: 'Failed to initialize Errors sheet headers. Please check Google Sheets configuration.' 
+        });
+      }
+    }
+
+    // Handle error logging request (default)
     // Add request metadata
     errorInfo.userAgent = req.headers['user-agent'] || '';
     errorInfo.url = req.headers['referer'] || req.url || '';
@@ -34,12 +52,11 @@ export default async function handler(req, res) {
       message: logged ? 'Error logged successfully' : 'Failed to log error'
     });
   } catch (error) {
-    console.error('Error in error-logger endpoint:', error);
+    console.error('Error in errors endpoint:', error);
     return res.status(500).json({ 
       success: false, 
-      message: 'Failed to log error' 
+      message: 'Failed to process error request' 
     });
   }
 }
-
 

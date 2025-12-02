@@ -12,25 +12,27 @@ export default function Skills() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/skills')
-      .then((res) => {
-        if (!res.ok) throw new Error('Network response was not ok')
-        return res.json()
-      })
-      .then((data) => {
-        setSkills(data)
-        setLoading(false)
-      })
-      .catch((err) => {
-        console.error('Skills yüklənərkən xəta:', err)
-        setSkills([
-          { name: 'Aviabilet Rezervasiyası', level: 95, category: 'Xidmətlər' },
-          { name: 'Otel Booking', level: 90, category: 'Xidmətlər' },
-          { name: 'Transfer Xidmətləri', level: 88, category: 'Xidmətlər' },
-          { name: 'Sığorta Məsləhəti', level: 85, category: 'Xidmətlər' },
-        ])
-        setLoading(false)
-      })
+    // Static skills data - moved from API to frontend to reduce serverless functions
+    const staticSkills: Skill[] = [
+      { name: 'Aviabilet Rezervasiyası', level: 95, category: 'Xidmətlər' },
+      { name: 'Otel Booking', level: 90, category: 'Xidmətlər' },
+      { name: 'Transfer Xidmətləri', level: 88, category: 'Xidmətlər' },
+      { name: 'Sığorta Məsləhəti', level: 85, category: 'Xidmətlər' },
+      { name: 'Səfirlik İşləri', level: 90, category: 'Xidmətlər' },
+      { name: 'Səyahət Planlaşdırması', level: 92, category: 'Xidmətlər' },
+      { name: 'Hava Yolu Sistemləri', level: 95, category: 'Bilik Sahələri' },
+      { name: 'Tarif Optimallaşdırması', level: 93, category: 'Bilik Sahələri' },
+      { name: 'Multi-City Rezervasiya', level: 90, category: 'Bilik Sahələri' },
+      { name: 'Viza Prosedurları', level: 88, category: 'Bilik Sahələri' },
+      { name: 'Səyahət Sənədləri', level: 90, category: 'Bilik Sahələri' },
+      { name: 'Müştəri Xidməti', level: 95, category: 'Bacarıqlar' },
+      { name: 'Fərdi Yanaşma', level: 93, category: 'Bacarıqlar' },
+      { name: 'Problem Həll Etmə', level: 90, category: 'Bacarıqlar' },
+      { name: 'Kommunikasiya', level: 95, category: 'Bacarıqlar' },
+      { name: 'Vaxt İdarəetməsi', level: 88, category: 'Bacarıqlar' },
+    ]
+    setSkills(staticSkills)
+    setLoading(false)
   }, [])
 
   const categories = Array.from(new Set(skills.map((s) => s.category)))

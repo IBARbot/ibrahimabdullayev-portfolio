@@ -326,7 +326,7 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
       } else {
         // Log API error response
         try {
-          await fetch('/api/error-logger', {
+          await fetch('/api/errors', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -355,7 +355,7 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
       console.error('Booking submission error:', error);
       // Log error to Google Sheets
       try {
-        await fetch('/api/error-logger', {
+        await fetch('/api/errors', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

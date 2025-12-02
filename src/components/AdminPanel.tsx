@@ -158,12 +158,13 @@ export default function AdminPanel() {
   const initializeErrorsSheetHeaders = async () => {
     try {
       const token = localStorage.getItem('adminToken')
-      const response = await fetch('/api/init-errors-sheet', {
+      const response = await fetch('/api/errors', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({ action: 'init' }),
       })
       const data = await response.json()
       if (data.success) {
