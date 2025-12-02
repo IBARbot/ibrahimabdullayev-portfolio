@@ -1,8 +1,9 @@
-// Shared in-memory content store for public site + admin panel
-// Note: This is in-memory per serverless instance. For long‑term persistence,
-// content should eventually be stored in a database or Google Sheets.
+// Shared content store with Google Sheets persistence
+// Content is stored in Google Sheets "Content" page, cell A1 as JSON string
+import jwt from 'jsonwebtoken';
 
-export let contentData = {
+// Default content (fallback if Google Sheets is not available)
+const defaultContent = {
   hero: {
     title: 'Salam, mən İbrahim Abdullayev',
     subtitle: 'Aviabilet və Rezervasiya Sistemləri üzrə Mütəxəssis',
@@ -23,7 +24,6 @@ export let contentData = {
     instagram: 'https://instagram.com/ibrahim_abdullar',
     whatsapp: 'https://wa.me/994555973923',
   },
-  // Personal portfolio items (can be edited from admin panel)
   portfolio: [
     {
       id: 'portfolio-1',
@@ -59,7 +59,6 @@ export let contentData = {
       github: '',
     },
   ],
-  // Certificates with images – paths point to /public, can be changed from admin panel
   certificates: [
     {
       id: 'cert-dgr-7-3',
@@ -78,9 +77,7 @@ export let contentData = {
       image: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92eee?w=1200&h=800&fit=cover',
     },
   ],
-  // Video / media links – can be embedded on the site
   videos: [],
-  // Dynamic social links (footer/icons). Icons will be mapped on frontend.
   socialLinks: [
     {
       id: 'linkedin',
@@ -111,19 +108,178 @@ export let contentData = {
       icon: 'mail',
     },
   ],
+};
+
+// In-memory cache (fallback)
+let contentData = { ...defaultContent };
+
+// Get access token for Google Sheets API
+async function getAccessToken() {
+  const serviceAccountKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+  if (!serviceAccountKey) return null;
+
+  try {
+    const serviceAccountJson = Buffer.from(serviceAccountKey, 'base64').toString('utf-8');
+    const serviceAccount = JSON.parse(serviceAccountJson);
+
+    const now = Math.floor(Date.now() / 1000);
+    const token = jwt.sign(
+      {
+        iss: serviceAccount.client_email,
+        sub: serviceAccount.client_email,
+        aud: 'https://oauth2.googleapis.com/token',
+        exp: now + 3600,
+        iat: now,
+        scope: 'https://www.googleapis.com/auth/spreadsheets',
+      },
+      serviceAccount.private_key,
+      { algorithm: 'RS256' }
+    );
+
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        assertion: token,
+      }),
+    });
+
+    const tokenData = await tokenResponse.json();
+    return tokenData.access_token || null;
+  } catch (error) {
+    console.error('Error getting access token:', error);
+    return null;
+  }
 }
 
-export function getContent() {
-  return contentData
+// Load content from Google Sheets
+async function loadContentFromSheets() {
+  const sheetId = process.env.GOOGLE_SHEET_ID;
+  if (!sheetId) {
+    console.log('Google Sheets ID not configured, using default content');
+    return null;
+  }
+
+  try {
+    const accessToken = await getAccessToken();
+    if (!accessToken) {
+      console.log('Could not get access token, using default content');
+      return null;
+    }
+
+    // Read from "Content" sheet, cell A1
+    const range = 'Content!A1';
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}`;
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.log('Could not read from Google Sheets, using default content');
+      return null;
+    }
+
+    const data = await response.json();
+    if (data.values && data.values[0] && data.values[0][0]) {
+      const contentJson = data.values[0][0];
+      const parsedContent = JSON.parse(contentJson);
+      console.log('Content loaded from Google Sheets');
+      return parsedContent;
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error loading content from Google Sheets:', error);
+    return null;
+  }
 }
 
-export function updateContent(partial) {
+// Save content to Google Sheets
+async function saveContentToSheets(content) {
+  const sheetId = process.env.GOOGLE_SHEET_ID;
+  if (!sheetId) {
+    console.log('Google Sheets ID not configured, content not saved');
+    return false;
+  }
+
+  try {
+    const accessToken = await getAccessToken();
+    if (!accessToken) {
+      console.log('Could not get access token, content not saved');
+      return false;
+    }
+
+    // Write to "Content" sheet, cell A1
+    const range = 'Content!A1';
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?valueInputOption=RAW`;
+
+    const contentJson = JSON.stringify(content);
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        values: [[contentJson]],
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error saving to Google Sheets:', errorText);
+      return false;
+    }
+
+    console.log('Content saved to Google Sheets successfully');
+    return true;
+  } catch (error) {
+    console.error('Error saving content to Google Sheets:', error);
+    return false;
+  }
+}
+
+// Get content (loads from Google Sheets if available, otherwise uses cache/default)
+export async function getContent() {
+  // Try to load from Google Sheets
+  const sheetsContent = await loadContentFromSheets();
+  if (sheetsContent) {
+    contentData = sheetsContent;
+    return contentData;
+  }
+
+  // Fallback to in-memory cache or default
+  return contentData;
+}
+
+// Update content (saves to Google Sheets and updates cache)
+export async function updateContent(partial) {
+  // Merge with existing content
   contentData = {
     ...contentData,
     ...partial,
-  }
-  return contentData
+  };
+
+  // Save to Google Sheets
+  await saveContentToSheets(contentData);
+
+  return contentData;
 }
 
-
-
+// Initialize: Try to load from Google Sheets on module load
+// Note: This runs once per serverless instance, so we still need to load on each request
+// But it helps with caching
+(async () => {
+  try {
+    const sheetsContent = await loadContentFromSheets();
+    if (sheetsContent) {
+      contentData = sheetsContent;
+    }
+  } catch (error) {
+    // Ignore initialization errors
+  }
+})();

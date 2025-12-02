@@ -263,8 +263,16 @@ export default async function handler(req, res) {
     if (route === 'content') {
       // Public GET: frontend (About, Projects, Footer, Hero) oxuya bilsin
       if (req.method === 'GET') {
-        const current = getContent();
-        return res.status(200).json(current);
+        try {
+          const current = await getContent();
+          return res.status(200).json(current);
+        } catch (error) {
+          console.error('Error loading content:', error);
+          // Return default content on error
+          const { getContent: getDefaultContent } = await import('../utils/contentStore.js');
+          const defaultContent = await getDefaultContent();
+          return res.status(200).json(defaultContent);
+        }
       }
 
       // PUT üçün authentication tələb olunur
@@ -286,7 +294,7 @@ export default async function handler(req, res) {
 
       if (req.method === 'PUT') {
         try {
-          const updated = updateContent(req.body || {});
+          const updated = await updateContent(req.body || {});
           return res
             .status(200)
             .json({ success: true, message: 'Məzmun yeniləndi', content: updated });
