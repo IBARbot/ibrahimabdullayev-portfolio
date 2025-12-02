@@ -3,6 +3,7 @@
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import { getContent, updateContent } from '../utils/contentStore.js';
+import { logApiError } from '../utils/errorLogger.js';
 
 const createTransporter = () => {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return null;
@@ -353,6 +354,9 @@ export default async function handler(req, res) {
             .json({ success: true, message: 'Məzmun yeniləndi', content: updated });
         } catch (error) {
           console.error('Content update error:', error);
+          await logApiError('/api/admin/content', error, req).catch(err => 
+            console.error('Failed to log error:', err)
+          );
           return res.status(500).json({ success: false, message: 'Xəta baş verdi' });
         }
       }
@@ -413,6 +417,10 @@ export default async function handler(req, res) {
     return res.status(404).json({ success: false, message: 'Route not found' });
   } catch (error) {
     console.error('Admin API error:', error);
+    // Log error to Google Sheets
+    await logApiError('/api/admin', error, req).catch(err => 
+      console.error('Failed to log error to Google Sheets:', err)
+    );
     return res.status(500).json({ success: false, message: 'Xəta baş verdi' });
   }
 }

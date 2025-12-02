@@ -312,15 +312,65 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
           setTimeout(() => onBookingSuccess(), 2000)
         }
       } else {
+        // Log API error response
+        try {
+          await fetch('/api/error-logger', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              type: 'API_ERROR_RESPONSE',
+              endpoint: '/api/booking',
+              message: data.message || 'Booking submission failed',
+              data: {
+                bookingType,
+                responseStatus: response.status,
+                responseData: data,
+              },
+            }),
+          }).catch(err => console.error('Failed to log error:', err));
+        } catch (logError) {
+          console.error('Error logging failed:', logError);
+        }
+        
         setSubmitStatus({
           type: 'error',
           message: data.message || t('booking.error'),
         })
       }
     } catch (error) {
+      console.error('Booking submission error:', error);
+      // Log error to Google Sheets
+      try {
+        await fetch('/api/error-logger', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'FRONTEND_ERROR',
+            endpoint: 'BookingForm',
+            message: error.message || String(error),
+            stack: error.stack || '',
+            data: {
+              bookingType,
+              formData: {
+                ...formData,
+                // Don't log sensitive data
+                email: formData.email ? '***' : '',
+                phone: formData.phone ? '***' : '',
+              },
+            },
+          }),
+        }).catch(err => console.error('Failed to log error:', err));
+      } catch (logError) {
+        console.error('Error logging failed:', logError);
+      }
+      
       setSubmitStatus({
         type: 'error',
-        message: t('booking.error'),
+        message: data?.message || t('booking.error'),
       })
     } finally {
       setIsSubmitting(false)
@@ -617,7 +667,7 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       value={passengerInfo.children}
                       onChange={(e) => {
                         const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(0).map((_, i) => passengerInfo.childAges?.[i] || 5)
+                        const newAges = Array(val).fill(0).map((_, i) => passengerInfo.childAges?.[i] ?? 5)
                         setPassengerInfo({ ...passengerInfo, children: val, childAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
@@ -669,10 +719,11 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                           type="number"
                           min="2"
                           max="11"
-                          value={passengerInfo.childAges?.[i] || 5}
+                          value={passengerInfo.childAges?.[i] ?? ''}
                           onChange={(e) => {
                             const newAges = [...(passengerInfo.childAges || [])]
-                            newAges[i] = parseInt(e.target.value) || 5
+                            const val = e.target.value.trim()
+                            newAges[i] = val === '' ? undefined : (parseInt(val) || undefined)
                             setPassengerInfo({ ...passengerInfo, childAges: newAges })
                           }}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
@@ -836,7 +887,7 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       value={guestInfo.children}
                       onChange={(e) => {
                         const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(0).map((_, i) => guestInfo.childAges?.[i] || 5)
+                        const newAges = Array(val).fill(0).map((_, i) => guestInfo.childAges?.[i] ?? 5)
                         setGuestInfo({ ...guestInfo, children: val, childAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
@@ -888,10 +939,11 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                           type="number"
                           min="2"
                           max="17"
-                          value={guestInfo.childAges?.[i] || 5}
+                          value={guestInfo.childAges?.[i] ?? ''}
                           onChange={(e) => {
                             const newAges = [...(guestInfo.childAges || [])]
-                            newAges[i] = parseInt(e.target.value) || 5
+                            const val = e.target.value.trim()
+                            newAges[i] = val === '' ? undefined : (parseInt(val) || undefined)
                             setGuestInfo({ ...guestInfo, childAges: newAges })
                           }}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
@@ -1078,7 +1130,7 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       value={transferPassengerInfo.children}
                       onChange={(e) => {
                         const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(0).map((_, i) => transferPassengerInfo.childAges?.[i] || 5)
+                        const newAges = Array(val).fill(0).map((_, i) => transferPassengerInfo.childAges?.[i] ?? 5)
                         setTransferPassengerInfo({ ...transferPassengerInfo, children: val, childAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
@@ -1130,10 +1182,11 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                           type="number"
                           min="2"
                           max="17"
-                          value={transferPassengerInfo.childAges?.[i] || 5}
+                          value={transferPassengerInfo.childAges?.[i] ?? ''}
                           onChange={(e) => {
                             const newAges = [...(transferPassengerInfo.childAges || [])]
-                            newAges[i] = parseInt(e.target.value) || 5
+                            const val = e.target.value.trim()
+                            newAges[i] = val === '' ? undefined : (parseInt(val) || undefined)
                             setTransferPassengerInfo({ ...transferPassengerInfo, childAges: newAges })
                           }}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
@@ -1287,7 +1340,7 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       value={insuranceTravelerInfo.children}
                       onChange={(e) => {
                         const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(0).map((_, i) => insuranceTravelerInfo.childAges?.[i] || 5)
+                        const newAges = Array(val).fill(0).map((_, i) => insuranceTravelerInfo.childAges?.[i] ?? 5)
                         setInsuranceTravelerInfo({ ...insuranceTravelerInfo, children: val, childAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
@@ -1339,10 +1392,11 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                           type="number"
                           min="2"
                           max="17"
-                          value={insuranceTravelerInfo.childAges?.[i] || 5}
+                          value={insuranceTravelerInfo.childAges?.[i] ?? ''}
                           onChange={(e) => {
                             const newAges = [...(insuranceTravelerInfo.childAges || [])]
-                            newAges[i] = parseInt(e.target.value) || 5
+                            const val = e.target.value.trim()
+                            newAges[i] = val === '' ? undefined : (parseInt(val) || undefined)
                             setInsuranceTravelerInfo({ ...insuranceTravelerInfo, childAges: newAges })
                           }}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
@@ -1467,7 +1521,7 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       value={embassyTravelerInfo.children}
                       onChange={(e) => {
                         const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(0).map((_, i) => embassyTravelerInfo.childAges?.[i] || 5)
+                        const newAges = Array(val).fill(0).map((_, i) => embassyTravelerInfo.childAges?.[i] ?? 5)
                         setEmbassyTravelerInfo({ ...embassyTravelerInfo, children: val, childAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
@@ -1519,10 +1573,11 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                           type="number"
                           min="2"
                           max="17"
-                          value={embassyTravelerInfo.childAges?.[i] || 5}
+                          value={embassyTravelerInfo.childAges?.[i] ?? ''}
                           onChange={(e) => {
                             const newAges = [...(embassyTravelerInfo.childAges || [])]
-                            newAges[i] = parseInt(e.target.value) || 5
+                            const val = e.target.value.trim()
+                            newAges[i] = val === '' ? undefined : (parseInt(val) || undefined)
                             setEmbassyTravelerInfo({ ...embassyTravelerInfo, childAges: newAges })
                           }}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"

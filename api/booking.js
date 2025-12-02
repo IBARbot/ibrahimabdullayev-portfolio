@@ -1,6 +1,7 @@
 // Vercel Serverless Function - Booking API
 import nodemailer from 'nodemailer';
 import { sanitizeBookingData } from './utils/validation.js';
+import { logApiError } from './utils/errorLogger.js';
 
 const createTransporter = () => {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return null;
@@ -33,6 +34,7 @@ export default async function handler(req, res) {
     
     // Validation: Email və ya telefon-dan ən azı biri mütləq olmalıdır
     if (!bookingData.type || (!bookingData.email && !bookingData.phone)) {
+      await logApiError('/api/booking', new Error('Missing required fields: type, email or phone'), req);
       return res.status(400).json({ success: false, message: 'Zəhmət olmasa email və ya telefon nömrəsindən ən azı birini daxil edin.' });
     }
     
@@ -40,6 +42,7 @@ export default async function handler(req, res) {
     try {
       bookingData = sanitizeBookingData(bookingData);
     } catch (validationError) {
+      await logApiError('/api/booking', validationError, req);
       return res.status(400).json({ 
         success: false, 
         message: validationError.message || 'Validation error' 
@@ -197,6 +200,10 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error('Booking xətası:', error);
+    // Log error to Google Sheets
+    await logApiError('/api/booking', error, req).catch(err => 
+      console.error('Failed to log error to Google Sheets:', err)
+    );
     return res.status(500).json({ success: false, message: 'Sorğu göndərilərkən xəta baş verdi' });
   }
 }
