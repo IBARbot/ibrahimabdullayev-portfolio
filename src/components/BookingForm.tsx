@@ -679,7 +679,8 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       value={passengerInfo.children}
                       onChange={(e) => {
                         const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(0).map((_, i) => passengerInfo.childAges?.[i] ?? 5)
+                        // Preserve existing ages, don't set default for new ones
+                        const newAges = Array(val).fill(undefined).map((_, i) => passengerInfo.childAges?.[i])
                         setPassengerInfo({ ...passengerInfo, children: val, childAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
@@ -945,7 +946,7 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       value={guestInfo.children}
                       onChange={(e) => {
                         const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(0).map((_, i) => guestInfo.childAges?.[i] ?? 5)
+                        const newAges = Array(val).fill(undefined).map((_, i) => guestInfo.childAges?.[i])
                         setGuestInfo({ ...guestInfo, children: val, childAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
@@ -1230,7 +1231,7 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       value={transferPassengerInfo.children}
                       onChange={(e) => {
                         const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(0).map((_, i) => transferPassengerInfo.childAges?.[i] ?? 5)
+                        const newAges = Array(val).fill(undefined).map((_, i) => transferPassengerInfo.childAges?.[i])
                         setTransferPassengerInfo({ ...transferPassengerInfo, children: val, childAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
@@ -1482,7 +1483,7 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       value={insuranceTravelerInfo.children}
                       onChange={(e) => {
                         const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(0).map((_, i) => insuranceTravelerInfo.childAges?.[i] ?? 5)
+                        const newAges = Array(val).fill(undefined).map((_, i) => insuranceTravelerInfo.childAges?.[i])
                         setInsuranceTravelerInfo({ ...insuranceTravelerInfo, children: val, childAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
@@ -1705,7 +1706,7 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                       value={embassyTravelerInfo.children}
                       onChange={(e) => {
                         const val = parseInt(e.target.value) || 0
-                        const newAges = Array(val).fill(0).map((_, i) => embassyTravelerInfo.childAges?.[i] ?? 5)
+                        const newAges = Array(val).fill(undefined).map((_, i) => embassyTravelerInfo.childAges?.[i])
                         setEmbassyTravelerInfo({ ...embassyTravelerInfo, children: val, childAges: newAges })
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm"
