@@ -14,24 +14,6 @@ export default function Hero({ onOpenBooking }: HeroProps) {
   const [heroImage, setHeroImage] = useState<string>(PROFILE_IMAGE)
 
   useEffect(() => {
-    // Load hero image from backend (if available) - non-blocking
-    fetch('/api/content')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.hero?.image) {
-          setHeroImage(data.hero.image)
-        }
-      })
-      .catch(() => {
-        // Keep default image
-      })
-  }, [])
-
-  // Update image when language changes (if backend provides different images per language)
-  useEffect(() => {
-    // Public content endpoint (shared with admin content storage)
-    fetch('/api/admin/content')
-  useEffect(() => {
     // Public content endpoint (shared with admin content storage)
     fetch('/api/admin/content')
       .then((res) => res.json())

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import {
   LogOut,
@@ -20,6 +20,9 @@ import {
   Video,
   Globe2,
   Award,
+  CheckCircle2,
+  XCircle,
+  Upload,
 } from 'lucide-react'
 
 interface PortfolioItem {
@@ -137,6 +140,9 @@ export default function AdminPanel() {
     type: null,
     text: '',
   })
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [uploadedImages, setUploadedImages] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken')
@@ -324,10 +330,20 @@ export default function AdminPanel() {
     }
   }
 
+  const showToastNotification = (type: 'success' | 'error', text: string) => {
+    setToastMessage({ type, text })
+    setShowToast(true)
+    setTimeout(() => {
+      setShowToast(false)
+      setTimeout(() => setToastMessage(null), 300)
+    }, 3000)
+  }
+
   const handleSave = async () => {
     if (!content) return
 
     setLoading(true)
+    setMessage({ type: null, text: '' })
     const token = localStorage.getItem('adminToken')
 
     try {
@@ -344,11 +360,17 @@ export default function AdminPanel() {
 
       if (data.success) {
         setMessage({ type: 'success', text: t('admin.content.saved') })
+        showToastNotification('success', t('admin.content.saved'))
+        setUploadedImages(new Set()) // Clear uploaded images indicator
       } else {
-        setMessage({ type: 'error', text: data.message || t('admin.content.error') })
+        const errorText = data.message || t('admin.content.error')
+        setMessage({ type: 'error', text: errorText })
+        showToastNotification('error', errorText)
       }
     } catch (error) {
-      setMessage({ type: 'error', text: t('admin.content.error') })
+      const errorText = t('admin.content.error')
+      setMessage({ type: 'error', text: errorText })
+      showToastNotification('error', errorText)
     } finally {
       setLoading(false)
     }
@@ -366,6 +388,9 @@ export default function AdminPanel() {
     reader.onloadend = () => {
       const base64String = reader.result as string
       if (!content) return
+
+      const imageKey = section === 'hero' ? 'hero' : `${section}-${index}`
+      setUploadedImages((prev) => new Set([...prev, imageKey]))
 
       if (section === 'hero') {
         setContent({
@@ -406,6 +431,13 @@ export default function AdminPanel() {
       }
     }
     reader.readAsDataURL(file)
+  }
+
+  const scrollToVideos = () => {
+    const videosSection = document.getElementById('videos-section')
+    if (videosSection) {
+      videosSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
   }
 
   if (!isAuthenticated) {
@@ -570,6 +602,33 @@ export default function AdminPanel() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Toast Notification */}
+        <AnimatePresence>
+          {showToast && toastMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -50, x: '-50%' }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -50 }}
+              className="fixed top-4 left-1/2 z-50 transform -translate-x-1/2"
+            >
+              <div
+                className={`flex items-center gap-3 px-6 py-4 rounded-lg shadow-lg ${
+                  toastMessage.type === 'success'
+                    ? 'bg-green-500 text-white'
+                    : 'bg-red-500 text-white'
+                }`}
+              >
+                {toastMessage.type === 'success' ? (
+                  <CheckCircle2 className="w-6 h-6" />
+                ) : (
+                  <XCircle className="w-6 h-6" />
+                )}
+                <span className="font-semibold">{toastMessage.text}</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {message.type && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -611,6 +670,19 @@ export default function AdminPanel() {
             </button>
           </nav>
         </div>
+
+        {/* Quick Navigation for Videos Section */}
+        {activeTab === 'content' && (
+          <div className="mb-6 flex justify-end">
+            <button
+              onClick={scrollToVideos}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"
+            >
+              <Video className="w-4 h-4" />
+              Video bölməsinə keç
+            </button>
+          </div>
+        )}
 
         {activeTab === 'stats' ? (
           <div className="space-y-6">
@@ -960,6 +1032,12 @@ export default function AdminPanel() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   {t('admin.content.hero.imageLabel')} (Base64 və ya URL)
+                  {uploadedImages.has('hero') && (
+                    <span className="ml-2 inline-flex items-center gap-1 text-xs text-green-600">
+                      <Upload className="w-3 h-3" />
+                      Yüklənib
+                    </span>
+                  )}
                 </label>
                 <input
                   type="file"
@@ -974,6 +1052,11 @@ export default function AdminPanel() {
                       alt="Hero"
                       className="w-full h-32 object-cover rounded-lg"
                     />
+                    {uploadedImages.has('hero') && (
+                      <div className="absolute top-2 right-12 bg-green-500 text-white rounded-full p-1">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                    )}
                     <button
                       type="button"
                       onClick={() => {
@@ -981,6 +1064,11 @@ export default function AdminPanel() {
                           setContent({
                             ...content,
                             hero: { ...content.hero, image: '' },
+                          })
+                          setUploadedImages((prev) => {
+                            const next = new Set(prev)
+                            next.delete('hero')
+                            return next
                           })
                         }
                       }}
@@ -1207,6 +1295,12 @@ export default function AdminPanel() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         {t('admin.content.portfolio.fields.image')}
+                        {uploadedImages.has(`portfolio-${index}`) && (
+                          <span className="ml-2 inline-flex items-center gap-1 text-xs text-green-600">
+                            <Upload className="w-3 h-3" />
+                            Yüklənib
+                          </span>
+                        )}
                       </label>
                       <input
                         type="file"
@@ -1215,11 +1309,18 @@ export default function AdminPanel() {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                       />
                       {item.image && (
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="mt-2 w-full h-28 object-cover rounded-md border border-gray-200"
-                        />
+                        <div className="mt-2 relative">
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            className="w-full h-28 object-cover rounded-md border border-gray-200"
+                          />
+                          {uploadedImages.has(`portfolio-${index}`) && (
+                            <div className="absolute top-1 right-1 bg-green-500 text-white rounded-full p-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                     <button
@@ -1227,6 +1328,25 @@ export default function AdminPanel() {
                       onClick={() => {
                         const updated = (content.portfolio || []).filter((_, idx) => idx !== index)
                         setContent({ ...content, portfolio: updated })
+                        setUploadedImages((prev) => {
+                          const next = new Set(prev)
+                          next.delete(`portfolio-${index}`)
+                          // Re-index remaining items
+                          const newSet = new Set<string>()
+                          next.forEach((key) => {
+                            if (key.startsWith('portfolio-')) {
+                              const oldIdx = parseInt(key.split('-')[1])
+                              if (oldIdx > index) {
+                                newSet.add(`portfolio-${oldIdx - 1}`)
+                              } else if (oldIdx < index) {
+                                newSet.add(key)
+                              }
+                            } else {
+                              newSet.add(key)
+                            }
+                          })
+                          return newSet
+                        })
                       }}
                       className="w-full flex items-center justify-center gap-2 px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm"
                     >
@@ -1347,6 +1467,12 @@ export default function AdminPanel() {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           {t('admin.content.certificates.fields.image')}
+                          {uploadedImages.has(`certificates-${index}`) && (
+                            <span className="ml-2 inline-flex items-center gap-1 text-xs text-green-600">
+                              <Upload className="w-3 h-3" />
+                              Yüklənib
+                            </span>
+                          )}
                         </label>
                         <input
                           type="file"
@@ -1355,11 +1481,18 @@ export default function AdminPanel() {
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                         />
                         {cert.image && (
-                          <img
-                            src={cert.image}
-                            alt={cert.title}
-                            className="mt-2 w-full h-28 object-cover rounded-md border border-gray-200"
-                          />
+                          <div className="mt-2 relative">
+                            <img
+                              src={cert.image}
+                              alt={cert.title}
+                              className="w-full h-28 object-cover rounded-md border border-gray-200"
+                            />
+                            {uploadedImages.has(`certificates-${index}`) && (
+                              <div className="absolute top-1 right-1 bg-green-500 text-white rounded-full p-1">
+                                <CheckCircle2 className="w-4 h-4" />
+                              </div>
+                            )}
+                          </div>
                         )}
                       </div>
                       <button
@@ -1369,6 +1502,25 @@ export default function AdminPanel() {
                             (_c, idx) => idx !== index,
                           )
                           setContent({ ...content, certificates: updated })
+                          setUploadedImages((prev) => {
+                            const next = new Set(prev)
+                            next.delete(`certificates-${index}`)
+                            // Re-index remaining items
+                            const newSet = new Set<string>()
+                            next.forEach((key) => {
+                              if (key.startsWith('certificates-')) {
+                                const oldIdx = parseInt(key.split('-')[1])
+                                if (oldIdx > index) {
+                                  newSet.add(`certificates-${oldIdx - 1}`)
+                                } else if (oldIdx < index) {
+                                  newSet.add(key)
+                                }
+                              } else {
+                                newSet.add(key)
+                              }
+                            })
+                            return newSet
+                          })
                         }}
                         className="w-full flex items-center justify-center gap-2 px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm"
                       >
@@ -1399,7 +1551,7 @@ export default function AdminPanel() {
             </div>
 
             {/* Videos / Media */}
-            <div>
+            <div id="videos-section">
               <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <Video className="w-5 h-5" />
                 {t('admin.content.videos.title')}
@@ -1689,21 +1841,57 @@ export default function AdminPanel() {
 
         {/* Save Button - Only show in content tab */}
         {activeTab === 'content' && (
-          <div className="mt-8 flex justify-end">
-            <motion.button
-              onClick={handleSave}
-              disabled={loading}
-              whileTap={{ scale: 0.96 }}
-              className="relative inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 active:bg-primary-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
-            >
-              {loading && (
-                <span className="absolute inset-0 bg-white/10 animate-pulse pointer-events-none" />
-              )}
-              <span className={loading ? 'animate-spin' : ''}>
-                <Save className="w-5 h-5" />
-              </span>
-              <span>{loading ? t('admin.content.saving') : t('admin.content.save')}</span>
-            </motion.button>
+          <div className="mt-8 flex justify-between items-center">
+            {uploadedImages.size > 0 && (
+              <div className="text-sm text-gray-600 flex items-center gap-2">
+                <Upload className="w-4 h-4 text-primary-600" />
+                <span>
+                  {uploadedImages.size} şəkil yüklənib. Dəyişiklikləri saxlatmaq üçün SAXLA düyməsini basın.
+                </span>
+              </div>
+            )}
+            <div className="ml-auto">
+              <motion.button
+                onClick={handleSave}
+                disabled={loading}
+                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                className="relative inline-flex items-center gap-2 px-8 py-4 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 active:bg-primary-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden shadow-lg hover:shadow-xl"
+              >
+                {loading && (
+                  <>
+                    <motion.span
+                      className="absolute inset-0 bg-gradient-to-r from-primary-400 to-primary-600"
+                      initial={{ x: '-100%' }}
+                      animate={{ x: '100%' }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1.5,
+                        ease: 'linear',
+                      }}
+                    />
+                    <motion.span
+                      className="absolute inset-0 bg-white/20"
+                      animate={{ opacity: [0.3, 0.6, 0.3] }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1,
+                        ease: 'easeInOut',
+                      }}
+                    />
+                  </>
+                )}
+                <motion.span
+                  animate={loading ? { rotate: 360 } : {}}
+                  transition={loading ? { repeat: Infinity, duration: 1, ease: 'linear' } : {}}
+                >
+                  <Save className="w-5 h-5" />
+                </motion.span>
+                <span className="relative z-10">
+                  {loading ? t('admin.content.saving') : t('admin.content.save')}
+                </span>
+              </motion.button>
+            </div>
           </div>
         )}
       </div>
