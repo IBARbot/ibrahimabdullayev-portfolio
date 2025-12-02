@@ -265,12 +265,65 @@ export default async function handler(req, res) {
       if (req.method === 'GET') {
         try {
           const current = await getContent();
-          return res.status(200).json(current);
+          // Validate content structure
+          if (current && typeof current === 'object' && current.hero && current.about) {
+            return res.status(200).json(current);
+          } else {
+            console.warn('Content structure invalid, using default');
+            // Return default content directly
+            const defaultContent = {
+              hero: {
+                title: 'Salam, mən İbrahim Abdullayev',
+                subtitle: 'Aviabilet və Rezervasiya Sistemləri üzrə Mütəxəssis',
+                description: 'Aviabilet rezervasiyası, otel booking, transfer xidmətləri, sığorta və səfirlik işləri üzrə peşəkar məsləhətçi. GDS, NDC və Direct Sell UI üzrə mentor kimi illər boyu təcrübəmlə səyahətçilərə ən uyğun və təhlükəsiz həlləri təqdim edirəm.',
+                image: 'https://i.imgur.com/64oQNiZ.jpeg',
+              },
+              about: {
+                title: 'Haqqımda',
+                content: 'Turizm və aviasiya sahəsində çoxillik təcrübəyə malik mütəxəssis kimi əsas fokusum aviabilet satışları, tariflərin düzgün hesablanması və müştərilərə ən optimal marşrutların təklif edilməsidir.\n\nGDS sistemləri (Amadeus, Galileo və s.), NDC interfeysləri və aviaşirkətlərin birbaşa satış platformaları ilə intensiv işləyərək həm sərnişin, həm də yük daşımalarında (Air Cargo) effektiv və sürətli həllər təqdim edirəm.\n\nMəqsədim – hər bir müştərinin büdcə, rahatlıq və təhlükəsizlik meyarlarına uyğun olaraq, şəffaf və peşəkar xidmət göstərməkdir.',
+              },
+              contact: {
+                email: 'ibrahim.abdullayev1@gmail.com',
+                phone: '+994 55 597 39 23',
+                address: 'Baku, Rashid Behbudov str, Azerbaijan',
+                linkedin: 'https://linkedin.com/in/ibrahim-abdullayev-7bb887152',
+                instagram: 'https://instagram.com/ibrahim_abdullar',
+                whatsapp: 'https://wa.me/994555973923',
+              },
+              portfolio: [],
+              certificates: [],
+              videos: [],
+              socialLinks: [],
+            };
+            return res.status(200).json(defaultContent);
+          }
         } catch (error) {
           console.error('Error loading content:', error);
-          // Return default content on error
-          const { getContent: getDefaultContent } = await import('../utils/contentStore.js');
-          const defaultContent = await getDefaultContent();
+          // Return default content structure on error
+          const defaultContent = {
+            hero: {
+              title: 'Salam, mən İbrahim Abdullayev',
+              subtitle: 'Aviabilet və Rezervasiya Sistemləri üzrə Mütəxəssis',
+              description: 'Aviabilet rezervasiyası, otel booking, transfer xidmətləri, sığorta və səfirlik işləri üzrə peşəkar məsləhətçi. GDS, NDC və Direct Sell UI üzrə mentor kimi illər boyu təcrübəmlə səyahətçilərə ən uyğun və təhlükəsiz həlləri təqdim edirəm.',
+              image: 'https://i.imgur.com/64oQNiZ.jpeg',
+            },
+            about: {
+              title: 'Haqqımda',
+              content: 'Turizm və aviasiya sahəsində çoxillik təcrübəyə malik mütəxəssis kimi əsas fokusum aviabilet satışları, tariflərin düzgün hesablanması və müştərilərə ən optimal marşrutların təklif edilməsidir.\n\nGDS sistemləri (Amadeus, Galileo və s.), NDC interfeysləri və aviaşirkətlərin birbaşa satış platformaları ilə intensiv işləyərək həm sərnişin, həm də yük daşımalarında (Air Cargo) effektiv və sürətli həllər təqdim edirəm.\n\nMəqsədim – hər bir müştərinin büdcə, rahatlıq və təhlükəsizlik meyarlarına uyğun olaraq, şəffaf və peşəkar xidmət göstərməkdir.',
+            },
+            contact: {
+              email: 'ibrahim.abdullayev1@gmail.com',
+              phone: '+994 55 597 39 23',
+              address: 'Baku, Rashid Behbudov str, Azerbaijan',
+              linkedin: 'https://linkedin.com/in/ibrahim-abdullayev-7bb887152',
+              instagram: 'https://instagram.com/ibrahim_abdullar',
+              whatsapp: 'https://wa.me/994555973923',
+            },
+            portfolio: [],
+            certificates: [],
+            videos: [],
+            socialLinks: [],
+          };
           return res.status(200).json(defaultContent);
         }
       }

@@ -239,11 +239,42 @@ export default function AdminPanel() {
 
   const loadContent = async () => {
     try {
-      const response = await fetch('/api/content')
+      const response = await fetch('/api/admin/content')
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
       const data = await response.json()
-      setContent(data)
+      // Validate data structure
+      if (data && typeof data === 'object' && data.hero && data.about) {
+        setContent(data)
+      } else {
+        console.error('Invalid content structure received:', data)
+        throw new Error('Invalid content structure')
+      }
     } catch (error) {
       console.error('Content yüklənərkən xəta:', error)
+      // Set a minimal valid content structure to prevent crashes
+      setContent({
+        hero: {
+          title: '',
+          subtitle: '',
+          description: '',
+          image: '',
+        },
+        about: {
+          title: '',
+          content: '',
+        },
+        contact: {
+          email: '',
+          phone: '',
+          address: '',
+        },
+        portfolio: [],
+        certificates: [],
+        videos: [],
+        socialLinks: [],
+      })
     }
   }
 

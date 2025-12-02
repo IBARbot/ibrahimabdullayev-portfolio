@@ -179,18 +179,36 @@ async function loadContentFromSheets() {
     });
 
     if (!response.ok) {
-      console.log('Could not read from Google Sheets, using default content');
+      const errorText = await response.text();
+      console.log('Could not read from Google Sheets:', response.status, errorText);
+      // If sheet doesn't exist, that's OK - we'll use default content
+      if (response.status === 400) {
+        console.log('Sheet might not exist yet, will use default content');
+      }
       return null;
     }
 
     const data = await response.json();
     if (data.values && data.values[0] && data.values[0][0]) {
       const contentJson = data.values[0][0];
-      const parsedContent = JSON.parse(contentJson);
-      console.log('Content loaded from Google Sheets');
-      return parsedContent;
+      try {
+        const parsedContent = JSON.parse(contentJson);
+        // Validate structure
+        if (parsedContent && typeof parsedContent === 'object' && parsedContent.hero && parsedContent.about) {
+          console.log('Content loaded from Google Sheets successfully');
+          return parsedContent;
+        } else {
+          console.warn('Content from Google Sheets has invalid structure');
+          return null;
+        }
+      } catch (parseError) {
+        console.error('Error parsing content JSON from Google Sheets:', parseError);
+        return null;
+      }
     }
 
+    // Empty cell - that's OK, use default
+    console.log('Content sheet is empty, using default content');
     return null;
   } catch (error) {
     console.error('Error loading content from Google Sheets:', error);
