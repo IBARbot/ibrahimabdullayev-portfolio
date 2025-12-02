@@ -66,6 +66,9 @@ export async function logErrorToSheets(errorInfo) {
       return false;
     }
 
+    // Ensure headers exist before logging
+    await ensureErrorsSheetHeaders(accessToken, sheetId);
+
     // Prepare error row data
     const rowData = [
       new Date().toISOString(), // Timestamp
@@ -105,6 +108,60 @@ export async function logErrorToSheets(errorInfo) {
     return true;
   } catch (error) {
     console.error('Error logging to Google Sheets:', error);
+    return false;
+  }
+}
+
+// Helper function to ensure headers exist
+async function ensureErrorsSheetHeaders(accessToken, sheetId) {
+  try {
+    // Check if headers exist by reading row 1
+    const checkUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Errors!A1:J1`;
+    const checkResponse = await fetch(checkUrl, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (checkResponse.ok) {
+      const checkData = await checkResponse.json();
+      // If row 1 exists and has data, headers are already there
+      if (checkData.values && checkData.values[0] && checkData.values[0][0]) {
+        return true;
+      }
+    }
+
+    // Headers don't exist, write them
+    const headers = [
+      'Timestamp',
+      'Error Type',
+      'Endpoint',
+      'Message',
+      'Stack Trace',
+      'Additional Data',
+      'User Agent',
+      'URL',
+      'Status Code',
+      'Method',
+    ];
+
+    const range = 'Errors!A1:J1';
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?valueInputOption=RAW`;
+
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        values: [headers],
+      }),
+    });
+
+    return response.ok;
+  } catch (error) {
+    console.error('Error ensuring headers:', error);
     return false;
   }
 }
@@ -185,43 +242,16 @@ export async function initializeErrorsSheet() {
       return false;
     }
 
-    // Headers for Errors sheet
-    const headers = [
-      'Timestamp',
-      'Error Type',
-      'Endpoint',
-      'Message',
-      'Stack Trace',
-      'Additional Data',
-      'User Agent',
-      'URL',
-      'Status Code',
-      'Method',
-    ];
-
-    // Write headers to Errors sheet, row 1
-    const range = 'Errors!A1:J1';
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?valueInputOption=RAW`;
-
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({
-        values: [headers],
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error writing headers to Google Sheets:', errorText);
-      return false;
+    // Use the helper function to ensure headers
+    const success = await ensureErrorsSheetHeaders(accessToken, sheetId);
+    
+    if (success) {
+      console.log('Errors sheet headers initialized successfully');
+    } else {
+      console.error('Failed to initialize Errors sheet headers');
     }
-
-    console.log('Errors sheet headers initialized successfully');
-    return true;
+    
+    return success;
   } catch (error) {
     console.error('Error initializing Errors sheet:', error);
     return false;

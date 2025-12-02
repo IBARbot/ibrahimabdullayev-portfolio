@@ -719,12 +719,24 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                           type="number"
                           min="2"
                           max="11"
-                          value={passengerInfo.childAges?.[i] ?? ''}
+                          value={passengerInfo.childAges?.[i] !== undefined ? passengerInfo.childAges[i] : ''}
                           onChange={(e) => {
                             const newAges = [...(passengerInfo.childAges || [])]
                             const val = e.target.value.trim()
-                            newAges[i] = val === '' ? undefined : (parseInt(val) || undefined)
+                            if (val === '') {
+                              newAges[i] = undefined
+                            } else {
+                              const numVal = parseInt(val)
+                              newAges[i] = isNaN(numVal) ? undefined : numVal
+                            }
                             setPassengerInfo({ ...passengerInfo, childAges: newAges })
+                          }}
+                          onBlur={(e) => {
+                            if (e.target.value === '' || isNaN(parseInt(e.target.value))) {
+                              const newAges = [...(passengerInfo.childAges || [])]
+                              newAges[i] = undefined
+                              setPassengerInfo({ ...passengerInfo, childAges: newAges })
+                            }
                           }}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
                           placeholder={`Uşaq ${i + 1}`}
@@ -939,12 +951,24 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                           type="number"
                           min="2"
                           max="17"
-                          value={guestInfo.childAges?.[i] ?? ''}
+                          value={guestInfo.childAges?.[i] !== undefined ? guestInfo.childAges[i] : ''}
                           onChange={(e) => {
                             const newAges = [...(guestInfo.childAges || [])]
                             const val = e.target.value.trim()
-                            newAges[i] = val === '' ? undefined : (parseInt(val) || undefined)
+                            if (val === '') {
+                              newAges[i] = undefined
+                            } else {
+                              const numVal = parseInt(val)
+                              newAges[i] = isNaN(numVal) ? undefined : numVal
+                            }
                             setGuestInfo({ ...guestInfo, childAges: newAges })
+                          }}
+                          onBlur={(e) => {
+                            if (e.target.value === '' || isNaN(parseInt(e.target.value))) {
+                              const newAges = [...(guestInfo.childAges || [])]
+                              newAges[i] = undefined
+                              setGuestInfo({ ...guestInfo, childAges: newAges })
+                            }
                           }}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
                           placeholder={`${t('booking.hotel.child')} ${i + 1}`}
@@ -1182,12 +1206,24 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                           type="number"
                           min="2"
                           max="17"
-                          value={transferPassengerInfo.childAges?.[i] ?? ''}
+                          value={transferPassengerInfo.childAges?.[i] !== undefined ? transferPassengerInfo.childAges[i] : ''}
                           onChange={(e) => {
                             const newAges = [...(transferPassengerInfo.childAges || [])]
                             const val = e.target.value.trim()
-                            newAges[i] = val === '' ? undefined : (parseInt(val) || undefined)
+                            if (val === '') {
+                              newAges[i] = undefined
+                            } else {
+                              const numVal = parseInt(val)
+                              newAges[i] = isNaN(numVal) ? undefined : numVal
+                            }
                             setTransferPassengerInfo({ ...transferPassengerInfo, childAges: newAges })
+                          }}
+                          onBlur={(e) => {
+                            if (e.target.value === '' || isNaN(parseInt(e.target.value))) {
+                              const newAges = [...(transferPassengerInfo.childAges || [])]
+                              newAges[i] = undefined
+                              setTransferPassengerInfo({ ...transferPassengerInfo, childAges: newAges })
+                            }
                           }}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
                           placeholder={`${t('booking.transfer.child')} ${i + 1}`}
@@ -1392,12 +1428,25 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                           type="number"
                           min="2"
                           max="17"
-                          value={insuranceTravelerInfo.childAges?.[i] ?? ''}
+                          value={insuranceTravelerInfo.childAges?.[i] !== undefined ? insuranceTravelerInfo.childAges[i] : ''}
                           onChange={(e) => {
                             const newAges = [...(insuranceTravelerInfo.childAges || [])]
                             const val = e.target.value.trim()
-                            newAges[i] = val === '' ? undefined : (parseInt(val) || undefined)
+                            if (val === '') {
+                              newAges[i] = undefined
+                            } else {
+                              const numVal = parseInt(val)
+                              newAges[i] = isNaN(numVal) ? undefined : numVal
+                            }
                             setInsuranceTravelerInfo({ ...insuranceTravelerInfo, childAges: newAges })
+                          }}
+                          onBlur={(e) => {
+                            // Ensure valid value on blur
+                            if (e.target.value === '' || isNaN(parseInt(e.target.value))) {
+                              const newAges = [...(insuranceTravelerInfo.childAges || [])]
+                              newAges[i] = undefined
+                              setInsuranceTravelerInfo({ ...insuranceTravelerInfo, childAges: newAges })
+                            }
                           }}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
                           placeholder={`${t('booking.insurance.child')} ${i + 1}`}
@@ -1573,12 +1622,24 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                           type="number"
                           min="2"
                           max="17"
-                          value={embassyTravelerInfo.childAges?.[i] ?? ''}
+                          value={embassyTravelerInfo.childAges?.[i] !== undefined ? embassyTravelerInfo.childAges[i] : ''}
                           onChange={(e) => {
                             const newAges = [...(embassyTravelerInfo.childAges || [])]
                             const val = e.target.value.trim()
-                            newAges[i] = val === '' ? undefined : (parseInt(val) || undefined)
+                            if (val === '') {
+                              newAges[i] = undefined
+                            } else {
+                              const numVal = parseInt(val)
+                              newAges[i] = isNaN(numVal) ? undefined : numVal
+                            }
                             setEmbassyTravelerInfo({ ...embassyTravelerInfo, childAges: newAges })
+                          }}
+                          onBlur={(e) => {
+                            if (e.target.value === '' || isNaN(parseInt(e.target.value))) {
+                              const newAges = [...(embassyTravelerInfo.childAges || [])]
+                              newAges[i] = undefined
+                              setEmbassyTravelerInfo({ ...embassyTravelerInfo, childAges: newAges })
+                            }
                           }}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 outline-none text-xs"
                           placeholder={`${t('booking.embassy.child')} ${i + 1}`}
