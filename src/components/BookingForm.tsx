@@ -12,7 +12,7 @@ interface PassengerInfo {
   children: number
   infants: number
   seniors?: number
-  childAges?: (number | undefined)[] // Array of ages for children (can be undefined for empty)
+  childAges?: (number | string | undefined)[] // Array of ages for children (can be string during editing, undefined for empty)
   infantAges?: number[] // Array of ages for infants (months)
 }
 
@@ -727,52 +727,62 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {Array(passengerInfo.children).fill(0).map((_, i) => (
                         <input
-                          key={`child-age-${i}-${passengerInfo.childAges?.[i] ?? 'empty'}`}
+                          key={`child-age-flight-${i}`}
                           type="text"
                           inputMode="numeric"
                           pattern="[0-9]*"
-                          value={passengerInfo.childAges?.[i] != null && passengerInfo.childAges[i] !== undefined ? String(passengerInfo.childAges[i]) : ''}
+                          value={(() => {
+                            const age = passengerInfo.childAges?.[i]
+                            if (age === undefined || age === null) return ''
+                            if (typeof age === 'string') return age
+                            return String(age)
+                          })()}
                           onChange={(e) => {
                             const inputValue = e.target.value
                             const newAges = [...(passengerInfo.childAges || [])]
                             
-                            // If empty, set to undefined
-                            if (inputValue === '' || inputValue.trim() === '') {
-                              newAges[i] = undefined
+                            // Allow empty string - store as empty string, not undefined
+                            if (inputValue === '') {
+                              newAges[i] = ''
                               setPassengerInfo(prev => ({ ...prev, childAges: newAges }))
                               return
                             }
                             
                             // Only allow digits
                             const numericValue = inputValue.replace(/[^\d]/g, '')
-                            if (numericValue !== inputValue) {
-                              // If non-numeric characters were removed, update with cleaned value
-                              e.target.value = numericValue
-                            }
                             
                             if (numericValue === '') {
-                              newAges[i] = undefined
+                              newAges[i] = ''
                               setPassengerInfo(prev => ({ ...prev, childAges: newAges }))
                               return
                             }
                             
+                            // Store as string while typing, validate on blur
                             const numVal = parseInt(numericValue, 10)
-                            if (!isNaN(numVal)) {
-                              // Validate range
-                              if (numVal >= 2 && numVal <= 11) {
-                                newAges[i] = numVal
-                                setPassengerInfo(prev => ({ ...prev, childAges: newAges }))
-                              }
+                            if (!isNaN(numVal) && numVal >= 2 && numVal <= 11) {
+                              newAges[i] = numericValue // Store as string
+                              setPassengerInfo(prev => ({ ...prev, childAges: newAges }))
+                            } else {
+                              // Invalid number, but allow typing
+                              newAges[i] = numericValue
+                              setPassengerInfo(prev => ({ ...prev, childAges: newAges }))
                             }
                           }}
                           onBlur={(e) => {
-                            // On blur, ensure valid value or clear
                             const val = e.target.value.trim()
+                            const newAges = [...(passengerInfo.childAges || [])]
+                            
                             if (val === '') {
-                              const newAges = [...(passengerInfo.childAges || [])]
                               newAges[i] = undefined
-                              setPassengerInfo(prev => ({ ...prev, childAges: newAges }))
+                            } else {
+                              const numVal = parseInt(val, 10)
+                              if (!isNaN(numVal) && numVal >= 2 && numVal <= 11) {
+                                newAges[i] = numVal // Convert to number on blur
+                              } else {
+                                newAges[i] = undefined // Invalid, clear it
+                              }
                             }
+                            setPassengerInfo(prev => ({ ...prev, childAges: newAges }))
                           }}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs transition-colors"
                           placeholder={`Uşaq ${i + 1}`}
@@ -983,45 +993,58 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {Array(guestInfo.children).fill(0).map((_, i) => (
                         <input
-                          key={`hotel-child-age-${i}-${guestInfo.childAges?.[i] ?? 'empty'}`}
+                          key={`child-age-hotel-${i}`}
                           type="text"
                           inputMode="numeric"
                           pattern="[0-9]*"
-                          value={guestInfo.childAges?.[i] != null && guestInfo.childAges[i] !== undefined ? String(guestInfo.childAges[i]) : ''}
+                          value={(() => {
+                            const age = guestInfo.childAges?.[i]
+                            if (age === undefined || age === null) return ''
+                            if (typeof age === 'string') return age
+                            return String(age)
+                          })()}
                           onChange={(e) => {
                             const inputValue = e.target.value
                             const newAges = [...(guestInfo.childAges || [])]
                             
-                            if (inputValue === '' || inputValue.trim() === '') {
-                              newAges[i] = undefined
+                            if (inputValue === '') {
+                              newAges[i] = ''
                               setGuestInfo(prev => ({ ...prev, childAges: newAges }))
                               return
                             }
                             
                             const numericValue = inputValue.replace(/[^\d]/g, '')
-                            if (numericValue !== inputValue) {
-                              e.target.value = numericValue
-                            }
                             
                             if (numericValue === '') {
-                              newAges[i] = undefined
+                              newAges[i] = ''
                               setGuestInfo(prev => ({ ...prev, childAges: newAges }))
                               return
                             }
                             
                             const numVal = parseInt(numericValue, 10)
                             if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
-                              newAges[i] = numVal
+                              newAges[i] = numericValue
+                              setGuestInfo(prev => ({ ...prev, childAges: newAges }))
+                            } else {
+                              newAges[i] = numericValue
                               setGuestInfo(prev => ({ ...prev, childAges: newAges }))
                             }
                           }}
                           onBlur={(e) => {
                             const val = e.target.value.trim()
+                            const newAges = [...(guestInfo.childAges || [])]
+                            
                             if (val === '') {
-                              const newAges = [...(guestInfo.childAges || [])]
                               newAges[i] = undefined
-                              setGuestInfo(prev => ({ ...prev, childAges: newAges }))
+                            } else {
+                              const numVal = parseInt(val, 10)
+                              if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
+                                newAges[i] = numVal
+                              } else {
+                                newAges[i] = undefined
+                              }
                             }
+                            setGuestInfo(prev => ({ ...prev, childAges: newAges }))
                           }}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs transition-colors"
                           placeholder={`${t('booking.hotel.child')} ${i + 1}`}
@@ -1255,45 +1278,58 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {Array(transferPassengerInfo.children).fill(0).map((_, i) => (
                         <input
-                          key={`transfer-child-age-${i}-${transferPassengerInfo.childAges?.[i] ?? 'empty'}`}
+                          key={`child-age-transfer-${i}`}
                           type="text"
                           inputMode="numeric"
                           pattern="[0-9]*"
-                          value={transferPassengerInfo.childAges?.[i] != null && transferPassengerInfo.childAges[i] !== undefined ? String(transferPassengerInfo.childAges[i]) : ''}
+                          value={(() => {
+                            const age = transferPassengerInfo.childAges?.[i]
+                            if (age === undefined || age === null) return ''
+                            if (typeof age === 'string') return age
+                            return String(age)
+                          })()}
                           onChange={(e) => {
                             const inputValue = e.target.value
                             const newAges = [...(transferPassengerInfo.childAges || [])]
                             
-                            if (inputValue === '' || inputValue.trim() === '') {
-                              newAges[i] = undefined
+                            if (inputValue === '') {
+                              newAges[i] = ''
                               setTransferPassengerInfo(prev => ({ ...prev, childAges: newAges }))
                               return
                             }
                             
                             const numericValue = inputValue.replace(/[^\d]/g, '')
-                            if (numericValue !== inputValue) {
-                              e.target.value = numericValue
-                            }
                             
                             if (numericValue === '') {
-                              newAges[i] = undefined
+                              newAges[i] = ''
                               setTransferPassengerInfo(prev => ({ ...prev, childAges: newAges }))
                               return
                             }
                             
                             const numVal = parseInt(numericValue, 10)
                             if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
-                              newAges[i] = numVal
+                              newAges[i] = numericValue
+                              setTransferPassengerInfo(prev => ({ ...prev, childAges: newAges }))
+                            } else {
+                              newAges[i] = numericValue
                               setTransferPassengerInfo(prev => ({ ...prev, childAges: newAges }))
                             }
                           }}
                           onBlur={(e) => {
                             const val = e.target.value.trim()
+                            const newAges = [...(transferPassengerInfo.childAges || [])]
+                            
                             if (val === '') {
-                              const newAges = [...(transferPassengerInfo.childAges || [])]
                               newAges[i] = undefined
-                              setTransferPassengerInfo(prev => ({ ...prev, childAges: newAges }))
+                            } else {
+                              const numVal = parseInt(val, 10)
+                              if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
+                                newAges[i] = numVal
+                              } else {
+                                newAges[i] = undefined
+                              }
                             }
+                            setTransferPassengerInfo(prev => ({ ...prev, childAges: newAges }))
                           }}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs transition-colors"
                           placeholder={`${t('booking.transfer.child')} ${i + 1}`}
@@ -1494,45 +1530,58 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {Array(insuranceTravelerInfo.children).fill(0).map((_, i) => (
                         <input
-                          key={`insurance-child-age-${i}-${insuranceTravelerInfo.childAges?.[i] ?? 'empty'}`}
+                          key={`child-age-insurance-${i}`}
                           type="text"
                           inputMode="numeric"
                           pattern="[0-9]*"
-                          value={insuranceTravelerInfo.childAges?.[i] != null && insuranceTravelerInfo.childAges[i] !== undefined ? String(insuranceTravelerInfo.childAges[i]) : ''}
+                          value={(() => {
+                            const age = insuranceTravelerInfo.childAges?.[i]
+                            if (age === undefined || age === null) return ''
+                            if (typeof age === 'string') return age
+                            return String(age)
+                          })()}
                           onChange={(e) => {
                             const inputValue = e.target.value
                             const newAges = [...(insuranceTravelerInfo.childAges || [])]
                             
-                            if (inputValue === '' || inputValue.trim() === '') {
-                              newAges[i] = undefined
+                            if (inputValue === '') {
+                              newAges[i] = ''
                               setInsuranceTravelerInfo(prev => ({ ...prev, childAges: newAges }))
                               return
                             }
                             
                             const numericValue = inputValue.replace(/[^\d]/g, '')
-                            if (numericValue !== inputValue) {
-                              e.target.value = numericValue
-                            }
                             
                             if (numericValue === '') {
-                              newAges[i] = undefined
+                              newAges[i] = ''
                               setInsuranceTravelerInfo(prev => ({ ...prev, childAges: newAges }))
                               return
                             }
                             
                             const numVal = parseInt(numericValue, 10)
                             if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
-                              newAges[i] = numVal
+                              newAges[i] = numericValue
+                              setInsuranceTravelerInfo(prev => ({ ...prev, childAges: newAges }))
+                            } else {
+                              newAges[i] = numericValue
                               setInsuranceTravelerInfo(prev => ({ ...prev, childAges: newAges }))
                             }
                           }}
                           onBlur={(e) => {
                             const val = e.target.value.trim()
+                            const newAges = [...(insuranceTravelerInfo.childAges || [])]
+                            
                             if (val === '') {
-                              const newAges = [...(insuranceTravelerInfo.childAges || [])]
                               newAges[i] = undefined
-                              setInsuranceTravelerInfo(prev => ({ ...prev, childAges: newAges }))
+                            } else {
+                              const numVal = parseInt(val, 10)
+                              if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
+                                newAges[i] = numVal
+                              } else {
+                                newAges[i] = undefined
+                              }
                             }
+                            setInsuranceTravelerInfo(prev => ({ ...prev, childAges: newAges }))
                           }}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs transition-colors"
                           placeholder={`${t('booking.insurance.child')} ${i + 1}`}
@@ -1704,45 +1753,58 @@ export default function BookingForm({ initialType = 'flight', onBookingSuccess }
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {Array(embassyTravelerInfo.children).fill(0).map((_, i) => (
                         <input
-                          key={`embassy-child-age-${i}-${embassyTravelerInfo.childAges?.[i] ?? 'empty'}`}
+                          key={`child-age-embassy-${i}`}
                           type="text"
                           inputMode="numeric"
                           pattern="[0-9]*"
-                          value={embassyTravelerInfo.childAges?.[i] != null && embassyTravelerInfo.childAges[i] !== undefined ? String(embassyTravelerInfo.childAges[i]) : ''}
+                          value={(() => {
+                            const age = embassyTravelerInfo.childAges?.[i]
+                            if (age === undefined || age === null) return ''
+                            if (typeof age === 'string') return age
+                            return String(age)
+                          })()}
                           onChange={(e) => {
                             const inputValue = e.target.value
                             const newAges = [...(embassyTravelerInfo.childAges || [])]
                             
-                            if (inputValue === '' || inputValue.trim() === '') {
-                              newAges[i] = undefined
+                            if (inputValue === '') {
+                              newAges[i] = ''
                               setEmbassyTravelerInfo(prev => ({ ...prev, childAges: newAges }))
                               return
                             }
                             
                             const numericValue = inputValue.replace(/[^\d]/g, '')
-                            if (numericValue !== inputValue) {
-                              e.target.value = numericValue
-                            }
                             
                             if (numericValue === '') {
-                              newAges[i] = undefined
+                              newAges[i] = ''
                               setEmbassyTravelerInfo(prev => ({ ...prev, childAges: newAges }))
                               return
                             }
                             
                             const numVal = parseInt(numericValue, 10)
                             if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
-                              newAges[i] = numVal
+                              newAges[i] = numericValue
+                              setEmbassyTravelerInfo(prev => ({ ...prev, childAges: newAges }))
+                            } else {
+                              newAges[i] = numericValue
                               setEmbassyTravelerInfo(prev => ({ ...prev, childAges: newAges }))
                             }
                           }}
                           onBlur={(e) => {
                             const val = e.target.value.trim()
+                            const newAges = [...(embassyTravelerInfo.childAges || [])]
+                            
                             if (val === '') {
-                              const newAges = [...(embassyTravelerInfo.childAges || [])]
                               newAges[i] = undefined
-                              setEmbassyTravelerInfo(prev => ({ ...prev, childAges: newAges }))
+                            } else {
+                              const numVal = parseInt(val, 10)
+                              if (!isNaN(numVal) && numVal >= 2 && numVal <= 17) {
+                                newAges[i] = numVal
+                              } else {
+                                newAges[i] = undefined
+                              }
                             }
+                            setEmbassyTravelerInfo(prev => ({ ...prev, childAges: newAges }))
                           }}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs transition-colors"
                           placeholder={`${t('booking.embassy.child')} ${i + 1}`}
