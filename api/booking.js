@@ -69,17 +69,18 @@ export default async function handler(req, res) {
       createdAt: new Date().toISOString() 
     };
     
-    // Send to Google Sheets (async, don't wait)
+    // Send to Google Sheets directly
     if (process.env.GOOGLE_SHEET_ID && (process.env.GOOGLE_SHEETS_API_KEY || process.env.GOOGLE_SERVICE_ACCOUNT_KEY)) {
       try {
-        const sheetsUrl = `${req.headers.origin || 'https://ibrahimabdullayev-portfolio.vercel.app'}/api/google-sheets`;
-        fetch(sheetsUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(bookingData),
-        }).catch(err => console.error('Google Sheets error:', err));
+        // Import and call Google Sheets function directly
+        const { appendBookingToSheets } = await import('./utils/googleSheetsBooking.js');
+        await appendBookingToSheets(bookingData);
+        console.log('Booking data successfully sent to Google Sheets');
       } catch (err) {
-        console.error('Google Sheets request error:', err);
+        console.error('Google Sheets error:', err);
+        console.error('Error stack:', err.stack);
+        // Log error but don't fail the booking
+        await logApiError('/api/booking', new Error(`Google Sheets error: ${err.message}`), req).catch(() => {});
       }
     }
 
