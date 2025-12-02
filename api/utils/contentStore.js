@@ -168,8 +168,26 @@ async function loadContentFromSheets() {
       return null;
     }
 
-    // Read from "Content" sheet, cell A1
-    const range = 'Content!A1';
+    // Try to find the correct sheet name (Content or content)
+    let sheetName = 'Content';
+    const sheetNames = ['Content', 'content'];
+    
+    // Check which sheet exists
+    for (const name of sheetNames) {
+      const checkUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${name}!A1`;
+      const checkResponse = await fetch(checkUrl, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      if (checkResponse.ok || checkResponse.status === 200) {
+        sheetName = name;
+        break;
+      }
+    }
+
+    // Read from Content sheet, cell A1
+    const range = `${sheetName}!A1`;
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}`;
 
     const response = await fetch(url, {
@@ -231,8 +249,26 @@ async function saveContentToSheets(content) {
       return false;
     }
 
-    // Write to "Content" sheet, cell A1
-    const range = 'Content!A1';
+    // Try to find the correct sheet name (Content or content)
+    let sheetName = 'Content';
+    const sheetNames = ['Content', 'content'];
+    
+    // Check which sheet exists
+    for (const name of sheetNames) {
+      const checkUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${name}!A1`;
+      const checkResponse = await fetch(checkUrl, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      if (checkResponse.ok || checkResponse.status === 200) {
+        sheetName = name;
+        break;
+      }
+    }
+
+    // Write to Content sheet, cell A1
+    const range = `${sheetName}!A1`;
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?valueInputOption=RAW`;
 
     const contentJson = JSON.stringify(content);

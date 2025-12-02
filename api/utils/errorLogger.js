@@ -83,8 +83,26 @@ export async function logErrorToSheets(errorInfo) {
       errorInfo.method || '', // HTTP method
     ];
 
-    // Append to "Errors" sheet
-    const range = 'Errors!A:J';
+    // Try to find the correct sheet name (Errors or errors)
+    let sheetName = 'Errors';
+    const sheetNames = ['Errors', 'errors'];
+    
+    // Check which sheet exists
+    for (const name of sheetNames) {
+      const checkUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${name}!A1`;
+      const checkResponse = await fetch(checkUrl, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      if (checkResponse.ok || checkResponse.status === 200) {
+        sheetName = name;
+        break;
+      }
+    }
+
+    // Append to Errors sheet
+    const range = `${sheetName}!A:J`;
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=RAW`;
 
     const response = await fetch(url, {
@@ -115,19 +133,31 @@ export async function logErrorToSheets(errorInfo) {
 // Helper function to ensure headers exist
 async function ensureErrorsSheetHeaders(accessToken, sheetId) {
   try {
-    // Check if headers exist by reading row 1
-    const checkUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Errors!A1:J1`;
-    const checkResponse = await fetch(checkUrl, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    // Try both "Errors" and "errors" sheet names (case-sensitive)
+    const sheetNames = ['Errors', 'errors'];
+    let sheetName = 'Errors';
+    
+    // Check which sheet exists
+    for (const name of sheetNames) {
+      const checkUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${name}!A1:J1`;
+      const checkResponse = await fetch(checkUrl, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
-    if (checkResponse.ok) {
-      const checkData = await checkResponse.json();
-      // If row 1 exists and has data, headers are already there
-      if (checkData.values && checkData.values[0] && checkData.values[0][0]) {
-        return true;
+      if (checkResponse.ok) {
+        const checkData = await checkResponse.json();
+        // If row 1 exists and has data, headers are already there
+        if (checkData.values && checkData.values[0] && checkData.values[0][0]) {
+          console.log(`Errors sheet headers already exist in "${name}" sheet`);
+          return true;
+        }
+        sheetName = name; // Use the sheet name that exists
+        break;
+      } else if (checkResponse.status === 400) {
+        // Sheet doesn't exist with this name, try next
+        continue;
       }
     }
 
@@ -145,7 +175,7 @@ async function ensureErrorsSheetHeaders(accessToken, sheetId) {
       'Method',
     ];
 
-    const range = 'Errors!A1:J1';
+    const range = `${sheetName}!A1:J1`;
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?valueInputOption=RAW`;
 
     const response = await fetch(url, {
@@ -159,7 +189,14 @@ async function ensureErrorsSheetHeaders(accessToken, sheetId) {
       }),
     });
 
-    return response.ok;
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Error writing headers to ${sheetName} sheet:`, errorText);
+      return false;
+    }
+
+    console.log(`Errors sheet headers written successfully to "${sheetName}" sheet`);
+    return true;
   } catch (error) {
     console.error('Error ensuring headers:', error);
     return false;
