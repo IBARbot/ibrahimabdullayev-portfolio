@@ -429,7 +429,7 @@ export default function AdminPanel() {
     }
   }
 
-  const handleImageUpload = (
+  const handleImageUpload = async (
     section: 'hero' | 'portfolio' | 'certificates',
     e: React.ChangeEvent<HTMLInputElement>,
     index?: number,
@@ -437,20 +437,51 @@ export default function AdminPanel() {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      const base64String = reader.result as string
+    const imageKey = section === 'hero' ? 'hero' : `${section}-${index}`
+    
+    // Show loading state
+    setUploadedImages((prev) => new Set([...prev, imageKey]))
+    setLoading(true)
+    setMessage({ type: null, text: '' })
+
+    try {
+      // Convert file to base64
+      const reader = new FileReader()
+      const base64String = await new Promise<string>((resolve, reject) => {
+        reader.onloadend = () => resolve(reader.result as string)
+        reader.onerror = reject
+        reader.readAsDataURL(file)
+      })
+
       if (!content) return
 
-      const imageKey = section === 'hero' ? 'hero' : `${section}-${index}`
-      setUploadedImages((prev) => new Set([...prev, imageKey]))
+      // Upload to API to get URL
+      const token = localStorage.getItem('adminToken')
+      const uploadResponse = await fetch('/api/upload-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ image: base64String }),
+      })
 
+      const uploadData = await uploadResponse.json()
+      
+      if (!uploadData.success) {
+        throw new Error(uploadData.message || 'Şəkil yüklənərkən xəta baş verdi')
+      }
+
+      // Use the URL from API (or fallback to base64)
+      const imageUrl = uploadData.url || base64String
+
+      // Update content with the image URL
       if (section === 'hero') {
         setContent({
           ...content,
           hero: {
             ...content.hero,
-            image: base64String,
+            image: imageUrl,
           },
         })
       } else if (section === 'portfolio' && typeof index === 'number') {
@@ -459,7 +490,7 @@ export default function AdminPanel() {
           idx === index
             ? {
                 ...item,
-                image: base64String,
+                image: imageUrl,
               }
             : item,
         )
@@ -473,7 +504,7 @@ export default function AdminPanel() {
           idx === index
             ? {
                 ...item,
-                image: base64String,
+                image: imageUrl,
               }
             : item,
         )
@@ -482,8 +513,22 @@ export default function AdminPanel() {
           certificates: updated,
         })
       }
+
+      setMessage({ type: 'success', text: 'Şəkil yükləndi' })
+      showToastNotification('success', 'Şəkil yükləndi')
+    } catch (error: any) {
+      console.error('Image upload error:', error)
+      setMessage({ type: 'error', text: error.message || 'Şəkil yüklənərkən xəta baş verdi' })
+      showToastNotification('error', error.message || 'Şəkil yüklənərkən xəta baş verdi')
+      // Remove from uploaded images on error
+      setUploadedImages((prev) => {
+        const next = new Set(prev)
+        next.delete(imageKey)
+        return next
+      })
+    } finally {
+      setLoading(false)
     }
-    reader.readAsDataURL(file)
   }
 
   const scrollToVideos = () => {
