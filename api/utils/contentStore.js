@@ -371,6 +371,82 @@ function isObject(item) {
   return item && typeof item === 'object' && !Array.isArray(item);
 }
 
+// Smart merge for certificates - preserves images by ID
+function mergeCertificates(latestCerts, partialCerts) {
+  if (!partialCerts || !Array.isArray(partialCerts) || partialCerts.length === 0) {
+    // If partial has no certificates, return latest
+    return latestCerts || [];
+  }
+  
+  if (!latestCerts || !Array.isArray(latestCerts) || latestCerts.length === 0) {
+    // If latest has no certificates, return partial
+    return partialCerts;
+  }
+  
+  // Create a map of latest certificates by ID for quick lookup
+  const latestMap = new Map();
+  latestCerts.forEach(cert => {
+    if (cert.id) {
+      latestMap.set(cert.id, cert);
+    }
+  });
+  
+  // Merge: use partial certificates, but preserve images from latest if missing in partial
+  const merged = partialCerts.map(partialCert => {
+    const latestCert = partialCert.id ? latestMap.get(partialCert.id) : null;
+    
+    // If partial cert has an image (base64 or URL), use it
+    // Otherwise, preserve image from latest if it exists
+    if (partialCert.image && partialCert.image.trim() !== '') {
+      return partialCert;
+    } else if (latestCert && latestCert.image && latestCert.image.trim() !== '') {
+      return {
+        ...partialCert,
+        image: latestCert.image, // Preserve image from latest
+      };
+    } else {
+      return partialCert;
+    }
+  });
+  
+  return merged;
+}
+
+// Smart merge for portfolio - preserves images by ID
+function mergePortfolio(latestPortfolio, partialPortfolio) {
+  if (!partialPortfolio || !Array.isArray(partialPortfolio) || partialPortfolio.length === 0) {
+    return latestPortfolio || [];
+  }
+  
+  if (!latestPortfolio || !Array.isArray(latestPortfolio) || latestPortfolio.length === 0) {
+    return partialPortfolio;
+  }
+  
+  const latestMap = new Map();
+  latestPortfolio.forEach(item => {
+    if (item.id) {
+      latestMap.set(item.id, item);
+    }
+  });
+  
+  const merged = partialPortfolio.map(partialItem => {
+    const latestItem = partialItem.id ? latestMap.get(partialItem.id) : null;
+    
+    if (partialItem.image && partialItem.image.trim() !== '') {
+      return partialItem;
+    } else if (latestItem && latestItem.image && latestItem.image.trim() !== '') {
+      return {
+        ...partialItem,
+        image: latestItem.image,
+      };
+    } else {
+      return partialItem;
+    }
+  });
+  
+  return merged;
+}
+
 // Update content (saves to Google Sheets and updates cache)
 export async function updateContent(partial) {
   // First, ensure we have the latest content from Google Sheets
@@ -380,57 +456,68 @@ export async function updateContent(partial) {
   console.log('Partial certificates length:', partial.certificates?.length || 0);
   console.log('LatestContent certificates length:', latestContent.certificates?.length || 0);
   
-  // Deep merge with existing content to preserve nested objects and arrays
-  contentData = deepMerge(latestContent, partial);
+  // Start with latest content as base
+  contentData = { ...latestContent };
   
-  // Explicitly preserve critical arrays if they're missing or empty in partial
-  // This is a safety net in case deepMerge didn't handle it correctly
-  const criticalArrays = ['certificates', 'portfolio', 'videos', 'socialLinks'];
+  // Merge non-critical fields first (using deep merge)
+  const nonCriticalFields = Object.keys(partial).filter(
+    key => !['certificates', 'portfolio', 'videos', 'socialLinks'].includes(key)
+  );
   
-  criticalArrays.forEach(arrayKey => {
-    // If partial has this key with items, use it (even if empty, but only if explicitly provided)
-    if (partial[arrayKey] !== undefined) {
-      if (Array.isArray(partial[arrayKey])) {
-        if (partial[arrayKey].length > 0) {
-          // Partial has items, use it
-          console.log(`Using ${arrayKey} array from partial (${partial[arrayKey].length} items)`);
-          contentData[arrayKey] = partial[arrayKey];
-        } else {
-          // Partial has empty array - check if we should preserve latestContent
-          if (latestContent[arrayKey] && Array.isArray(latestContent[arrayKey]) && latestContent[arrayKey].length > 0) {
-            console.log(`Preserving ${arrayKey} array from latestContent (${latestContent[arrayKey].length} items) - partial was empty`);
-            contentData[arrayKey] = latestContent[arrayKey];
-          } else {
-            // Both are empty, use partial
-            contentData[arrayKey] = partial[arrayKey];
-          }
-        }
-      } else {
-        // Partial has non-array value, use it
-        contentData[arrayKey] = partial[arrayKey];
-      }
+  nonCriticalFields.forEach(key => {
+    if (typeof partial[key] === 'object' && !Array.isArray(partial[key]) && partial[key] !== null) {
+      contentData[key] = deepMerge(latestContent[key] || {}, partial[key]);
     } else {
-      // Partial doesn't have this key, preserve latestContent
-      if (latestContent[arrayKey] && Array.isArray(latestContent[arrayKey]) && latestContent[arrayKey].length > 0) {
-        console.log(`Preserving ${arrayKey} array from latestContent (${latestContent[arrayKey].length} items) - not in partial`);
-        contentData[arrayKey] = latestContent[arrayKey];
-      } else {
-        contentData[arrayKey] = latestContent[arrayKey] || [];
-      }
+      contentData[key] = partial[key];
     }
   });
-
-  // Ensure contentData has all required structure
-  if (!contentData.certificates) {
+  
+  // Smart merge for critical arrays
+  // Certificates: merge by ID, preserve images
+  if (partial.certificates !== undefined) {
+    contentData.certificates = mergeCertificates(latestContent.certificates, partial.certificates);
+    console.log(`Merged certificates: ${contentData.certificates.length} items`);
+    // Log image status
+    contentData.certificates.forEach((cert, idx) => {
+      const hasImage = cert.image && cert.image.trim() !== '';
+      console.log(`  Certificate ${idx} (${cert.id || 'no-id'}): ${hasImage ? 'HAS IMAGE' : 'NO IMAGE'}`);
+    });
+  } else {
+    // Not in partial, preserve latest
     contentData.certificates = latestContent.certificates || [];
   }
-  if (!contentData.portfolio) {
+  
+  // Portfolio: merge by ID, preserve images
+  if (partial.portfolio !== undefined) {
+    contentData.portfolio = mergePortfolio(latestContent.portfolio, partial.portfolio);
+    console.log(`Merged portfolio: ${contentData.portfolio.length} items`);
+  } else {
     contentData.portfolio = latestContent.portfolio || [];
   }
-  if (!contentData.videos) {
+  
+  // Videos: simple array merge (replace if provided)
+  if (partial.videos !== undefined) {
+    if (Array.isArray(partial.videos) && partial.videos.length > 0) {
+      contentData.videos = partial.videos;
+    } else if (latestContent.videos && latestContent.videos.length > 0) {
+      contentData.videos = latestContent.videos;
+    } else {
+      contentData.videos = partial.videos || [];
+    }
+  } else {
     contentData.videos = latestContent.videos || [];
   }
-  if (!contentData.socialLinks) {
+  
+  // Social Links: simple array merge
+  if (partial.socialLinks !== undefined) {
+    if (Array.isArray(partial.socialLinks) && partial.socialLinks.length > 0) {
+      contentData.socialLinks = partial.socialLinks;
+    } else if (latestContent.socialLinks && latestContent.socialLinks.length > 0) {
+      contentData.socialLinks = latestContent.socialLinks;
+    } else {
+      contentData.socialLinks = partial.socialLinks || [];
+    }
+  } else {
     contentData.socialLinks = latestContent.socialLinks || [];
   }
 
@@ -441,6 +528,7 @@ export async function updateContent(partial) {
   const saved = await saveContentToSheets(contentData);
   if (!saved) {
     console.error('Failed to save content to Google Sheets');
+    throw new Error('Failed to save content to Google Sheets');
   } else {
     console.log('Content successfully saved to Google Sheets');
   }
