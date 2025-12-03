@@ -54,3 +54,4 @@ Bu təlimat, saytın kontentini (sertifikat şəkilləri, portfolio, və s.) Goo
 2. Service Account JSON faylının düzgün formatda olduğunu yoxlayın
 
 
+

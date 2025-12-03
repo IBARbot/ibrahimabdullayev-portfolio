@@ -57,3 +57,4 @@ Hər error aşağıdakı məlumatları ehtiva edir:
 - Error logging sistem xətası olsa belə, əsas funksionallığı bloklamır
 
 
+

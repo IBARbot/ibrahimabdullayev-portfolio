@@ -376,6 +376,10 @@ export async function updateContent(partial) {
   // First, ensure we have the latest content from Google Sheets
   const latestContent = await getContent();
   
+  console.log('=== UPDATE CONTENT DEBUG ===');
+  console.log('Partial certificates length:', partial.certificates?.length || 0);
+  console.log('LatestContent certificates length:', latestContent.certificates?.length || 0);
+  
   // Deep merge with existing content to preserve nested objects and arrays
   contentData = deepMerge(latestContent, partial);
   
@@ -384,16 +388,35 @@ export async function updateContent(partial) {
   const criticalArrays = ['certificates', 'portfolio', 'videos', 'socialLinks'];
   
   criticalArrays.forEach(arrayKey => {
-    // If partial doesn't have this key, or has empty array, preserve latestContent
-    if (!partial[arrayKey] || (Array.isArray(partial[arrayKey]) && partial[arrayKey].length === 0)) {
-      if (latestContent[arrayKey] && Array.isArray(latestContent[arrayKey]) && latestContent[arrayKey].length > 0) {
-        console.log(`Preserving ${arrayKey} array from latestContent (${latestContent[arrayKey].length} items)`);
-        contentData[arrayKey] = latestContent[arrayKey];
+    // If partial has this key with items, use it (even if empty, but only if explicitly provided)
+    if (partial[arrayKey] !== undefined) {
+      if (Array.isArray(partial[arrayKey])) {
+        if (partial[arrayKey].length > 0) {
+          // Partial has items, use it
+          console.log(`Using ${arrayKey} array from partial (${partial[arrayKey].length} items)`);
+          contentData[arrayKey] = partial[arrayKey];
+        } else {
+          // Partial has empty array - check if we should preserve latestContent
+          if (latestContent[arrayKey] && Array.isArray(latestContent[arrayKey]) && latestContent[arrayKey].length > 0) {
+            console.log(`Preserving ${arrayKey} array from latestContent (${latestContent[arrayKey].length} items) - partial was empty`);
+            contentData[arrayKey] = latestContent[arrayKey];
+          } else {
+            // Both are empty, use partial
+            contentData[arrayKey] = partial[arrayKey];
+          }
+        }
+      } else {
+        // Partial has non-array value, use it
+        contentData[arrayKey] = partial[arrayKey];
       }
-    } else if (Array.isArray(partial[arrayKey]) && partial[arrayKey].length > 0) {
-      // Partial has items, use it
-      console.log(`Using ${arrayKey} array from partial (${partial[arrayKey].length} items)`);
-      contentData[arrayKey] = partial[arrayKey];
+    } else {
+      // Partial doesn't have this key, preserve latestContent
+      if (latestContent[arrayKey] && Array.isArray(latestContent[arrayKey]) && latestContent[arrayKey].length > 0) {
+        console.log(`Preserving ${arrayKey} array from latestContent (${latestContent[arrayKey].length} items) - not in partial`);
+        contentData[arrayKey] = latestContent[arrayKey];
+      } else {
+        contentData[arrayKey] = latestContent[arrayKey] || [];
+      }
     }
   });
 
@@ -411,8 +434,16 @@ export async function updateContent(partial) {
     contentData.socialLinks = latestContent.socialLinks || [];
   }
 
+  console.log('Final contentData certificates length:', contentData.certificates?.length || 0);
+  console.log('=== END UPDATE CONTENT DEBUG ===');
+
   // Save to Google Sheets
-  await saveContentToSheets(contentData);
+  const saved = await saveContentToSheets(contentData);
+  if (!saved) {
+    console.error('Failed to save content to Google Sheets');
+  } else {
+    console.log('Content successfully saved to Google Sheets');
+  }
 
   return contentData;
 }

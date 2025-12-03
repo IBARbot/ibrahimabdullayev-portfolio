@@ -2,6 +2,94 @@
 // Can be used both from API endpoint and directly from booking.js
 import jwt from 'jsonwebtoken';
 
+// Helper function to get access token for Google Sheets API
+async function getAccessToken() {
+  const serviceAccountKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+  if (!serviceAccountKey) return null;
+
+  try {
+    const serviceAccountJson = Buffer.from(serviceAccountKey, 'base64').toString('utf-8');
+    const serviceAccount = JSON.parse(serviceAccountJson);
+
+    const now = Math.floor(Date.now() / 1000);
+    const token = jwt.sign(
+      {
+        iss: serviceAccount.client_email,
+        sub: serviceAccount.client_email,
+        aud: 'https://oauth2.googleapis.com/token',
+        exp: now + 3600,
+        iat: now,
+        scope: 'https://www.googleapis.com/auth/spreadsheets',
+      },
+      serviceAccount.private_key,
+      { algorithm: 'RS256' }
+    );
+
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        assertion: token,
+      }),
+    });
+
+    const tokenData = await tokenResponse.json();
+    return tokenData.access_token || null;
+  } catch (error) {
+    console.error('Error getting access token:', error);
+    return null;
+  }
+}
+
+// Helper function to find the correct sheet name for bookings
+async function findBookingSheetName(sheetId, accessToken) {
+  // Try common sheet names
+  const possibleNames = ['Bookings', 'bookings', 'Booking', 'booking', 'Sheet1', 'Sheet 1'];
+  
+  for (const name of possibleNames) {
+    try {
+      const checkUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${name}!A1`;
+      const checkResponse = await fetch(checkUrl, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      if (checkResponse.ok || checkResponse.status === 200) {
+        console.log(`Found booking sheet: ${name}`);
+        return name;
+      }
+    } catch (error) {
+      // Continue to next name
+    }
+  }
+  
+  // If no specific sheet found, try to get the first sheet from spreadsheet metadata
+  try {
+    const metadataUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}`;
+    const metadataResponse = await fetch(metadataUrl, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    
+    if (metadataResponse.ok) {
+      const metadata = await metadataResponse.json();
+      if (metadata.sheets && metadata.sheets.length > 0) {
+        const firstSheetName = metadata.sheets[0].properties.title;
+        console.log(`Using first sheet: ${firstSheetName}`);
+        return firstSheetName;
+      }
+    }
+  } catch (error) {
+    console.error('Error getting sheet metadata:', error);
+  }
+  
+  // Default to Sheet1
+  console.log('Using default sheet: Sheet1');
+  return 'Sheet1';
+}
+
 export async function appendBookingToSheets(bookingData) {
   const sheetId = process.env.GOOGLE_SHEET_ID;
   const apiKey = process.env.GOOGLE_SHEETS_API_KEY;
@@ -126,10 +214,13 @@ export async function appendBookingToSheets(bookingData) {
       console.log('Row data length:', rowData.length);
       console.log('Row data:', JSON.stringify(rowData));
 
+      // Find the correct sheet name for bookings
+      const sheetName = await findBookingSheetName(sheetId, tokenData.access_token);
+      
       // Append to Google Sheets using access token
-      // Range format: Sheet1!A:AL or A:AL (for default sheet)
+      // Range format: SheetName!A:AL or A:AL (for default sheet)
       // Using A:AL for 38 columns (A to AL)
-      const range = 'A:AL'; // 38 columns
+      const range = `${sheetName}!A:AL`; // 38 columns
       const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=RAW`;
       
       console.log('Google Sheets API URL:', url);
@@ -165,7 +256,26 @@ export async function appendBookingToSheets(bookingData) {
       // Fallback to API Key method if Service Account fails
       if (apiKey) {
         console.log('API Key metodu ilə yenidən cəhd edilir...');
-        const range = 'A:AL';
+        // For API Key method, try to find sheet name using API Key
+        let sheetName = 'Sheet1';
+        try {
+          const metadataUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?key=${apiKey}`;
+          const metadataResponse = await fetch(metadataUrl);
+          if (metadataResponse.ok) {
+            const metadata = await metadataResponse.json();
+            if (metadata.sheets && metadata.sheets.length > 0) {
+              // Try to find Bookings sheet first
+              const bookingsSheet = metadata.sheets.find(s => 
+                ['Bookings', 'bookings', 'Booking', 'booking'].includes(s.properties.title)
+              );
+              sheetName = bookingsSheet ? bookingsSheet.properties.title : metadata.sheets[0].properties.title;
+              console.log(`Using sheet: ${sheetName}`);
+            }
+          }
+        } catch (error) {
+          console.log('Could not determine sheet name, using Sheet1');
+        }
+        const range = `${sheetName}!A:AL`;
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=RAW&key=${apiKey}`;
         response = await fetch(url, {
           method: 'POST',
@@ -190,7 +300,26 @@ export async function appendBookingToSheets(bookingData) {
   // Method 2: API Key (Fallback)
   else if (apiKey) {
     console.log('API Key metodu istifadə olunur...');
-    const range = 'A:AL'; // 38 columns
+    // Try to find sheet name using API Key
+    let sheetName = 'Sheet1';
+    try {
+      const metadataUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?key=${apiKey}`;
+      const metadataResponse = await fetch(metadataUrl);
+      if (metadataResponse.ok) {
+        const metadata = await metadataResponse.json();
+        if (metadata.sheets && metadata.sheets.length > 0) {
+          // Try to find Bookings sheet first
+          const bookingsSheet = metadata.sheets.find(s => 
+            ['Bookings', 'bookings', 'Booking', 'booking'].includes(s.properties.title)
+          );
+          sheetName = bookingsSheet ? bookingsSheet.properties.title : metadata.sheets[0].properties.title;
+          console.log(`Using sheet: ${sheetName}`);
+        }
+      }
+    } catch (error) {
+      console.log('Could not determine sheet name, using Sheet1');
+    }
+    const range = `${sheetName}!A:AL`; // 38 columns
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=RAW&key=${apiKey}`;
     response = await fetch(url, {
       method: 'POST',
@@ -224,4 +353,5 @@ export async function appendBookingToSheets(bookingData) {
 
   return responseData;
 }
+
 
