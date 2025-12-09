@@ -505,7 +505,8 @@ export default function AdminPanel() {
         throw new Error('Giriş edilməyib. Zəhmət olmasa yenidən giriş edin.')
       }
 
-      const uploadResponse = await fetch('/api/upload-image', {
+      // Try Vercel Blob Storage first (simplest and most reliable)
+      let uploadResponse = await fetch('/api/upload-blob', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -513,6 +514,19 @@ export default function AdminPanel() {
         },
         body: JSON.stringify({ image: base64String }),
       })
+
+      // Fallback to upload-image if blob fails
+      if (!uploadResponse.ok) {
+        console.log('Vercel Blob Storage failed, trying fallback...')
+        uploadResponse = await fetch('/api/upload-image', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ image: base64String }),
+        })
+      }
 
       if (!uploadResponse.ok) {
         const errorData = await uploadResponse.json().catch(() => ({ 
@@ -1223,37 +1237,12 @@ export default function AdminPanel() {
                     </span>
                   )}
                 </label>
-                <div className="space-y-2">
-                  {/* URL Input */}
-                  <input
-                    type="url"
-                    placeholder="https://i.imgur.com/abc123.jpg və ya https://drive.google.com/..."
-                    value={content.hero.image || ''}
-                    onChange={(e) => {
-                      setContent({
-                        ...content,
-                        hero: {
-                          ...content.hero,
-                          image: e.target.value,
-                        },
-                      })
-                    }}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
-                  />
-                  <div className="text-xs text-gray-500">
-                    💡 Şəkil URL-i daxil edin (Imgur, Google Drive, Dropbox və s.)
-                  </div>
-                  {/* File Upload (Alternative) */}
-                  <div className="relative">
-                    <div className="text-xs text-gray-400 text-center mb-1">və ya</div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleImageUpload('hero', e)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
-                    />
-                  </div>
-                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload('hero', e)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                />
                 {content.hero.image && (
                   <div className="mt-2 relative">
                     <img
@@ -1505,43 +1494,22 @@ export default function AdminPanel() {
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {t('admin.content.portfolio.fields.image')}
-                        {uploadedImages.has(`portfolio-${index}`) && (
-                          <span className="ml-2 inline-flex items-center gap-1 text-xs text-green-600">
-                            <Upload className="w-3 h-3" />
-                            Yüklənib
-                          </span>
-                        )}
-                      </label>
-                      <div className="space-y-2">
-                        {/* URL Input */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {t('admin.content.portfolio.fields.image')}
+                          {uploadedImages.has(`portfolio-${index}`) && (
+                            <span className="ml-2 inline-flex items-center gap-1 text-xs text-green-600">
+                              <Upload className="w-3 h-3" />
+                              Yüklənib
+                            </span>
+                          )}
+                        </label>
                         <input
-                          type="url"
-                          placeholder="https://i.imgur.com/abc123.jpg və ya https://drive.google.com/..."
-                          value={item.image || ''}
-                          onChange={(e) => {
-                            const updated = [...(content.portfolio || [])]
-                            updated[index] = { ...updated[index], image: e.target.value }
-                            setContent({ ...content, portfolio: updated })
-                          }}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload('portfolio', e, index)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
                         />
-                        <div className="text-xs text-gray-500">
-                          💡 Şəkil URL-i daxil edin (Imgur, Google Drive, Dropbox və s.)
-                        </div>
-                        {/* File Upload (Alternative) */}
-                        <div className="relative">
-                          <div className="text-xs text-gray-400 text-center mb-1">və ya</div>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleImageUpload('portfolio', e, index)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
-                          />
-                        </div>
-                      </div>
                       {item.image && (
                         <div className="mt-2 relative">
                           <img
@@ -1708,33 +1676,12 @@ export default function AdminPanel() {
                             </span>
                           )}
                         </label>
-                        <div className="space-y-2">
-                          {/* URL Input */}
-                          <input
-                            type="url"
-                            placeholder="https://i.imgur.com/abc123.jpg və ya https://drive.google.com/..."
-                            value={cert.image || ''}
-                            onChange={(e) => {
-                              const updated = [...(content.certificates || [])]
-                              updated[index] = { ...updated[index], image: e.target.value }
-                              setContent({ ...content, certificates: updated })
-                            }}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
-                          />
-                          <div className="text-xs text-gray-500">
-                            💡 Şəkil URL-i daxil edin (Imgur, Google Drive, Dropbox və s.)
-                          </div>
-                          {/* File Upload (Alternative) */}
-                          <div className="relative">
-                            <div className="text-xs text-gray-400 text-center mb-1">və ya</div>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleImageUpload('certificates', e, index)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
-                            />
-                          </div>
-                        </div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload('certificates', e, index)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                        />
                         {cert.image && (
                           <div className="mt-2 relative">
                             <img
