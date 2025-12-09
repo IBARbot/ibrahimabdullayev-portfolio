@@ -285,11 +285,24 @@ async function saveContentToSheets(content) {
 
     const contentJson = JSON.stringify(content);
     const jsonSize = contentJson.length;
-    console.log(`Content JSON size: ${jsonSize} characters`);
+    console.log(`📊 Content JSON size: ${jsonSize} characters (${Math.round(jsonSize / 1000)}KB)`);
+    
+    // Check for base64 images in content (they make content too large)
+    const base64ImagePattern = /data:image\/[^;]+;base64,[A-Za-z0-9+/=]{100,}/g;
+    const base64Matches = contentJson.match(base64ImagePattern);
+    if (base64Matches && base64Matches.length > 0) {
+      console.warn(`⚠️ Found ${base64Matches.length} base64 image(s) in content. Total size: ${jsonSize} characters`);
+      const base64TotalSize = base64Matches.reduce((sum, match) => sum + match.length, 0);
+      console.warn(`⚠️ Base64 images total size: ${Math.round(base64TotalSize / 1000)}KB`);
+      
+      if (jsonSize > 50000) {
+        throw new Error(`Content çox böyükdür (${Math.round(jsonSize / 1000)}KB). Şəkilləri Cloudinary-ə yükləyin və URL formatında saxlayın. Base64 şəkillər Google Sheets-də saxlanıla bilməz.`);
+      }
+    }
     
     // Google Sheets cell limit is 50,000 characters
     if (jsonSize > 50000) {
-      console.error(`Content too large: ${jsonSize} characters (limit: 50,000)`);
+      console.error(`❌ Content too large: ${jsonSize} characters (limit: 50,000)`);
       throw new Error(`Content çox böyükdür (${Math.round(jsonSize / 1000)}KB). Şəkilləri URL formatında saxladığınızdan əmin olun.`);
     }
 
@@ -316,26 +329,44 @@ async function saveContentToSheets(content) {
       
       // Try to parse error for better message
       let errorMessage = `Google Sheets-ə yazıla bilmədi (HTTP ${response.status})`;
+      let errorDetails = '';
+      
       try {
         const errorData = JSON.parse(errorText);
         if (errorData.error) {
           if (errorData.error.message) {
             errorMessage = `Google Sheets xətası: ${errorData.error.message}`;
+            errorDetails = errorData.error.message;
           }
           if (errorData.error.status === 'PERMISSION_DENIED') {
             errorMessage = 'Google Sheets-ə icazə verilmədi. Service Account-un "Editor" icazəsi olduğunu yoxlayın.';
+            errorDetails = 'PERMISSION_DENIED - Service Account icazələri yoxlanılmalıdır';
           } else if (errorData.error.status === 'NOT_FOUND') {
             errorMessage = `Google Sheets səhifəsi tapılmadı. "${sheetName}" səhifəsinin mövcud olduğunu yoxlayın.`;
+            errorDetails = `NOT_FOUND - "${sheetName}" səhifəsi tapılmadı`;
           } else if (errorData.error.status === 'INVALID_ARGUMENT') {
             errorMessage = 'Google Sheets-də xəta: Yalnış arqument. Content strukturunu yoxlayın.';
+            errorDetails = 'INVALID_ARGUMENT - Content struktur problemi';
+          } else if (errorData.error.status === 'RESOURCE_EXHAUSTED') {
+            errorMessage = 'Google Sheets API limiti aşıldı. Bir az gözləyin və yenidən cəhd edin.';
+            errorDetails = 'RESOURCE_EXHAUSTED - API limiti';
           }
         }
       } catch {
         // If parsing fails, use raw error text
         if (errorText) {
           errorMessage = `Google Sheets xətası: ${errorText.substring(0, 200)}`;
+          errorDetails = errorText.substring(0, 500);
         }
       }
+      
+      // Log detailed error for debugging
+      console.error('❌ Detailed error:', {
+        message: errorMessage,
+        details: errorDetails,
+        status: response.status,
+        jsonSize: jsonSize,
+      });
       
       throw new Error(errorMessage);
     }
@@ -696,17 +727,32 @@ export async function updateContent(partial) {
 
   // Save to Google Sheets
   try {
+    console.log('💾 Attempting to save content to Google Sheets...');
+    console.log('📊 Content summary:', {
+      certificates: contentData.certificates?.length || 0,
+      portfolio: contentData.portfolio?.length || 0,
+      hasHeroImage: !!contentData.hero?.image,
+      heroImageType: contentData.hero?.image?.substring(0, 50) || 'none',
+    });
+    
     const saved = await saveContentToSheets(contentData);
     if (!saved) {
-      console.error('Failed to save content to Google Sheets');
-      throw new Error('Failed to save content to Google Sheets');
+      console.error('❌ Failed to save content to Google Sheets (returned false)');
+      throw new Error('Google Sheets-ə yazıla bilmədi: Xəta baş verdi');
     } else {
-      console.log('Content successfully saved to Google Sheets');
+      console.log('✅ Content successfully saved to Google Sheets');
     }
   } catch (saveError) {
-    console.error('Error saving content to Google Sheets:', saveError);
-    // Re-throw with more context
-    throw new Error(`Google Sheets-ə yazıla bilmədi: ${saveError.message || 'Naməlum xəta'}`);
+    console.error('❌ Error saving content to Google Sheets:', saveError);
+    console.error('Error message:', saveError.message);
+    console.error('Error stack:', saveError.stack);
+    
+    // Re-throw with more context, but preserve original message if it's already detailed
+    if (saveError.message && saveError.message.includes('Google Sheets')) {
+      throw saveError; // Already has detailed message
+    } else {
+      throw new Error(`Google Sheets-ə yazıla bilmədi: ${saveError.message || 'Naməlum xəta'}`);
+    }
   }
 
   return contentData;
