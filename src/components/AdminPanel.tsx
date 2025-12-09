@@ -535,10 +535,17 @@ export default function AdminPanel() {
         console.log('✅ Şəkil URL alındı:', imageUrl.substring(0, 80))
       } else if (imageUrl.startsWith('data:image')) {
         const base64Size = base64String.length
-        console.warn(`⚠️ Şəkil base64 formatında qayıdıb (${Math.round(base64Size / 1000)}KB). Cloudinary/Imgur upload uğursuz oldu.`)
+        console.error(`❌ Şəkil base64 formatında qayıdıb (${Math.round(base64Size / 1000)}KB). Cloudinary/Imgur upload uğursuz oldu.`)
+        console.error('Upload response:', uploadData)
+        
         // Don't use base64 - it will be removed by cleanContentForSheets
-        // Instead, show error to user
-        throw new Error('Şəkil yüklənə bilmədi. Zəhmət olmasa Cloudinary konfiqurasiyasını yoxlayın və yenidən cəhd edin.')
+        // Instead, show error to user with more details
+        const errorDetails = uploadData.message || 'Cloudinary upload uğursuz oldu'
+        throw new Error(`Şəkil yüklənə bilmədi: ${errorDetails}. Zəhmət olmasa Cloudinary konfiqurasiyasını yoxlayın və yenidən cəhd edin.`)
+      } else {
+        // Unknown format
+        console.error('❌ Naməlum şəkil formatı:', imageUrl.substring(0, 50))
+        throw new Error('Şəkil yüklənə bilmədi. Naməlum format.')
       }
 
       // Update content with the image URL

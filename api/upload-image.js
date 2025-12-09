@@ -99,21 +99,38 @@ export default async function handler(req, res) {
         } else {
           console.error('❌ Cloudinary upload error:', cloudinaryData);
           // Log detailed error for debugging
+          let errorMessage = 'Cloudinary upload uğursuz oldu';
           if (cloudinaryData.error) {
             console.error('Cloudinary error details:', {
               message: cloudinaryData.error.message,
               http_code: cloudinaryData.error.http_code,
             });
             
+            errorMessage = cloudinaryData.error.message || errorMessage;
+            
             // If error is about display name/slashes, it might be upload preset configuration issue
             if (cloudinaryData.error.message && cloudinaryData.error.message.includes('Display name')) {
               console.error('💡 TIP: Upload preset-də folder parametrini yoxlayın. Folder adında slash olmamalıdır.');
+              errorMessage = 'Display name xətası: Upload preset-də folder parametrini yoxlayın.';
             }
           }
+          
+          // Don't fallback to base64 - return error instead
+          return res.status(400).json({
+            success: false,
+            message: errorMessage,
+            error: cloudinaryData.error || cloudinaryData,
+          });
         }
       } catch (cloudinaryError) {
         console.error('❌ Cloudinary upload exception:', cloudinaryError);
         console.error('Exception details:', cloudinaryError.message);
+        
+        // Don't fallback to base64 - return error instead
+        return res.status(500).json({
+          success: false,
+          message: `Cloudinary upload xətası: ${cloudinaryError.message || 'Naməlum xəta'}`,
+        });
       }
     }
 
@@ -145,18 +162,28 @@ export default async function handler(req, res) {
           });
         } else {
           console.error('Imgur upload error:', imgurData);
+          // Don't fallback to base64 - return error instead
+          return res.status(400).json({
+            success: false,
+            message: imgurData.data?.error || 'Imgur upload uğursuz oldu',
+            error: imgurData,
+          });
         }
       } catch (imgurError) {
         console.error('Imgur upload exception:', imgurError);
+        // Don't fallback to base64 - return error instead
+        return res.status(500).json({
+          success: false,
+          message: `Imgur upload xətası: ${imgurError.message || 'Naməlum xəta'}`,
+        });
       }
     }
 
-    // Final fallback: Return base64 as data URL
-    console.warn('No cloud storage configured, returning base64 data URL');
-    return res.status(200).json({
-      success: true,
-      url: image, // Return as-is (base64 data URL)
-      message: 'Şəkil base64 formatında qaytarıldı (Cloudinary və ya Imgur konfiqurasiya edilməyib)',
+    // No cloud storage configured - return error instead of base64
+    console.error('❌ No cloud storage configured (Cloudinary və ya Imgur)');
+    return res.status(400).json({
+      success: false,
+      message: 'Şəkil yükləmə konfiqurasiya edilməyib. Zəhmət olmasa Cloudinary və ya Imgur konfiqurasiyasını yoxlayın.',
     });
   } catch (error) {
     console.error('Image upload error:', error);
