@@ -55,7 +55,41 @@ export default async function handler(req, res) {
     const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
     const imageType = image.match(/data:image\/(\w+);base64/)?.[1] || 'png';
     
-    // Try Cloudinary first (recommended)
+    // Try Imgur first (easier, no configuration issues)
+    const imgurClientId = process.env.IMGUR_CLIENT_ID;
+    if (imgurClientId) {
+      try {
+        const formData = new URLSearchParams();
+        formData.append('image', base64Data);
+        formData.append('type', 'base64');
+
+        const imgurResponse = await fetch('https://api.imgur.com/3/image', {
+          method: 'POST',
+          headers: {
+            Authorization: `Client-ID ${imgurClientId}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: formData.toString(),
+        });
+
+        const imgurData = await imgurResponse.json();
+
+        if (imgurResponse.ok && imgurData.success && imgurData.data?.link) {
+          console.log('✅ Image uploaded to Imgur successfully');
+          return res.status(200).json({
+            success: true,
+            url: imgurData.data.link,
+            message: 'Şəkil Imgur-a uğurla yükləndi',
+          });
+        } else {
+          console.error('❌ Imgur upload error:', imgurData);
+        }
+      } catch (imgurError) {
+        console.error('❌ Imgur upload exception:', imgurError);
+      }
+    }
+
+    // Try Cloudinary second (if Imgur not configured or failed)
     const cloudinaryCloudName = process.env.CLOUDINARY_CLOUD_NAME;
     const cloudinaryUploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || 'ml_default';
     
@@ -144,50 +178,7 @@ export default async function handler(req, res) {
       }
     }
 
-    // Fallback to Imgur (if configured)
-    const imgurClientId = process.env.IMGUR_CLIENT_ID;
-    if (imgurClientId) {
-      try {
-        const formData = new URLSearchParams();
-        formData.append('image', base64Data);
-        formData.append('type', 'base64');
-
-        const imgurResponse = await fetch('https://api.imgur.com/3/image', {
-          method: 'POST',
-          headers: {
-            Authorization: `Client-ID ${imgurClientId}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: formData.toString(),
-        });
-
-        const imgurData = await imgurResponse.json();
-
-        if (imgurResponse.ok && imgurData.success && imgurData.data?.link) {
-          console.log('Image uploaded to Imgur successfully');
-          return res.status(200).json({
-            success: true,
-            url: imgurData.data.link,
-            message: 'Şəkil Imgur-a uğurla yükləndi',
-          });
-        } else {
-          console.error('Imgur upload error:', imgurData);
-          // Don't fallback to base64 - return error instead
-          return res.status(400).json({
-            success: false,
-            message: imgurData.data?.error || 'Imgur upload uğursuz oldu',
-            error: imgurData,
-          });
-        }
-      } catch (imgurError) {
-        console.error('Imgur upload exception:', imgurError);
-        // Don't fallback to base64 - return error instead
-        return res.status(500).json({
-          success: false,
-          message: `Imgur upload xətası: ${imgurError.message || 'Naməlum xəta'}`,
-        });
-      }
-    }
+    // Imgur already tried above, skip duplicate code
 
     // No cloud storage configured - return error instead of base64
     console.error('❌ No cloud storage configured (Cloudinary və ya Imgur)');
