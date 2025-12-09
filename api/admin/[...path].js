@@ -348,16 +348,28 @@ export default async function handler(req, res) {
 
       if (req.method === 'PUT') {
         try {
+          console.log('Content update request received');
+          console.log('Content size:', JSON.stringify(req.body || {}).length, 'characters');
+          
           const updated = await updateContent(req.body || {});
           return res
             .status(200)
             .json({ success: true, message: 'Məzmun yeniləndi', content: updated });
         } catch (error) {
           console.error('Content update error:', error);
+          console.error('Error message:', error.message);
+          console.error('Error stack:', error.stack);
+          
           await logApiError('/api/admin/content', error, req).catch(err => 
             console.error('Failed to log error:', err)
           );
-          return res.status(500).json({ success: false, message: 'Xəta baş verdi' });
+          
+          // Return more specific error message
+          const errorMessage = error.message || 'Xəta baş verdi';
+          return res.status(500).json({ 
+            success: false, 
+            message: errorMessage 
+          });
         }
       }
 

@@ -272,6 +272,15 @@ async function saveContentToSheets(content) {
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?valueInputOption=RAW`;
 
     const contentJson = JSON.stringify(content);
+    const jsonSize = contentJson.length;
+    console.log(`Content JSON size: ${jsonSize} characters`);
+    
+    // Google Sheets cell limit is 50,000 characters
+    if (jsonSize > 50000) {
+      console.error(`Content too large: ${jsonSize} characters (limit: 50,000)`);
+      throw new Error(`Content çox böyükdür (${Math.round(jsonSize / 1000)}KB). Şəkilləri URL formatında saxladığınızdan əmin olun.`);
+    }
+
     const response = await fetch(url, {
       method: 'PUT',
       headers: {
@@ -285,11 +294,30 @@ async function saveContentToSheets(content) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Error saving to Google Sheets:', errorText);
-      return false;
+      console.error('Error saving to Google Sheets:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText,
+      });
+      
+      // Try to parse error for better message
+      try {
+        const errorData = JSON.parse(errorText);
+        if (errorData.error && errorData.error.message) {
+          throw new Error(`Google Sheets xətası: ${errorData.error.message}`);
+        }
+      } catch {
+        // If parsing fails, use raw error text
+      }
+      
+      throw new Error(`Google Sheets-ə yazıla bilmədi: ${response.status} ${response.statusText}`);
     }
 
-    console.log('Content saved to Google Sheets successfully');
+    const responseData = await response.json().catch(() => ({}));
+    console.log('Content saved to Google Sheets successfully', {
+      updatedCells: responseData.updatedCells || 'unknown',
+      jsonSize: jsonSize,
+    });
     return true;
   } catch (error) {
     console.error('Error saving content to Google Sheets:', error);
