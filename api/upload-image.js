@@ -64,9 +64,15 @@ export default async function handler(req, res) {
         const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`;
         const cloudinaryFormData = new URLSearchParams();
         
+        // Generate a unique public_id without slashes to avoid "Display name cannot contain slashes" error
+        const timestamp = Date.now();
+        const randomId = Math.random().toString(36).substring(2, 15);
+        const publicId = `ibrahimabdullayev_${timestamp}_${randomId}`;
+        
         // Use base64 data directly (not as data URL)
         cloudinaryFormData.append('file', `data:image/${imageType};base64,${base64Data}`);
         cloudinaryFormData.append('upload_preset', cloudinaryUploadPreset);
+        cloudinaryFormData.append('public_id', publicId); // Explicitly set public_id without slashes
         
         // IMPORTANT: Don't add folder parameter here - it causes "Display name cannot contain slashes" error
         // If you need folder organization, configure it in the upload preset settings in Cloudinary dashboard
@@ -76,6 +82,7 @@ export default async function handler(req, res) {
           preset: cloudinaryUploadPreset,
           imageType: imageType,
           base64Size: base64Data.length,
+          publicId: publicId,
         });
 
         const cloudinaryResponse = await fetch(cloudinaryUrl, {
