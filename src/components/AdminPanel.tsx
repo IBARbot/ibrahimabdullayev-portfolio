@@ -457,6 +457,10 @@ export default function AdminPanel() {
 
       // Upload to API to get URL
       const token = localStorage.getItem('adminToken')
+      if (!token) {
+        throw new Error('Giriş edilməyib. Zəhmət olmasa yenidən giriş edin.')
+      }
+
       const uploadResponse = await fetch('/api/upload-image', {
         method: 'POST',
         headers: {
@@ -465,6 +469,13 @@ export default function AdminPanel() {
         },
         body: JSON.stringify({ image: base64String }),
       })
+
+      if (!uploadResponse.ok) {
+        const errorData = await uploadResponse.json().catch(() => ({ 
+          message: `HTTP ${uploadResponse.status}: ${uploadResponse.statusText}` 
+        }))
+        throw new Error(errorData.message || 'Şəkil yüklənərkən xəta baş verdi')
+      }
 
       const uploadData = await uploadResponse.json()
       
@@ -518,8 +529,21 @@ export default function AdminPanel() {
       showToastNotification('success', 'Şəkil yükləndi')
     } catch (error: any) {
       console.error('Image upload error:', error)
-      setMessage({ type: 'error', text: error.message || 'Şəkil yüklənərkən xəta baş verdi' })
-      showToastNotification('error', error.message || 'Şəkil yüklənərkən xəta baş verdi')
+      const errorMessage = error.message || 'Şəkil yüklənərkən xəta baş verdi'
+      
+      // If authentication error, suggest re-login
+      if (errorMessage.includes('İcazə verilmədi') || errorMessage.includes('Token')) {
+        const shouldRelogin = window.confirm(
+          'Giriş müddəti bitib və ya token etibarsızdır. Yenidən giriş etmək istəyirsiniz?'
+        )
+        if (shouldRelogin) {
+          handleLogout()
+          return
+        }
+      }
+      
+      setMessage({ type: 'error', text: errorMessage })
+      showToastNotification('error', errorMessage)
       // Remove from uploaded images on error
       setUploadedImages((prev) => {
         const next = new Set(prev)

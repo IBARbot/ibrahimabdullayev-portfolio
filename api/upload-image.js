@@ -19,16 +19,29 @@ export default async function handler(req, res) {
 
   try {
     // Check authentication
-    const token = req.headers.authorization?.replace('Bearer ', '');
+    const authHeader = req.headers.authorization;
+    console.log('Auth header:', authHeader ? 'Present' : 'Missing');
+    
+    const token = authHeader?.replace('Bearer ', '').trim();
     if (!token) {
-      return res.status(401).json({ success: false, message: 'İcazə verilmədi' });
+      console.error('No token provided');
+      return res.status(401).json({ success: false, message: 'İcazə verilmədi - Token tapılmadı' });
     }
 
+    console.log('Token received:', token.substring(0, 20) + '...');
+
     // Verify JWT token
+    const jwtSecret = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
     try {
-      jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production');
+      const decoded = jwt.verify(token, jwtSecret);
+      console.log('Token verified successfully, username:', decoded.username);
     } catch (jwtError) {
-      return res.status(401).json({ success: false, message: 'İcazə verilmədi' });
+      console.error('JWT verification failed:', jwtError.message);
+      console.error('JWT error name:', jwtError.name);
+      return res.status(401).json({ 
+        success: false, 
+        message: 'İcazə verilmədi - Token etibarsızdır' 
+      });
     }
 
     // Get image from request
