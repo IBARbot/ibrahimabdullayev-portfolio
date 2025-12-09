@@ -146,9 +146,19 @@ async function getAccessToken() {
     });
 
     const tokenData = await tokenResponse.json();
-    return tokenData.access_token || null;
+    
+    if (!tokenData.access_token) {
+      console.error('❌ No access token in response:', tokenData);
+      if (tokenData.error) {
+        console.error('Token error:', tokenData.error, tokenData.error_description);
+      }
+      return null;
+    }
+    
+    return tokenData.access_token;
   } catch (error) {
-    console.error('Error getting access token:', error);
+    console.error('❌ Error getting access token:', error.message);
+    console.error('Error details:', error);
     return null;
   }
 }
@@ -238,16 +248,18 @@ async function loadContentFromSheets() {
 async function saveContentToSheets(content) {
   const sheetId = process.env.GOOGLE_SHEET_ID;
   if (!sheetId) {
-    console.log('Google Sheets ID not configured, content not saved');
-    return false;
+    console.error('❌ Google Sheets ID not configured');
+    throw new Error('GOOGLE_SHEET_ID environment variable tapılmadı');
   }
 
   try {
+    console.log('🔑 Getting access token...');
     const accessToken = await getAccessToken();
     if (!accessToken) {
-      console.log('Could not get access token, content not saved');
-      return false;
+      console.error('❌ Could not get access token');
+      throw new Error('Google Sheets API üçün access token alına bilmədi. GOOGLE_SERVICE_ACCOUNT_KEY yoxlanılmalıdır.');
     }
+    console.log('✅ Access token received');
 
     // Try to find the correct sheet name (Content or content)
     let sheetName = 'Content';
@@ -294,23 +306,38 @@ async function saveContentToSheets(content) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Error saving to Google Sheets:', {
+      console.error('❌ Error saving to Google Sheets:', {
         status: response.status,
         statusText: response.statusText,
         error: errorText,
+        sheetId: sheetId,
+        sheetName: sheetName,
       });
       
       // Try to parse error for better message
+      let errorMessage = `Google Sheets-ə yazıla bilmədi (HTTP ${response.status})`;
       try {
         const errorData = JSON.parse(errorText);
-        if (errorData.error && errorData.error.message) {
-          throw new Error(`Google Sheets xətası: ${errorData.error.message}`);
+        if (errorData.error) {
+          if (errorData.error.message) {
+            errorMessage = `Google Sheets xətası: ${errorData.error.message}`;
+          }
+          if (errorData.error.status === 'PERMISSION_DENIED') {
+            errorMessage = 'Google Sheets-ə icazə verilmədi. Service Account-un "Editor" icazəsi olduğunu yoxlayın.';
+          } else if (errorData.error.status === 'NOT_FOUND') {
+            errorMessage = `Google Sheets səhifəsi tapılmadı. "${sheetName}" səhifəsinin mövcud olduğunu yoxlayın.`;
+          } else if (errorData.error.status === 'INVALID_ARGUMENT') {
+            errorMessage = 'Google Sheets-də xəta: Yalnış arqument. Content strukturunu yoxlayın.';
+          }
         }
       } catch {
         // If parsing fails, use raw error text
+        if (errorText) {
+          errorMessage = `Google Sheets xətası: ${errorText.substring(0, 200)}`;
+        }
       }
       
-      throw new Error(`Google Sheets-ə yazıla bilmədi: ${response.status} ${response.statusText}`);
+      throw new Error(errorMessage);
     }
 
     const responseData = await response.json().catch(() => ({}));
