@@ -18,7 +18,7 @@ Sertifikat şəkillərinin və digər şəkillərin saytda saxlanması üçün C
    - **"Add upload preset"** düyməsini basın
    - **Preset name**: `ml_default` (və ya istədiyiniz ad)
    - **Signing mode**: `Unsigned` seçin (vacib!)
-   - **Folder**: `ibrahimabdullayev` (optional - şəkilləri təşkil etmək üçün)
+   - **Asset folder**: **BOŞ BURAXIN** (vacib! - folder parametri "Display name cannot contain slashes" xətasına səbəb ola bilər)
    - **Save** düyməsini basın
 
 ### Addım 3: Cloud Name və Upload Preset-i Kopyalayın
