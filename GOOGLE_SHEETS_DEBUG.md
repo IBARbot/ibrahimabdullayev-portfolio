@@ -110,3 +110,6 @@ Sizin cədvəlinizdə **5 sütun** olmalıdır (1-ci sətirdə):
 
 
 
+
+
+

@@ -49,3 +49,6 @@ Vercel-də deploy etdikdən sonra:
 - Daha yavaşdır (böyük şəkillər üçün)
 - Google Sheets-də məhdudiyyətlər ola bilər
 
+
+
+

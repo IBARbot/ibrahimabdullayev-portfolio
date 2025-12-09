@@ -371,15 +371,15 @@ function isObject(item) {
   return item && typeof item === 'object' && !Array.isArray(item);
 }
 
-// Smart merge for certificates - preserves images by ID
+// Smart merge for certificates - preserves images by ID and keeps all certificates
 function mergeCertificates(latestCerts, partialCerts) {
+  // If partial has no certificates, return latest (preserve all existing)
   if (!partialCerts || !Array.isArray(partialCerts) || partialCerts.length === 0) {
-    // If partial has no certificates, return latest
     return latestCerts || [];
   }
   
+  // If latest has no certificates, return partial
   if (!latestCerts || !Array.isArray(latestCerts) || latestCerts.length === 0) {
-    // If latest has no certificates, return partial
     return partialCerts;
   }
   
@@ -391,37 +391,88 @@ function mergeCertificates(latestCerts, partialCerts) {
     }
   });
   
-  // Merge: use partial certificates, but preserve images from latest if missing in partial
-  const merged = partialCerts.map(partialCert => {
-    const latestCert = partialCert.id ? latestMap.get(partialCert.id) : null;
-    
-    // If partial cert has an image (base64 or URL), use it
-    // Otherwise, preserve image from latest if it exists
-    if (partialCert.image && partialCert.image.trim() !== '') {
-      return partialCert;
-    } else if (latestCert && latestCert.image && latestCert.image.trim() !== '') {
-      return {
-        ...partialCert,
-        image: latestCert.image, // Preserve image from latest
-      };
-    } else {
-      return partialCert;
+  // Create a map of partial certificates by ID
+  const partialMap = new Map();
+  partialCerts.forEach(cert => {
+    if (cert.id) {
+      partialMap.set(cert.id, cert);
     }
   });
   
-  return merged;
+  // Start with latest certificates (preserve all existing)
+  const mergedMap = new Map();
+  latestCerts.forEach(cert => {
+    if (cert.id) {
+      mergedMap.set(cert.id, { ...cert }); // Copy latest cert
+    }
+  });
+  
+  // Update with partial certificates (merge images intelligently)
+  partialCerts.forEach(partialCert => {
+    if (partialCert.id) {
+      const existingCert = mergedMap.get(partialCert.id);
+      if (existingCert) {
+        // Certificate exists in latest, merge it
+        const mergedCert = {
+          ...partialCert, // Use partial data (title, subtitle, etc.)
+          // Preserve image from latest if partial doesn't have one
+          image: (partialCert.image && partialCert.image.trim() !== '') 
+            ? partialCert.image 
+            : (existingCert.image && existingCert.image.trim() !== '') 
+              ? existingCert.image 
+              : partialCert.image || existingCert.image || '',
+        };
+        mergedMap.set(partialCert.id, mergedCert);
+      } else {
+        // New certificate, add it
+        mergedMap.set(partialCert.id, { ...partialCert });
+      }
+    } else {
+      // Certificate without ID, add it (might be a new one)
+      mergedMap.set(`temp-${Date.now()}-${Math.random()}`, { ...partialCert });
+    }
+  });
+  
+  // Convert map back to array
+  const merged = Array.from(mergedMap.values());
+  
+  // Preserve order: partial certificates first (in their order), then latest certificates not in partial
+  const partialIds = new Set(partialCerts.map(c => c.id).filter(Boolean));
+  const orderedMerged = [];
+  
+  // Add partial certificates first (in their order)
+  partialCerts.forEach(partialCert => {
+    if (partialCert.id) {
+      const mergedCert = mergedMap.get(partialCert.id);
+      if (mergedCert) {
+        orderedMerged.push(mergedCert);
+      }
+    }
+  });
+  
+  // Add latest certificates that are not in partial (preserve existing ones)
+  latestCerts.forEach(latestCert => {
+    if (latestCert.id && !partialIds.has(latestCert.id)) {
+      orderedMerged.push(latestCert);
+    }
+  });
+  
+  return orderedMerged.length > 0 ? orderedMerged : merged;
 }
 
-// Smart merge for portfolio - preserves images by ID
+// Smart merge for portfolio - preserves images by ID and keeps all items
 function mergePortfolio(latestPortfolio, partialPortfolio) {
+  // If partial has no portfolio items, return latest (preserve all existing)
   if (!partialPortfolio || !Array.isArray(partialPortfolio) || partialPortfolio.length === 0) {
     return latestPortfolio || [];
   }
   
+  // If latest has no portfolio items, return partial
   if (!latestPortfolio || !Array.isArray(latestPortfolio) || latestPortfolio.length === 0) {
     return partialPortfolio;
   }
   
+  // Create a map of latest portfolio items by ID
   const latestMap = new Map();
   latestPortfolio.forEach(item => {
     if (item.id) {
@@ -429,22 +480,73 @@ function mergePortfolio(latestPortfolio, partialPortfolio) {
     }
   });
   
-  const merged = partialPortfolio.map(partialItem => {
-    const latestItem = partialItem.id ? latestMap.get(partialItem.id) : null;
-    
-    if (partialItem.image && partialItem.image.trim() !== '') {
-      return partialItem;
-    } else if (latestItem && latestItem.image && latestItem.image.trim() !== '') {
-      return {
-        ...partialItem,
-        image: latestItem.image,
-      };
-    } else {
-      return partialItem;
+  // Create a map of partial portfolio items by ID
+  const partialMap = new Map();
+  partialPortfolio.forEach(item => {
+    if (item.id) {
+      partialMap.set(item.id, item);
     }
   });
   
-  return merged;
+  // Start with latest portfolio items (preserve all existing)
+  const mergedMap = new Map();
+  latestPortfolio.forEach(item => {
+    if (item.id) {
+      mergedMap.set(item.id, { ...item }); // Copy latest item
+    }
+  });
+  
+  // Update with partial portfolio items (merge images intelligently)
+  partialPortfolio.forEach(partialItem => {
+    if (partialItem.id) {
+      const existingItem = mergedMap.get(partialItem.id);
+      if (existingItem) {
+        // Item exists in latest, merge it
+        const mergedItem = {
+          ...partialItem, // Use partial data (title, description, etc.)
+          // Preserve image from latest if partial doesn't have one
+          image: (partialItem.image && partialItem.image.trim() !== '') 
+            ? partialItem.image 
+            : (existingItem.image && existingItem.image.trim() !== '') 
+              ? existingItem.image 
+              : partialItem.image || existingItem.image || '',
+        };
+        mergedMap.set(partialItem.id, mergedItem);
+      } else {
+        // New item, add it
+        mergedMap.set(partialItem.id, { ...partialItem });
+      }
+    } else {
+      // Item without ID, add it (might be a new one)
+      mergedMap.set(`temp-${Date.now()}-${Math.random()}`, { ...partialItem });
+    }
+  });
+  
+  // Convert map back to array
+  const merged = Array.from(mergedMap.values());
+  
+  // Preserve order: partial items first (in their order), then latest items not in partial
+  const partialIds = new Set(partialPortfolio.map(i => i.id).filter(Boolean));
+  const orderedMerged = [];
+  
+  // Add partial items first (in their order)
+  partialPortfolio.forEach(partialItem => {
+    if (partialItem.id) {
+      const mergedItem = mergedMap.get(partialItem.id);
+      if (mergedItem) {
+        orderedMerged.push(mergedItem);
+      }
+    }
+  });
+  
+  // Add latest items that are not in partial (preserve existing ones)
+  latestPortfolio.forEach(latestItem => {
+    if (latestItem.id && !partialIds.has(latestItem.id)) {
+      orderedMerged.push(latestItem);
+    }
+  });
+  
+  return orderedMerged.length > 0 ? orderedMerged : merged;
 }
 
 // Update content (saves to Google Sheets and updates cache)
@@ -460,13 +562,26 @@ export async function updateContent(partial) {
   contentData = { ...latestContent };
   
   // Merge non-critical fields first (using deep merge)
+  // Special handling for hero image - preserve if partial doesn't have one
   const nonCriticalFields = Object.keys(partial).filter(
     key => !['certificates', 'portfolio', 'videos', 'socialLinks'].includes(key)
   );
   
   nonCriticalFields.forEach(key => {
     if (typeof partial[key] === 'object' && !Array.isArray(partial[key]) && partial[key] !== null) {
-      contentData[key] = deepMerge(latestContent[key] || {}, partial[key]);
+      // Special handling for hero - preserve image if partial doesn't have one
+      if (key === 'hero' && latestContent.hero) {
+        const mergedHero = deepMerge(latestContent.hero || {}, partial.hero);
+        // Preserve image from latest if partial doesn't have one
+        if (!partial.hero.image || partial.hero.image.trim() === '') {
+          if (latestContent.hero.image && latestContent.hero.image.trim() !== '') {
+            mergedHero.image = latestContent.hero.image;
+          }
+        }
+        contentData[key] = mergedHero;
+      } else {
+        contentData[key] = deepMerge(latestContent[key] || {}, partial[key]);
+      }
     } else {
       contentData[key] = partial[key];
     }
