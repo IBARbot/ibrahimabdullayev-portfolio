@@ -527,8 +527,17 @@ export default function AdminPanel() {
         throw new Error(uploadData.message || 'Şəkil yüklənərkən xəta baş verdi')
       }
 
-      // Use the URL from API (or fallback to base64)
-      const imageUrl = uploadData.url || base64String
+      // Use the URL from API (prefer URL over base64)
+      let imageUrl = uploadData.url || base64String
+      
+      // Warn if using base64 (too large for Google Sheets)
+      if (imageUrl.startsWith('data:image')) {
+        const base64Size = base64String.length
+        if (base64Size > 100000) { // 100KB
+          console.warn(`Şəkil çox böyükdür (${Math.round(base64Size / 1000)}KB). Imgur upload uğursuz oldu, base64 formatında saxlanılır.`)
+          // Still use base64, but warn user
+        }
+      }
 
       // Update content with the image URL
       if (section === 'hero') {
