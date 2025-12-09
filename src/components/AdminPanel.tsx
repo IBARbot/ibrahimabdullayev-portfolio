@@ -399,7 +399,21 @@ export default function AdminPanel() {
     setMessage({ type: null, text: '' })
     const token = localStorage.getItem('adminToken')
 
+    if (!token) {
+      const errorText = 'Giriş edilməyib. Zəhmət olmasa yenidən giriş edin.'
+      setMessage({ type: 'error', text: errorText })
+      showToastNotification('error', errorText)
+      setLoading(false)
+      return
+    }
+
     try {
+      console.log('Saving content...', {
+        certificatesCount: content.certificates?.length || 0,
+        portfolioCount: content.portfolio?.length || 0,
+        hasHeroImage: !!content.hero?.image,
+      })
+
       const response = await fetch('/api/admin/content', {
         method: 'PUT',
         headers: {
@@ -408,6 +422,18 @@ export default function AdminPanel() {
         },
         body: JSON.stringify(content),
       })
+
+      // Check if response is ok before parsing JSON
+      if (!response.ok) {
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.message || errorMessage
+        } catch {
+          // If JSON parsing fails, use status text
+        }
+        throw new Error(errorMessage)
+      }
 
       const data = await response.json()
 
@@ -420,8 +446,26 @@ export default function AdminPanel() {
         setMessage({ type: 'error', text: errorText })
         showToastNotification('error', errorText)
       }
-    } catch (error) {
-      const errorText = t('admin.content.error')
+    } catch (error: any) {
+      console.error('Save error:', error)
+      let errorText = t('admin.content.error')
+      
+      // More specific error messages
+      if (error.message) {
+        if (error.message.includes('Unauthorized') || error.message.includes('Invalid token')) {
+          errorText = 'Giriş müddəti bitib. Zəhmət olmasa yenidən giriş edin.'
+          const shouldRelogin = window.confirm('Giriş müddəti bitib. Yenidən giriş etmək istəyirsiniz?')
+          if (shouldRelogin) {
+            handleLogout()
+            return
+          }
+        } else if (error.message.includes('Failed to save')) {
+          errorText = 'Google Sheets-ə yazıla bilmədi. Zəhmət olmasa yenidən cəhd edin.'
+        } else {
+          errorText = error.message
+        }
+      }
+      
       setMessage({ type: 'error', text: errorText })
       showToastNotification('error', errorText)
     } finally {

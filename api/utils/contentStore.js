@@ -640,12 +640,18 @@ export async function updateContent(partial) {
   console.log('=== END UPDATE CONTENT DEBUG ===');
 
   // Save to Google Sheets
-  const saved = await saveContentToSheets(contentData);
-  if (!saved) {
-    console.error('Failed to save content to Google Sheets');
-    throw new Error('Failed to save content to Google Sheets');
-  } else {
-    console.log('Content successfully saved to Google Sheets');
+  try {
+    const saved = await saveContentToSheets(contentData);
+    if (!saved) {
+      console.error('Failed to save content to Google Sheets');
+      throw new Error('Failed to save content to Google Sheets');
+    } else {
+      console.log('Content successfully saved to Google Sheets');
+    }
+  } catch (saveError) {
+    console.error('Error saving content to Google Sheets:', saveError);
+    // Re-throw with more context
+    throw new Error(`Google Sheets-ə yazıla bilmədi: ${saveError.message || 'Naməlum xəta'}`);
   }
 
   return contentData;
