@@ -110,8 +110,11 @@ export default async function handler(req, res) {
             
             // If error is about display name/slashes, it might be upload preset configuration issue
             if (cloudinaryData.error.message && cloudinaryData.error.message.includes('Display name')) {
-              console.error('💡 TIP: Upload preset-də folder parametrini yoxlayın. Folder adında slash olmamalıdır.');
-              errorMessage = 'Display name xətası: Upload preset-də folder parametrini yoxlayın.';
+              console.error('💡 TIP: Upload preset konfiqurasiyasını yoxlayın:');
+              console.error('   1. Asset folder BOŞ olmalıdır');
+              console.error('   2. "Prepend a path to the public ID" toggle OFF olmalıdır');
+              console.error('   3. "Generated display name" - filename istifadə edilməlidir');
+              errorMessage = 'Display name xətası: Upload preset-də "Asset folder" və "Prepend a path to the public ID" parametrlərini yoxlayın. Hər ikisi boş/OFF olmalıdır.';
             }
           }
           

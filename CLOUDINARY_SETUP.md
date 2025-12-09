@@ -10,15 +10,26 @@ Sertifikat şəkillərinin və digər şəkillərin saytda saxlanması üçün C
 3. Email ilə qeydiyyatdan keçin və email-ı təsdiq edin
 4. Pulsuz plan kifayətdir (25GB storage, 25GB bandwidth/ay)
 
-### Addım 2: Dashboard-dan API Məlumatlarını Alın
+### Addım 2: Upload Preset Yaradın və ya Düzəldin
 1. Cloudinary Dashboard-a daxil olun: https://console.cloudinary.com/
 2. Yuxarı sağ küncdə **"Settings"** (⚙️) düyməsini basın
 3. **"Upload"** tab-ına keçin
 4. **"Upload presets"** bölməsində:
-   - **"Add upload preset"** düyməsini basın
-   - **Preset name**: `ml_default` (və ya istədiyiniz ad)
+   - **`ml_default`** preset-ini tapın və açın (və ya yeni yaradın)
+   - **General** tab-ında aşağıdakı parametrləri yoxlayın:
+
+   **VACİB PARAMETRLƏR:**
    - **Signing mode**: `Unsigned` seçin (vacib!)
    - **Asset folder**: **BOŞ BURAXIN** (vacib! - folder parametri "Display name cannot contain slashes" xətasına səbəb ola bilər)
+   
+   **"Generated public ID" bölməsində:**
+   - **"Auto-generate an unguessable public ID value"** seçin (default)
+   - **"Prepend a path to the public ID"** toggle-ı **OFF** olmalıdır (vacib!)
+   
+   **"Generated display name" bölməsində:**
+   - **"Use the filename of the uploaded file as the asset's display name"** seçin (default)
+   - **"Use the last segment of the public ID as the display Name"** seçməyin
+   
    - **Save** düyməsini basın
 
 ### Addım 3: Cloud Name və Upload Preset-i Kopyalayın
