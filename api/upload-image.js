@@ -1,5 +1,5 @@
 // Vercel Serverless Function - Image Upload API
-// Uploads images to Imgur and returns the URL
+// Uploads images to Cloudinary (or Imgur fallback) and returns the URL
 import jwt from 'jsonwebtoken';
 
 export default async function handler(req, res) {
@@ -53,50 +53,85 @@ export default async function handler(req, res) {
 
     // Remove data URL prefix if present (data:image/png;base64,...)
     const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+    const imageType = image.match(/data:image\/(\w+);base64/)?.[1] || 'png';
     
-    // Upload to Imgur
+    // Try Cloudinary first (recommended)
+    const cloudinaryCloudName = process.env.CLOUDINARY_CLOUD_NAME;
+    const cloudinaryUploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || 'ml_default';
+    
+    if (cloudinaryCloudName) {
+      try {
+        const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`;
+        const cloudinaryFormData = new URLSearchParams();
+        cloudinaryFormData.append('file', `data:image/${imageType};base64,${base64Data}`);
+        cloudinaryFormData.append('upload_preset', cloudinaryUploadPreset);
+        cloudinaryFormData.append('folder', 'ibrahimabdullayev'); // Optional: organize images in folder
+
+        const cloudinaryResponse = await fetch(cloudinaryUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: cloudinaryFormData.toString(),
+        });
+
+        const cloudinaryData = await cloudinaryResponse.json();
+
+        if (cloudinaryResponse.ok && cloudinaryData.secure_url) {
+          console.log('Image uploaded to Cloudinary successfully');
+          return res.status(200).json({
+            success: true,
+            url: cloudinaryData.secure_url,
+            message: 'Şəkil Cloudinary-ə uğurla yükləndi',
+          });
+        } else {
+          console.error('Cloudinary upload error:', cloudinaryData);
+        }
+      } catch (cloudinaryError) {
+        console.error('Cloudinary upload exception:', cloudinaryError);
+      }
+    }
+
+    // Fallback to Imgur (if configured)
     const imgurClientId = process.env.IMGUR_CLIENT_ID;
-    
-    if (!imgurClientId) {
-      // Fallback: Return base64 as data URL (for development)
-      console.warn('IMGUR_CLIENT_ID not configured, returning base64 data URL');
-      return res.status(200).json({
-        success: true,
-        url: image, // Return as-is (base64 data URL)
-        message: 'Şəkil base64 formatında qaytarıldı (Imgur konfiqurasiya edilməyib)',
-      });
+    if (imgurClientId) {
+      try {
+        const formData = new URLSearchParams();
+        formData.append('image', base64Data);
+        formData.append('type', 'base64');
+
+        const imgurResponse = await fetch('https://api.imgur.com/3/image', {
+          method: 'POST',
+          headers: {
+            Authorization: `Client-ID ${imgurClientId}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: formData.toString(),
+        });
+
+        const imgurData = await imgurResponse.json();
+
+        if (imgurResponse.ok && imgurData.success && imgurData.data?.link) {
+          console.log('Image uploaded to Imgur successfully');
+          return res.status(200).json({
+            success: true,
+            url: imgurData.data.link,
+            message: 'Şəkil Imgur-a uğurla yükləndi',
+          });
+        } else {
+          console.error('Imgur upload error:', imgurData);
+        }
+      } catch (imgurError) {
+        console.error('Imgur upload exception:', imgurError);
+      }
     }
 
-    // Upload to Imgur using form-urlencoded
-    const formData = new URLSearchParams();
-    formData.append('image', base64Data);
-    formData.append('type', 'base64');
-
-    const imgurResponse = await fetch('https://api.imgur.com/3/image', {
-      method: 'POST',
-      headers: {
-        Authorization: `Client-ID ${imgurClientId}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: formData.toString(),
-    });
-
-    const imgurData = await imgurResponse.json();
-
-    if (!imgurResponse.ok || !imgurData.success) {
-      console.error('Imgur upload error:', imgurData);
-      // Fallback: Return base64 as data URL
-      return res.status(200).json({
-        success: true,
-        url: image,
-        message: 'Şəkil base64 formatında qaytarıldı (Imgur xətası)',
-      });
-    }
-
+    // Final fallback: Return base64 as data URL
+    console.warn('No cloud storage configured, returning base64 data URL');
     return res.status(200).json({
       success: true,
-      url: imgurData.data.link,
-      message: 'Şəkil uğurla yükləndi',
+      url: image, // Return as-is (base64 data URL)
+      message: 'Şəkil base64 formatında qaytarıldı (Cloudinary və ya Imgur konfiqurasiya edilməyib)',
     });
   } catch (error) {
     console.error('Image upload error:', error);
