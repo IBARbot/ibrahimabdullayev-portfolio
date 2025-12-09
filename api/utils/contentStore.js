@@ -458,30 +458,53 @@ function isObject(item) {
 }
 
 // Clean content for Google Sheets - remove base64 images to reduce size
+// IMPORTANT: Only remove base64, keep URLs (Cloudinary, Imgur, etc.)
 function cleanContentForSheets(content) {
   const cleaned = JSON.parse(JSON.stringify(content)); // Deep clone
   
-  // Remove base64 images from hero
-  if (cleaned.hero && cleaned.hero.image && cleaned.hero.image.startsWith('data:image')) {
-    // Keep only URL if exists, otherwise remove
-    cleaned.hero.image = '';
+  // Remove base64 images from hero (keep URLs)
+  if (cleaned.hero && cleaned.hero.image) {
+    if (cleaned.hero.image.startsWith('data:image')) {
+      // Base64 detected - remove it (URL should be uploaded to Cloudinary first)
+      console.warn('⚠️ Hero image is base64, removing for Google Sheets');
+      cleaned.hero.image = '';
+    } else {
+      // URL detected - keep it
+      console.log('✅ Hero image is URL, keeping:', cleaned.hero.image.substring(0, 50));
+    }
   }
   
-  // Remove base64 images from certificates
+  // Remove base64 images from certificates (keep URLs)
   if (cleaned.certificates && Array.isArray(cleaned.certificates)) {
-    cleaned.certificates = cleaned.certificates.map(cert => {
-      if (cert.image && cert.image.startsWith('data:image')) {
-        return { ...cert, image: '' }; // Remove base64, keep other data
+    cleaned.certificates = cleaned.certificates.map((cert, idx) => {
+      if (cert.image) {
+        if (cert.image.startsWith('data:image')) {
+          // Base64 detected - remove it
+          console.warn(`⚠️ Certificate ${idx} image is base64, removing for Google Sheets`);
+          return { ...cert, image: '' };
+        } else {
+          // URL detected - keep it
+          console.log(`✅ Certificate ${idx} image is URL, keeping:`, cert.image.substring(0, 50));
+          return cert;
+        }
       }
       return cert;
     });
   }
   
-  // Remove base64 images from portfolio
+  // Remove base64 images from portfolio (keep URLs)
   if (cleaned.portfolio && Array.isArray(cleaned.portfolio)) {
-    cleaned.portfolio = cleaned.portfolio.map(item => {
-      if (item.image && item.image.startsWith('data:image')) {
-        return { ...item, image: '' }; // Remove base64, keep other data
+    cleaned.portfolio = cleaned.portfolio.map((item, idx) => {
+      if (item.image) {
+        if (item.image.startsWith('data:image')) {
+          // Base64 detected - remove it
+          console.warn(`⚠️ Portfolio ${idx} image is base64, removing for Google Sheets`);
+          return { ...item, image: '' };
+        } else {
+          // URL detected - keep it
+          console.log(`✅ Portfolio ${idx} image is URL, keeping:`, item.image.substring(0, 50));
+          return item;
+        }
       }
       return item;
     });

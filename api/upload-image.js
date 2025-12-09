@@ -63,10 +63,20 @@ export default async function handler(req, res) {
       try {
         const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`;
         const cloudinaryFormData = new URLSearchParams();
+        
+        // Use base64 data directly (not as data URL)
         cloudinaryFormData.append('file', `data:image/${imageType};base64,${base64Data}`);
         cloudinaryFormData.append('upload_preset', cloudinaryUploadPreset);
-        // Don't use folder parameter - it causes "Display name cannot contain slashes" error
-        // Images will be uploaded to root or as specified in upload preset
+        
+        // IMPORTANT: Don't add folder parameter here - it causes "Display name cannot contain slashes" error
+        // If you need folder organization, configure it in the upload preset settings in Cloudinary dashboard
+
+        console.log('📤 Uploading to Cloudinary...', {
+          cloudName: cloudinaryCloudName,
+          preset: cloudinaryUploadPreset,
+          imageType: imageType,
+          base64Size: base64Data.length,
+        });
 
         const cloudinaryResponse = await fetch(cloudinaryUrl, {
           method: 'POST',
@@ -79,17 +89,31 @@ export default async function handler(req, res) {
         const cloudinaryData = await cloudinaryResponse.json();
 
         if (cloudinaryResponse.ok && cloudinaryData.secure_url) {
-          console.log('Image uploaded to Cloudinary successfully');
+          console.log('✅ Image uploaded to Cloudinary successfully');
+          console.log('Cloudinary URL:', cloudinaryData.secure_url);
           return res.status(200).json({
             success: true,
             url: cloudinaryData.secure_url,
             message: 'Şəkil Cloudinary-ə uğurla yükləndi',
           });
         } else {
-          console.error('Cloudinary upload error:', cloudinaryData);
+          console.error('❌ Cloudinary upload error:', cloudinaryData);
+          // Log detailed error for debugging
+          if (cloudinaryData.error) {
+            console.error('Cloudinary error details:', {
+              message: cloudinaryData.error.message,
+              http_code: cloudinaryData.error.http_code,
+            });
+            
+            // If error is about display name/slashes, it might be upload preset configuration issue
+            if (cloudinaryData.error.message && cloudinaryData.error.message.includes('Display name')) {
+              console.error('💡 TIP: Upload preset-də folder parametrini yoxlayın. Folder adında slash olmamalıdır.');
+            }
+          }
         }
       } catch (cloudinaryError) {
-        console.error('Cloudinary upload exception:', cloudinaryError);
+        console.error('❌ Cloudinary upload exception:', cloudinaryError);
+        console.error('Exception details:', cloudinaryError.message);
       }
     }
 

@@ -530,13 +530,15 @@ export default function AdminPanel() {
       // Use the URL from API (prefer URL over base64)
       let imageUrl = uploadData.url || base64String
       
-      // Warn if using base64 (too large for Google Sheets)
-      if (imageUrl.startsWith('data:image')) {
+      // Log what we got
+      if (imageUrl.startsWith('http')) {
+        console.log('✅ Şəkil URL alındı:', imageUrl.substring(0, 80))
+      } else if (imageUrl.startsWith('data:image')) {
         const base64Size = base64String.length
-        if (base64Size > 100000) { // 100KB
-          console.warn(`Şəkil çox böyükdür (${Math.round(base64Size / 1000)}KB). Imgur upload uğursuz oldu, base64 formatında saxlanılır.`)
-          // Still use base64, but warn user
-        }
+        console.warn(`⚠️ Şəkil base64 formatında qayıdıb (${Math.round(base64Size / 1000)}KB). Cloudinary/Imgur upload uğursuz oldu.`)
+        // Don't use base64 - it will be removed by cleanContentForSheets
+        // Instead, show error to user
+        throw new Error('Şəkil yüklənə bilmədi. Zəhmət olmasa Cloudinary konfiqurasiyasını yoxlayın və yenidən cəhd edin.')
       }
 
       // Update content with the image URL
