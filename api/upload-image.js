@@ -65,7 +65,8 @@ export default async function handler(req, res) {
         const cloudinaryFormData = new URLSearchParams();
         cloudinaryFormData.append('file', `data:image/${imageType};base64,${base64Data}`);
         cloudinaryFormData.append('upload_preset', cloudinaryUploadPreset);
-        cloudinaryFormData.append('folder', 'ibrahimabdullayev'); // Optional: organize images in folder
+        // Don't use folder parameter - it causes "Display name cannot contain slashes" error
+        // Images will be uploaded to root or as specified in upload preset
 
         const cloudinaryResponse = await fetch(cloudinaryUrl, {
           method: 'POST',

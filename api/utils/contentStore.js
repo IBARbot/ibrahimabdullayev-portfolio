@@ -457,6 +457,39 @@ function isObject(item) {
   return item && typeof item === 'object' && !Array.isArray(item);
 }
 
+// Clean content for Google Sheets - remove base64 images to reduce size
+function cleanContentForSheets(content) {
+  const cleaned = JSON.parse(JSON.stringify(content)); // Deep clone
+  
+  // Remove base64 images from hero
+  if (cleaned.hero && cleaned.hero.image && cleaned.hero.image.startsWith('data:image')) {
+    // Keep only URL if exists, otherwise remove
+    cleaned.hero.image = '';
+  }
+  
+  // Remove base64 images from certificates
+  if (cleaned.certificates && Array.isArray(cleaned.certificates)) {
+    cleaned.certificates = cleaned.certificates.map(cert => {
+      if (cert.image && cert.image.startsWith('data:image')) {
+        return { ...cert, image: '' }; // Remove base64, keep other data
+      }
+      return cert;
+    });
+  }
+  
+  // Remove base64 images from portfolio
+  if (cleaned.portfolio && Array.isArray(cleaned.portfolio)) {
+    cleaned.portfolio = cleaned.portfolio.map(item => {
+      if (item.image && item.image.startsWith('data:image')) {
+        return { ...item, image: '' }; // Remove base64, keep other data
+      }
+      return item;
+    });
+  }
+  
+  return cleaned;
+}
+
 // Smart merge for certificates - preserves images by ID and keeps all certificates
 function mergeCertificates(latestCerts, partialCerts) {
   // If partial has no certificates, return latest (preserve all existing)
@@ -725,6 +758,12 @@ export async function updateContent(partial) {
   console.log('Final contentData certificates length:', contentData.certificates?.length || 0);
   console.log('=== END UPDATE CONTENT DEBUG ===');
 
+  // Clean content before saving - remove base64 images to reduce size
+  const cleanedContent = cleanContentForSheets(contentData);
+  const originalSize = JSON.stringify(contentData).length;
+  const cleanedSize = JSON.stringify(cleanedContent).length;
+  console.log(`🧹 Cleaned content: ${originalSize} → ${cleanedSize} characters (saved ${originalSize - cleanedSize} chars)`);
+
   // Save to Google Sheets
   try {
     console.log('💾 Attempting to save content to Google Sheets...');
@@ -733,9 +772,11 @@ export async function updateContent(partial) {
       portfolio: contentData.portfolio?.length || 0,
       hasHeroImage: !!contentData.hero?.image,
       heroImageType: contentData.hero?.image?.substring(0, 50) || 'none',
+      originalSize: originalSize,
+      cleanedSize: cleanedSize,
     });
     
-    const saved = await saveContentToSheets(contentData);
+    const saved = await saveContentToSheets(cleanedContent);
     if (!saved) {
       console.error('❌ Failed to save content to Google Sheets (returned false)');
       throw new Error('Google Sheets-ə yazıla bilmədi: Xəta baş verdi');
