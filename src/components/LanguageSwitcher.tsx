@@ -2,7 +2,12 @@ import { useTranslation } from 'react-i18next'
 import { Globe } from 'lucide-react'
 import { setLanguage } from '../i18n/config'
 
-export default function LanguageSwitcher() {
+interface LanguageSwitcherProps {
+  // Dil seçiləndən sonra çağırılır (məsələn, mobil menyunu bağlamaq üçün)
+  onSelect?: () => void
+}
+
+export default function LanguageSwitcher({ onSelect }: LanguageSwitcherProps) {
   const { i18n, t } = useTranslation()
 
   const languages = [
@@ -29,7 +34,10 @@ export default function LanguageSwitcher() {
         {languages.map((lang) => (
           <button
             key={lang.code}
-            onClick={() => setLanguage(lang.code as 'az' | 'en' | 'ru')}
+            onClick={() => {
+              setLanguage(lang.code as 'az' | 'en' | 'ru')
+              onSelect?.()
+            }}
             className={`w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-primary-50 transition-colors ${
               i18n.language === lang.code ? 'bg-primary-50 text-primary-600' : 'text-gray-700'
             }`}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Menu, X, Calendar } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
@@ -24,6 +24,7 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
   const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
+  const navRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,11 +44,37 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Mobil menyu açıqkən: Escape, menyudan kənara toxunuş və ya səhifənin sürüşməsi menyunu bağlayır
+  useEffect(() => {
+    if (!isOpen) return
+
+    const startY = window.scrollY
+    const onScroll = () => {
+      if (Math.abs(window.scrollY - startY) > 10) setIsOpen(false)
+    }
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false)
+    }
+    const onPointerDown = (e: PointerEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setIsOpen(false)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    document.addEventListener('keydown', onKeyDown)
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      document.removeEventListener('keydown', onKeyDown)
+      document.removeEventListener('pointerdown', onPointerDown)
+    }
+  }, [isOpen])
+
   const scrollToSection = (id: string) => {
+    // Menyu hər halda bağlanır
+    setIsOpen(false)
     const element = document.getElementById(id)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
-      setIsOpen(false)
     }
   }
 
@@ -61,6 +88,7 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
 
   return (
     <nav
+      ref={navRef}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
           ? 'bg-white/95 backdrop-blur-sm shadow-md'
@@ -149,10 +177,13 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
               </button>
             ))}
             <div className="px-3 py-2">
-              <LanguageSwitcher />
+              <LanguageSwitcher onSelect={() => setIsOpen(false)} />
             </div>
             <button
-              onClick={() => onOpenBooking?.()}
+              onClick={() => {
+                setIsOpen(false)
+                onOpenBooking?.()
+              }}
               className="w-full mt-2 px-4 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 active:bg-primary-800 transition-colors flex items-center justify-center gap-2 text-base touch-manipulation"
             >
               <Calendar className="w-5 h-5" />

@@ -77,3 +77,8 @@ button:focus-visible,
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Menyudan bölməyə keçəndə başlıq sabit naviqasiyanın altında qalmasın */
+section[id] {
+  scroll-margin-top: 4rem;
+}
