@@ -1,6 +1,26 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "ibrahimabdullayev.az" }],
+      "destination": "https://ibrahimabdullayev.com/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.ibrahimabdullayev.az" }],
+      "destination": "https://ibrahimabdullayev.com/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.ibrahimabdullayev.com" }],
+      "destination": "https://ibrahimabdullayev.com/$1",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/((?!api/).*)",
@@ -19,4 +39,3 @@
     }
   ]
 }
-
