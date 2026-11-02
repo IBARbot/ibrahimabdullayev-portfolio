@@ -38,6 +38,8 @@ export default function Hero({ onOpenBooking }: HeroProps) {
   const heroTitle = t('hero.title')
   const heroSubtitle = t('hero.subtitle')
   const heroDescription = t('hero.description')
+  const credentialsRaw = t('hero.credentials', { returnObjects: true }) as unknown
+  const credentials: string[] = Array.isArray(credentialsRaw) ? (credentialsRaw as string[]) : []
 
   return (
     <section
@@ -87,7 +89,7 @@ export default function Hero({ onOpenBooking }: HeroProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight"
+            className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight text-balance"
           >
             {heroTitle.includes('İbrahim Abdullayev') || heroTitle.includes('Ibrahim Abdullayev') || heroTitle.includes('Ибрагим Абдуллаев') ? (
               <>
@@ -115,10 +117,28 @@ export default function Hero({ onOpenBooking }: HeroProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="text-base text-gray-500 mb-10 max-w-xl mx-auto"
+            className="text-base text-gray-500 mb-5 max-w-xl mx-auto"
           >
             {heroDescription}
           </motion.p>
+
+          {credentials.length > 0 && (
+            <motion.ul
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.7 }}
+              className="flex flex-wrap justify-center md:justify-start gap-2 mb-10"
+            >
+              {credentials.map((item) => (
+                <li
+                  key={item}
+                  className="px-3 py-1 text-xs sm:text-sm font-medium rounded-full bg-primary-50 text-primary-700 border border-primary-100"
+                >
+                  {item}
+                </li>
+              ))}
+            </motion.ul>
+          )}
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -127,16 +147,16 @@ export default function Hero({ onOpenBooking }: HeroProps) {
             className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-12 sm:mb-16"
           >
             <button
-              onClick={() => scrollToSection('services')}
+              onClick={() => onOpenBooking?.()}
               className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 active:bg-primary-800 transition-all shadow-lg hover:shadow-xl active:scale-95 touch-manipulation text-sm sm:text-base"
             >
-              {t('hero.viewServices')}
+              {t('nav.bookNow')}
             </button>
             <button
-              onClick={() => onOpenBooking?.()}
+              onClick={() => scrollToSection('services')}
               className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-white text-primary-600 border-2 border-primary-600 rounded-lg font-semibold hover:bg-primary-50 active:bg-primary-100 transition-all active:scale-95 touch-manipulation text-sm sm:text-base"
             >
-              {t('hero.contact')}
+              {t('hero.viewServices')}
             </button>
           </motion.div>
 

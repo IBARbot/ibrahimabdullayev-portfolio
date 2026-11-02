@@ -11,10 +11,16 @@
     "scrollDown": "Aşağı sürüşdür",
     "close": "Bağla"
   },
+  "notFound": {
+    "title": "Səhifə tapılmadı",
+    "description": "Axtardığınız səhifə mövcud deyil və ya köçürülüb.",
+    "home": "Ana səhifəyə qayıt"
+  },
   "hero": {
     "title": "Salam, mən İbrahim Abdullayev",
     "subtitle": "Aviabilet və Rezervasiya Sistemləri üzrə Mütəxəssis",
     "description": "Aviabiletlər, sığorta, paket turlar, transfer və rezervasiya sistemləri üzrə işləyən ticketing mütəxəssisiyəm. GDS, NDC və birbaşa satış interfeyslərində (direct sell UI) uzunillik təcrübə ilə həm fərdi səyahətçilərə, həm də şirkətlərə ən uyğun həlləri təklif edirəm.",
+    "credentials": ["IATA sertifikatlı", "Galileo GDS", "NDC", "Direct sell UI"],
     "viewServices": "Xidmətlərimə Bax",
     "contact": "Əlaqə Saxla"
   },

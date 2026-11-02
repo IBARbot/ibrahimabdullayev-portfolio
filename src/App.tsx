@@ -1,5 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { MotionConfig } from 'framer-motion'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import Navigation from './components/Navigation'
 import Hero from './components/Hero'
@@ -12,6 +13,7 @@ import FloatingWhatsApp from './components/FloatingWhatsApp'
 import Analytics from './components/Analytics'
 import { initializeLanguage } from './i18n/config'
 import CookieConsent from './components/CookieConsent'
+import NotFound from './components/NotFound'
 
 // Böyük və ya yalnız lazım olduqda açılan hissələr ayrıca yüklənir (code splitting)
 const AdminPanel = lazy(() => import('./components/AdminPanel'))
@@ -110,15 +112,19 @@ function HomePage() {
 function App() {
   return (
     <ErrorBoundary>
-      <Router>
-        <Suspense fallback={null}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/admin" element={<AdminPanel />} />
-            <Route path="/admin/reset-password" element={<ResetPassword />} />
-          </Routes>
-        </Suspense>
-      </Router>
+      {/* Sistemində "hərəkəti azalt" seçilibsə, animasiyalar avtomatik söndürülür */}
+      <MotionConfig reducedMotion="user">
+        <Router>
+          <Suspense fallback={null}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/admin/reset-password" element={<ResetPassword />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </Router>
+      </MotionConfig>
     </ErrorBoundary>
   )
 }
