@@ -1,5 +1,6 @@
 // Vercel Serverless Function - Booking API
 import nodemailer from 'nodemailer';
+import { applyCors, rateLimit, clientIp } from '../server/security.js';
 import { sanitizeBookingData } from '../server/validation.js';
 import { logApiError } from '../server/errorLogger.js';
 
@@ -29,10 +30,7 @@ const createTransporter = () => {
 
 export default async function handler(req, res) {
   // CORS
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  applyCors(req, res, 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -40,6 +38,12 @@ export default async function handler(req, res) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
+  }
+
+  const limit = rateLimit(`booking:${clientIp(req)}`, 8, 10 * 60 * 1000);
+  if (limit.limited) {
+    res.setHeader('Retry-After', String(limit.retryAfter));
+    return res.status(429).json({ success: false, message: 'Çox sayda sorğu. Bir az sonra yenidən cəhd edin.' });
   }
 
   try {

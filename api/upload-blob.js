@@ -1,14 +1,11 @@
 // Vercel Blob Storage - Simple Image Upload
 // Uploads images to Vercel Blob Storage and returns the URL
-import jwt from 'jsonwebtoken';
+import { applyCors, requireAdmin } from '../server/security.js';
 import { put } from '@vercel/blob';
 
 export default async function handler(req, res) {
   // CORS
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  applyCors(req, res, 'POST,OPTIONS');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -19,34 +16,25 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Check authentication
-    const authHeader = req.headers.authorization;
-    const token = authHeader?.replace('Bearer ', '').trim();
-    if (!token) {
-      return res.status(401).json({ success: false, message: 'İcazə verilmədi - Token tapılmadı' });
-    }
-
-    // Verify JWT token
-    const jwtSecret = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
-    try {
-      jwt.verify(token, jwtSecret);
-    } catch (jwtError) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'İcazə verilmədi - Token etibarsızdır' 
-      });
-    }
+    // Yalnız admin yükləyə bilər
+    if (!requireAdmin(req, res)) return;
 
     // Get image from request
-    const { image } = req.body;
+    const { image } = req.body || {};
     
-    if (!image) {
+    if (!image || typeof image !== 'string') {
       return res.status(400).json({ success: false, message: 'Şəkil tapılmadı' });
+    }
+    if (image.length > 7_000_000) {
+      return res.status(413).json({ success: false, message: 'Şəkil çox böyükdür (maksimum ~5 MB)' });
     }
 
     // Remove data URL prefix if present (data:image/png;base64,...)
     const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
-    const imageType = image.match(/data:image\/(\w+);base64/)?.[1] || 'png';
+    const imageType = image.match(/^data:image\/(png|jpe?g|webp|gif);base64,/i)?.[1]?.toLowerCase();
+    if (!imageType) {
+      return res.status(400).json({ success: false, message: 'Yalnız PNG, JPG, WEBP və GIF şəkilləri qəbul olunur' });
+    }
     
     // Convert base64 to buffer
     const buffer = Buffer.from(base64Data, 'base64');

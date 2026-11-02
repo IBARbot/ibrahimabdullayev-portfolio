@@ -104,7 +104,7 @@ const authenticateToken = (req, res, next) => {
     return res.status(401).json({ success: false, message: 'Token tələb olunur' });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production', (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
       return res.status(403).json({ success: false, message: 'Token etibarsızdır' });
     }
@@ -283,13 +283,16 @@ app.post('/api/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     
-    const adminUsername = process.env.ADMIN_USERNAME || 'admin';
-    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const adminUsername = process.env.ADMIN_USERNAME;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminUsername || !adminPassword || !process.env.JWT_SECRET) {
+      return res.status(503).json({ success: false, message: 'Admin giriş konfiqurasiya edilməyib' });
+    }
     
     if (username === adminUsername && password === adminPassword) {
       const token = jwt.sign(
         { username: adminUsername },
-        process.env.JWT_SECRET || 'your-secret-key-change-in-production',
+        process.env.JWT_SECRET,
         { expiresIn: '24h' }
       );
       
