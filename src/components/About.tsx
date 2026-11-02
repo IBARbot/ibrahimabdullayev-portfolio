@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Award, Coffee, Heart, ZoomIn } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { formatDate } from '../utils/formatDate'
 
 const PROFILE_IMAGE = '/profile.jpg'
 
@@ -15,7 +16,7 @@ interface CertificateItem {
 }
 
 export default function About() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [certificates, setCertificates] = useState<CertificateItem[]>([])
   const [selectedCert, setSelectedCert] = useState<CertificateItem | null>(null)
 
@@ -174,7 +175,7 @@ export default function About() {
                         )}
                         {cert.date && (
                           <p className="text-xs text-gray-400 mt-1">
-                            {new Date(cert.date).toLocaleDateString()}
+                            {formatDate(cert.date, i18n.language)}
                           </p>
                         )}
                       </div>
@@ -265,7 +266,7 @@ export default function About() {
               )}
               {selectedCert.date && (
                 <p className="text-xs text-gray-400 mt-1">
-                  {new Date(selectedCert.date).toLocaleDateString()}
+                  {formatDate(selectedCert.date, i18n.language)}
                 </p>
               )}
             </div>
