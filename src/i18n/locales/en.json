@@ -11,6 +11,15 @@
     "scrollDown": "Scroll down",
     "close": "Close"
   },
+  "howItWorks": {
+    "title": "How I work",
+    "subtitle": "The right solution in three simple steps",
+    "steps": [
+      { "title": "Send a request", "text": "Share your route, dates and needs via WhatsApp or the form." },
+      { "title": "Get an offer", "text": "I check options in GDS and direct sell interfaces and present the best fits." },
+      { "title": "Confirm your ticket", "text": "You confirm your choice, and I complete the booking and paperwork." }
+    ]
+  },
   "notFound": {
     "title": "Page not found",
     "description": "The page you are looking for does not exist or has been moved.",
@@ -21,6 +30,7 @@
     "subtitle": "Specialist in Air Ticketing and Reservation Systems",
     "description": "I work as a ticketing specialist across flights, insurance, package tours, transfers and reservation systems. With solid hands-on experience in GDS, NDC and direct sell UIs, I help both individual travelers and companies find clear, efficient and realistic booking solutions.",
     "credentials": ["IATA certified", "Galileo GDS", "NDC", "Direct sell UI"],
+    "status": { "online": "Online now · replying", "offline": "Offline now · will reply in the morning", "time": "Baku time" },
     "viewServices": "View Services",
     "contact": "Contact Me"
   },

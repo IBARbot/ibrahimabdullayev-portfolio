@@ -11,6 +11,15 @@
     "scrollDown": "Aşağı sürüşdür",
     "close": "Bağla"
   },
+  "howItWorks": {
+    "title": "Necə işləyirəm",
+    "subtitle": "Üç sadə addımda sizə uyğun həll",
+    "steps": [
+      { "title": "Sorğu göndərin", "text": "Marşrut, tarixlər və ehtiyaclarınızı WhatsApp və ya formla yazın." },
+      { "title": "Təklif alın", "text": "GDS və birbaşa satış interfeyslərində variantları yoxlayıb ən uyğun seçimləri təqdim edirəm." },
+      { "title": "Bileti təsdiqləyin", "text": "Seçiminizi təsdiqləyirsiniz, mən rezervasiya və sənədləşməni tamamlayıram." }
+    ]
+  },
   "notFound": {
     "title": "Səhifə tapılmadı",
     "description": "Axtardığınız səhifə mövcud deyil və ya köçürülüb.",
@@ -21,6 +30,7 @@
     "subtitle": "Aviabilet və Rezervasiya Sistemləri üzrə Mütəxəssis",
     "description": "Aviabiletlər, sığorta, paket turlar, transfer və rezervasiya sistemləri üzrə işləyən ticketing mütəxəssisiyəm. GDS, NDC və birbaşa satış interfeyslərində (direct sell UI) uzunillik təcrübə ilə həm fərdi səyahətçilərə, həm də şirkətlərə ən uyğun həlləri təklif edirəm.",
     "credentials": ["IATA sertifikatlı", "Galileo GDS", "NDC", "Direct sell UI"],
+    "status": { "online": "İndi onlayn · cavab verirəm", "offline": "Hazırda oflayn · səhər cavab verəcəm", "time": "Bakı vaxtı" },
     "viewServices": "Xidmətlərimə Bax",
     "contact": "Əlaqə Saxla"
   },

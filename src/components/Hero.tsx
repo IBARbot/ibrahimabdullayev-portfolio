@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronDown, Linkedin, Mail, Instagram, MessageCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import BakuStatus from './BakuStatus'
 
 const PROFILE_IMAGE = '/profile.jpg'
 
@@ -50,6 +51,38 @@ export default function Hero({ onOpenBooking }: HeroProps) {
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary-50 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        {/* Bakıdan dünyaya: yumşaq uçuş marşrutu */}
+        <svg
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full text-primary-300 opacity-50 pointer-events-none"
+          viewBox="0 0 1200 800"
+          preserveAspectRatio="xMidYMid slice"
+          fill="none"
+        >
+          <path
+            id="hero-route-a"
+            d="M-20 640 C 250 380, 600 340, 880 170 S 1150 60, 1230 40"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeDasharray="4 10"
+            strokeLinecap="round"
+            className="hero-route-dash"
+          />
+          <path
+            d="M-20 760 C 300 620, 700 700, 1000 480 S 1180 380, 1230 360"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeDasharray="3 12"
+            strokeLinecap="round"
+            className="hero-route-dash"
+          />
+          <circle r="5" fill="currentColor" className="motion-reduce:hidden">
+            <animateMotion dur="14s" repeatCount="indefinite" rotate="auto">
+              <mpath href="#hero-route-a" />
+            </animateMotion>
+          </circle>
+          <circle cx="880" cy="170" r="4" fill="currentColor" />
+        </svg>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
@@ -85,6 +118,8 @@ export default function Hero({ onOpenBooking }: HeroProps) {
             transition={{ duration: 0.6 }}
             className="text-center md:text-left order-2 md:order-1"
           >
+          <BakuStatus />
+
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

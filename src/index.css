@@ -82,3 +82,13 @@ button:focus-visible,
 section[id] {
   scroll-margin-top: 4rem;
 }
+
+/* Hero marşrut xətti: nöqtələr yavaşca irəli axır */
+@keyframes route-dash {
+  to {
+    stroke-dashoffset: -140;
+  }
+}
+.hero-route-dash {
+  animation: route-dash 18s linear infinite;
+}
