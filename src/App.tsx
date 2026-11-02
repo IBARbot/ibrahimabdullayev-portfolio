@@ -6,6 +6,7 @@ import Navigation from './components/Navigation'
 import Hero from './components/Hero'
 import About from './components/About'
 import Services from './components/Services'
+import HowItWorks from './components/HowItWorks'
 import Projects from './components/Projects'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
@@ -77,6 +78,7 @@ function HomePage() {
         <Hero onOpenBooking={openBookingModal} />
         <About />
         <Services onOpenBooking={openBookingModal} />
+        <HowItWorks />
         <Projects onOpenBooking={openBookingModal} />
         <Contact />
       </main>
