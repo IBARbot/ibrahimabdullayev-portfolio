@@ -30,7 +30,7 @@
     "subtitle": "Aviabilet və Rezervasiya Sistemləri üzrə Mütəxəssis",
     "description": "Aviabiletlər, sığorta, paket turlar, transfer və rezervasiya sistemləri üzrə işləyən ticketing mütəxəssisiyəm. GDS, NDC və birbaşa satış interfeyslərində (direct sell UI) uzunillik təcrübə ilə həm fərdi səyahətçilərə, həm də şirkətlərə ən uyğun həlləri təklif edirəm.",
     "credentials": ["IATA sertifikatlı", "Galileo GDS", "NDC", "Direct sell UI"],
-    "status": { "instant": "Dərhal cavab verirəm", "soon": "Qısa müddətə cavab verirəm", "later": "Bir qədər sonra cavab verəcəm", "time": "Bakı vaxtı" },
+    "status": { "instant": "Dərhal cavab verirəm", "soon": "Qısa müddətə cavab verirəm", "later": "Oflayn ola bilərəm · bir qədər sonra cavab verəcəm", "time": "Bakı vaxtı" },
     "viewServices": "Xidmətlərimə Bax",
     "contact": "Əlaqə Saxla"
   },
