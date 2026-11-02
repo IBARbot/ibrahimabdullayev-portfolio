@@ -38,7 +38,7 @@ const initDataFiles = () => {
         title: 'Salam, mən İbrahim Abdullayev',
         subtitle: 'Turizm Sahəsində Aparıcı Mütəxəssis',
         description: 'Aviabilet rezervasiyası, otel booking, transfer xidmətləri, sığorta və səfirlik işləri üzrə peşəkar məsləhətçi. İllər boyu təcrübəmlə səyahətçilərə ən yaxşı həlləri təqdim edirəm.',
-        image: 'https://i.imgur.com/64oQNiZ.jpeg'
+        image: '/profile.jpg'
       },
       about: {
         title: 'Haqqımda',

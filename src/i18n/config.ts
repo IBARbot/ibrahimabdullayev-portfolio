@@ -49,6 +49,15 @@ i18n
     },
   })
 
+// <html lang> atributunu seçilmiş dillə sinxron saxla (əlçatanlıq və SEO üçün)
+const syncHtmlLang = (lng?: string) => {
+  if (typeof document !== 'undefined' && lng) {
+    document.documentElement.lang = lng.split('-')[0]
+  }
+}
+i18n.on('languageChanged', syncHtmlLang)
+syncHtmlLang(i18n.language)
+
 // IP əsaslı ölkə detection (async) - App.tsx-də istifadə olunur
 export const detectCountryLanguage = async (): Promise<string | null> => {
   try {

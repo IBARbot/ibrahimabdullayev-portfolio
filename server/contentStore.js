@@ -9,7 +9,7 @@ const defaultContent = {
     subtitle: 'Aviabilet və Rezervasiya Sistemləri üzrə Mütəxəssis',
     description:
       'Aviabilet rezervasiyası, otel booking, transfer xidmətləri, sığorta və səfirlik işləri üzrə peşəkar məsləhətçi. GDS, NDC və Direct Sell UI üzrə mentor kimi illər boyu təcrübəmlə səyahətçilərə ən uyğun və təhlükəsiz həlləri təqdim edirəm.',
-    image: 'https://i.imgur.com/64oQNiZ.jpeg',
+    image: '/profile.jpg',
   },
   about: {
     title: 'Haqqımda',

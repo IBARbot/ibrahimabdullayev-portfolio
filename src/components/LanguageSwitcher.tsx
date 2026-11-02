@@ -2,8 +2,13 @@ import { useTranslation } from 'react-i18next'
 import { Globe } from 'lucide-react'
 import { setLanguage } from '../i18n/config'
 
-export default function LanguageSwitcher() {
-  const { i18n } = useTranslation()
+interface LanguageSwitcherProps {
+  // Dil seçiləndən sonra çağırılır (məsələn, mobil menyunu bağlamaq üçün)
+  onSelect?: () => void
+}
+
+export default function LanguageSwitcher({ onSelect }: LanguageSwitcherProps) {
+  const { i18n, t } = useTranslation()
 
   const languages = [
     { code: 'az', name: 'Azərbaycan', flag: '🇦🇿' },
@@ -17,18 +22,22 @@ export default function LanguageSwitcher() {
     <div className="relative group">
       <button
         className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
-        aria-label="Dil seç"
+        aria-label={t('nav.language')}
+        aria-haspopup="true"
       >
         <Globe className="w-4 h-4" />
         <span className="hidden sm:inline">{currentLang.flag} {currentLang.name}</span>
         <span className="sm:hidden">{currentLang.flag}</span>
       </button>
 
-      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 z-50">
         {languages.map((lang) => (
           <button
             key={lang.code}
-            onClick={() => setLanguage(lang.code as 'az' | 'en' | 'ru')}
+            onClick={() => {
+              setLanguage(lang.code as 'az' | 'en' | 'ru')
+              onSelect?.()
+            }}
             className={`w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-primary-50 transition-colors ${
               i18n.language === lang.code ? 'bg-primary-50 text-primary-600' : 'text-gray-700'
             }`}

@@ -55,3 +55,30 @@
 .animation-delay-2000 {
   animation-delay: 2s;
 }
+
+/* Klaviatura ilə gəzənlər üçün aydın fokus xətti */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid #0284c7;
+  outline-offset: 2px;
+}
+
+/* Sistemində "hərəkəti azalt" seçilibsə, CSS animasiyalarını da söndür */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Menyudan bölməyə keçəndə başlıq sabit naviqasiyanın altında qalmasın */
+section[id] {
+  scroll-margin-top: 4rem;
+}

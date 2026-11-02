@@ -9,45 +9,6 @@ interface Service {
   features: string[]
 }
 
-const services: Service[] = [
-  {
-    icon: Plane,
-    title: 'Aviabilet Rezervasiyası',
-    description: 'Ən yaxşı qiymətlərlə aviabilet rezervasiyası və məsləhəti',
-    features: ['Uçuş axtarışı', 'Multi-city', 'Optimal qiymətlər', '24/7 dəstək'],
-  },
-  {
-    icon: Hotel,
-    title: 'Otel Rezervasiyası',
-    description: 'Dünyanın hər yerində otel rezervasiyası və booking xidməti',
-    features: ['Ən yaxşı otellər', 'Rəqabətli qiymətlər', 'Giriş/çıxış tarixləri', 'Otaq seçimi'],
-  },
-  {
-    icon: Car,
-    title: 'Transfer Xidmətləri',
-    description: 'Hava limanı, otel və şəhər daxilində transfer xidmətləri',
-    features: ['Hava limanı transfer', 'Şəhər daxili', 'Komfortlu nəqliyyat', 'Təhlükəsiz səyahət'],
-  },
-  {
-    icon: Shield,
-    title: 'Sığorta Xidmətləri',
-    description: 'Səyahət, sağlamlıq və həyat sığortası paketləri',
-    features: ['Səyahət sığortası', 'Sağlamlıq sığortası', 'Həyat sığortası', 'Fərdi paketlər'],
-  },
-  {
-    icon: Building2,
-    title: 'Səfirlik İşləri',
-    description: 'Viza müraciətləri və səfirlik işləri üzrə məsləhət',
-    features: ['Viza müraciətləri', 'Sənəd hazırlığı', 'Təcili xidmət', 'Məsləhət'],
-  },
-  {
-    icon: MapPin,
-    title: 'Səyahət Planlaşdırması',
-    description: 'Kompleks səyahət planları və marşrut optimallaşdırması',
-    features: ['Marşrut planlaşdırması', 'Multi-destination', 'Büdcə optimallaşdırması', 'Fərdi planlar'],
-  },
-]
-
 type BookingType = 'flight' | 'hotel' | 'transfer' | 'insurance' | 'embassy'
 
 interface ServicesProps {

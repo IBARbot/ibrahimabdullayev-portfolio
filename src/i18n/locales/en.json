@@ -5,12 +5,22 @@
     "services": "Services",
     "portfolio": "Portfolio",
     "contact": "Contact",
-    "bookNow": "Book Now"
+    "bookNow": "Book Now",
+    "menu": "Menu",
+    "language": "Select language",
+    "scrollDown": "Scroll down",
+    "close": "Close"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "home": "Back to home"
   },
   "hero": {
     "title": "Hello, I'm Ibrahim Abdullayev",
     "subtitle": "Specialist in Air Ticketing and Reservation Systems",
     "description": "I work as a ticketing specialist across flights, insurance, package tours, transfers and reservation systems. With solid hands-on experience in GDS, NDC and direct sell UIs, I help both individual travelers and companies find clear, efficient and realistic booking solutions.",
+    "credentials": ["IATA certified", "Galileo GDS", "NDC", "Direct sell UI"],
     "viewServices": "View Services",
     "contact": "Contact Me"
   },

@@ -2,8 +2,8 @@
 // Handles all admin routes: login, content, bookings, forgot-password, reset-password
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
-import { getContent, updateContent } from '../utils/contentStore.js';
-import { logApiError } from '../utils/errorLogger.js';
+import { getContent, updateContent } from '../../server/contentStore.js';
+import { logApiError } from '../../server/errorLogger.js';
 
 const createTransporter = () => {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return null;
@@ -99,7 +99,7 @@ export default async function handler(req, res) {
             { expiresIn: '1h' }
           );
 
-          const resetLink = `${req.headers.origin || 'https://ibrahimabdullayev.com'}/admin/reset-password?token=${resetToken}`;
+          const resetLink = `${req.headers.origin || 'https://www.ibrahimabdullayev.com'}/admin/reset-password?token=${resetToken}`;
           console.log('Reset link generated:', resetLink);
 
           const transporter = createTransporter();
@@ -277,7 +277,7 @@ export default async function handler(req, res) {
                 title: 'Salam, mən İbrahim Abdullayev',
                 subtitle: 'Aviabilet və Rezervasiya Sistemləri üzrə Mütəxəssis',
                 description: 'Aviabilet rezervasiyası, otel booking, transfer xidmətləri, sığorta və səfirlik işləri üzrə peşəkar məsləhətçi. GDS, NDC və Direct Sell UI üzrə mentor kimi illər boyu təcrübəmlə səyahətçilərə ən uyğun və təhlükəsiz həlləri təqdim edirəm.',
-                image: 'https://i.imgur.com/64oQNiZ.jpeg',
+                image: '/profile.jpg',
               },
               about: {
                 title: 'Haqqımda',
@@ -306,7 +306,7 @@ export default async function handler(req, res) {
               title: 'Salam, mən İbrahim Abdullayev',
               subtitle: 'Aviabilet və Rezervasiya Sistemləri üzrə Mütəxəssis',
               description: 'Aviabilet rezervasiyası, otel booking, transfer xidmətləri, sığorta və səfirlik işləri üzrə peşəkar məsləhətçi. GDS, NDC və Direct Sell UI üzrə mentor kimi illər boyu təcrübəmlə səyahətçilərə ən uyğun və təhlükəsiz həlləri təqdim edirəm.',
-              image: 'https://i.imgur.com/64oQNiZ.jpeg',
+              image: '/profile.jpg',
             },
             about: {
               title: 'Haqqımda',

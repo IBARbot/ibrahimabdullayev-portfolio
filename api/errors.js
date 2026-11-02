@@ -1,5 +1,5 @@
 // Combined API endpoint for error logging and initialization
-import { logErrorToSheets, initializeErrorsSheet } from './utils/errorLogger.js';
+import { logErrorToSheets, initializeErrorsSheet } from '../server/errorLogger.js';
 
 export default async function handler(req, res) {
   // CORS
