@@ -31,6 +31,7 @@
     "description": "I work as a ticketing specialist across flights, insurance, package tours, transfers and reservation systems. With solid hands-on experience in GDS, NDC and direct sell UIs, I help both individual travelers and companies find clear, efficient and realistic booking solutions.",
     "credentials": ["IATA certified", "Galileo GDS", "NDC", "Direct sell UI"],
     "status": { "instant": "Replying instantly", "soon": "Replying shortly", "later": "May be offline · will reply a bit later", "time": "Baku time" },
+    "clocks": { "title": "World clocks", "baku": "Baku", "istanbul": "Istanbul", "newyork": "New York", "london": "London", "beijing": "Beijing", "tokyo": "Tokyo", "moscow": "Moscow", "show": "Show world clocks", "hide": "Hide world clocks" },
     "viewServices": "View Services",
     "contact": "Contact Me"
   },

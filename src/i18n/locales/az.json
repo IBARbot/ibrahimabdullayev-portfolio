@@ -31,6 +31,7 @@
     "description": "Aviabiletlər, sığorta, paket turlar, transfer və rezervasiya sistemləri üzrə işləyən ticketing mütəxəssisiyəm. GDS, NDC və birbaşa satış interfeyslərində (direct sell UI) uzunillik təcrübə ilə həm fərdi səyahətçilərə, həm də şirkətlərə ən uyğun həlləri təklif edirəm.",
     "credentials": ["IATA sertifikatlı", "Galileo GDS", "NDC", "Direct sell UI"],
     "status": { "instant": "Dərhal cavab verirəm", "soon": "Qısa müddətə cavab verirəm", "later": "Oflayn ola bilərəm · bir qədər sonra cavab verəcəm", "time": "Bakı vaxtı" },
+    "clocks": { "title": "Dünya saatları", "baku": "Bakı", "istanbul": "İstanbul", "newyork": "Nyu York", "london": "London", "beijing": "Pekin", "tokyo": "Tokio", "moscow": "Moskva", "show": "Dünya saatlarını göstər", "hide": "Dünya saatlarını gizlət" },
     "viewServices": "Xidmətlərimə Bax",
     "contact": "Əlaqə Saxla"
   },
