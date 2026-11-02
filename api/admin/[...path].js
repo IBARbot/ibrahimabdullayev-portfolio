@@ -99,7 +99,7 @@ export default async function handler(req, res) {
             { expiresIn: '1h' }
           );
 
-          const resetLink = `${req.headers.origin || 'https://ibrahimabdullayev.com'}/admin/reset-password?token=${resetToken}`;
+          const resetLink = `${req.headers.origin || 'https://www.ibrahimabdullayev.com'}/admin/reset-password?token=${resetToken}`;
           console.log('Reset link generated:', resetLink);
 
           const transporter = createTransporter();

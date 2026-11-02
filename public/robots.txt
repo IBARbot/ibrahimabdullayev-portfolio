@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://ibrahimabdullayev.com/sitemap.xml
+Sitemap: https://www.ibrahimabdullayev.com/sitemap.xml
