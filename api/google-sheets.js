@@ -1,6 +1,6 @@
 // Vercel Serverless Function - Google Sheets Integration
 // This function appends booking data to Google Sheets
-import { appendBookingToSheets } from './utils/googleSheetsBooking.js';
+import { appendBookingToSheets } from '../server/googleSheetsBooking.js';
 
 export default async function handler(req, res) {
   // CORS

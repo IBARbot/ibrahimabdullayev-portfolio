@@ -1,7 +1,7 @@
 // Vercel Serverless Function - Booking API
 import nodemailer from 'nodemailer';
-import { sanitizeBookingData } from './utils/validation.js';
-import { logApiError } from './utils/errorLogger.js';
+import { sanitizeBookingData } from '../server/validation.js';
+import { logApiError } from '../server/errorLogger.js';
 
 // Helper function to escape HTML
 function escapeHtml(text) {
@@ -73,7 +73,7 @@ export default async function handler(req, res) {
     if (process.env.GOOGLE_SHEET_ID && (process.env.GOOGLE_SHEETS_API_KEY || process.env.GOOGLE_SERVICE_ACCOUNT_KEY)) {
       try {
         // Import and call Google Sheets function directly
-        const { appendBookingToSheets } = await import('./utils/googleSheetsBooking.js');
+        const { appendBookingToSheets } = await import('../server/googleSheetsBooking.js');
         await appendBookingToSheets(bookingData);
         console.log('Booking data successfully sent to Google Sheets');
       } catch (err) {

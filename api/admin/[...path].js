@@ -2,8 +2,8 @@
 // Handles all admin routes: login, content, bookings, forgot-password, reset-password
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
-import { getContent, updateContent } from '../utils/contentStore.js';
-import { logApiError } from '../utils/errorLogger.js';
+import { getContent, updateContent } from '../../server/contentStore.js';
+import { logApiError } from '../../server/errorLogger.js';
 
 const createTransporter = () => {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return null;
