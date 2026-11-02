@@ -8,7 +8,17 @@ interface NavigationProps {
   onOpenBooking?: () => void
 }
 
-const PROFILE_IMAGE = 'https://i.imgur.com/64oQNiZ.jpeg'
+const PROFILE_IMAGE = '/profile-192.jpg'
+
+// Şəkil yüklənmədikdə xarici xidmətə (via.placeholder.com) ehtiyac olmasın deyə yerli SVG
+const FALLBACK_AVATAR =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">' +
+      '<rect width="40" height="40" fill="#0ea5e9"/>' +
+      '<text x="20" y="26" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#ffffff" text-anchor="middle">IA</text>' +
+      '</svg>'
+  )
 
 export default function Navigation({ isScrolled, onOpenBooking }: NavigationProps) {
   const { t } = useTranslation()
@@ -29,7 +39,7 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
       if (current) setActiveSection(current)
     }
 
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
@@ -71,7 +81,8 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement
-                    target.src = 'https://via.placeholder.com/40x40/0ea5e9/ffffff?text=IA'
+                    target.onerror = null
+                    target.src = FALLBACK_AVATAR
                   }}
                 />
               </div>
@@ -92,7 +103,6 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
                     ? 'text-primary-600 border-b-2 border-primary-600'
                     : 'text-gray-700 hover:text-primary-600'
                 }`}
-                aria-label={`${item.label} bölməsinə keç`}
               >
                 {item.label}
               </button>
@@ -112,6 +122,8 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-700 hover:text-primary-600"
+              aria-label={t('nav.menu')}
+              aria-expanded={isOpen}
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>

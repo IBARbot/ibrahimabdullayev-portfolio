@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import Navigation from './components/Navigation'
@@ -8,14 +8,16 @@ import Services from './components/Services'
 import Projects from './components/Projects'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
-import AdminPanel from './components/AdminPanel'
-import ResetPassword from './components/ResetPassword'
-import WelcomeModal from './components/WelcomeModal'
 import FloatingWhatsApp from './components/FloatingWhatsApp'
-import BookingModal from './components/BookingModal'
 import Analytics from './components/Analytics'
 import { initializeLanguage } from './i18n/config'
 import CookieConsent from './components/CookieConsent'
+
+// Böyük və ya yalnız lazım olduqda açılan hissələr ayrıca yüklənir (code splitting)
+const AdminPanel = lazy(() => import('./components/AdminPanel'))
+const ResetPassword = lazy(() => import('./components/ResetPassword'))
+const WelcomeModal = lazy(() => import('./components/WelcomeModal'))
+const BookingModal = lazy(() => import('./components/BookingModal'))
 
 type BookingType = 'flight' | 'hotel' | 'transfer' | 'insurance' | 'embassy'
 
@@ -37,7 +39,7 @@ function HomePage() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
     }
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
@@ -48,6 +50,17 @@ function HomePage() {
       setShowWelcomeModal(true)
     }
   }, [languageInitialized])
+
+  // Rezervasiya pəncərəsinin kodunu səhifə yüklənəndən sonra əvvəlcədən gətir,
+  // istifadəçi düyməyə basanda gecikmə olmasın
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      import('./components/BookingModal').catch(() => {
+        // Yükləmə alınmadısa, düyməyə basanda yenidən cəhd olunacaq
+      })
+    }, 3000)
+    return () => window.clearTimeout(timer)
+  }, [])
 
   const openBookingModal = (type: BookingType = 'flight') => {
     setBookingType(type)
@@ -66,26 +79,30 @@ function HomePage() {
         <Contact />
       </main>
       <Footer />
-      
+
       {/* Floating WhatsApp Button */}
       <FloatingWhatsApp />
       {/* Cookie / Privacy banner */}
       <CookieConsent />
-      
-      {/* Welcome Modal */}
-      {showWelcomeModal && (
-        <WelcomeModal
-          onClose={() => setShowWelcomeModal(false)}
-          onOpenBooking={() => openBookingModal('flight')}
-        />
-      )}
 
-      {/* Booking Modal */}
-      <BookingModal
-        isOpen={showBookingModal}
-        onClose={() => setShowBookingModal(false)}
-        initialType={bookingType}
-      />
+      <Suspense fallback={null}>
+        {/* Welcome Modal */}
+        {showWelcomeModal && (
+          <WelcomeModal
+            onClose={() => setShowWelcomeModal(false)}
+            onOpenBooking={() => openBookingModal('flight')}
+          />
+        )}
+
+        {/* Booking Modal */}
+        {showBookingModal && (
+          <BookingModal
+            isOpen={showBookingModal}
+            onClose={() => setShowBookingModal(false)}
+            initialType={bookingType}
+          />
+        )}
+      </Suspense>
     </div>
   )
 }
@@ -94,15 +111,16 @@ function App() {
   return (
     <ErrorBoundary>
       <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/admin" element={<AdminPanel />} />
-          <Route path="/admin/reset-password" element={<ResetPassword />} />
-        </Routes>
+        <Suspense fallback={null}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/admin/reset-password" element={<ResetPassword />} />
+          </Routes>
+        </Suspense>
       </Router>
     </ErrorBoundary>
   )
 }
 
 export default App
-

@@ -65,7 +65,7 @@ export default function BookingModal({ isOpen, onClose, initialType = 'flight' }
           <button
             onClick={handleClose}
             className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 transition-colors z-10 bg-white rounded-full shadow-md hover:bg-gray-50"
-            aria-label="Bağla"
+            aria-label={t('nav.close')}
           >
             <X className="w-5 h-5" />
           </button>

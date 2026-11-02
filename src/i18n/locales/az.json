@@ -5,7 +5,11 @@
     "services": "Xidmətlər",
     "portfolio": "Portfolio",
     "contact": "Əlaqə",
-    "bookNow": "İndi Rezerv Et"
+    "bookNow": "İndi Rezerv Et",
+    "menu": "Menyu",
+    "language": "Dil seç",
+    "scrollDown": "Aşağı sürüşdür",
+    "close": "Bağla"
   },
   "hero": {
     "title": "Salam, mən İbrahim Abdullayev",

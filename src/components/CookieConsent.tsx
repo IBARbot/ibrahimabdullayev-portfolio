@@ -25,6 +25,8 @@ export default function CookieConsent() {
     setIsVisible(false)
     if (value) {
       localStorage.setItem(STORAGE_KEY, value)
+      // Analytics komponentinə razılığın dəyişdiyini bildir
+      window.dispatchEvent(new Event('cookie-consent-change'))
     }
   }
 

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { ChevronDown, Linkedin, Mail, Instagram, MessageCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-const PROFILE_IMAGE = 'https://i.imgur.com/64oQNiZ.jpeg'
+const PROFILE_IMAGE = '/profile.jpg'
 
 interface HeroProps {
   onOpenBooking?: () => void
@@ -195,7 +195,7 @@ export default function Hero({ onOpenBooking }: HeroProps) {
           <button
             onClick={() => scrollToSection('about')}
             className="animate-bounce"
-            aria-label="Aşağı scroll et"
+            aria-label={t('nav.scrollDown')}
           >
             <ChevronDown className="w-8 h-8 text-primary-600" />
           </button>

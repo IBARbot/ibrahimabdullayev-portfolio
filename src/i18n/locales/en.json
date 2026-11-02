@@ -5,7 +5,11 @@
     "services": "Services",
     "portfolio": "Portfolio",
     "contact": "Contact",
-    "bookNow": "Book Now"
+    "bookNow": "Book Now",
+    "menu": "Menu",
+    "language": "Select language",
+    "scrollDown": "Scroll down",
+    "close": "Close"
   },
   "hero": {
     "title": "Hello, I'm Ibrahim Abdullayev",

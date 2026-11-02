@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { Award, Coffee, Heart, ZoomIn } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-const PROFILE_IMAGE = 'https://i.imgur.com/64oQNiZ.jpeg'
+const PROFILE_IMAGE = '/profile.jpg'
 
 interface CertificateItem {
   id: string
