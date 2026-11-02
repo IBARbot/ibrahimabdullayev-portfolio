@@ -3,26 +3,36 @@
   "outputDirectory": "dist",
   "redirects": [
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "has": [
         {
           "type": "host",
-          "value": "ibrahimabdullayev.az"
+          "value": "www.ibrahimabdullayev.com"
+        },
+        {
+          "type": "header",
+          "key": "x-vercel-ip-country",
+          "value": "AZ"
         }
       ],
-      "destination": "https://www.ibrahimabdullayev.com/$1",
-      "permanent": true
+      "destination": "https://www.ibrahimabdullayev.az/$1",
+      "permanent": false
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "has": [
         {
           "type": "host",
           "value": "www.ibrahimabdullayev.az"
+        },
+        {
+          "type": "header",
+          "key": "x-vercel-ip-country",
+          "value": "(?!AZ$).+"
         }
       ],
       "destination": "https://www.ibrahimabdullayev.com/$1",
-      "permanent": true
+      "permanent": false
     }
   ],
   "rewrites": [
