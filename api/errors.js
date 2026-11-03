@@ -1,12 +1,10 @@
 // Combined API endpoint for error logging and initialization
 import { logErrorToSheets, initializeErrorsSheet } from '../server/errorLogger.js';
+import { applyCors } from '../server/security.js';
 
 export default async function handler(req, res) {
   // CORS
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  applyCors(req, res, 'POST,OPTIONS');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();

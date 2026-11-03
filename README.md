@@ -37,8 +37,8 @@ EMAIL_USER=your-email@gmail.com
 EMAIL_PASS=your-app-password
 CONTACT_EMAIL=ibrahim.abdullayev1@gmail.com
 ADMIN_USERNAME=admin
-ADMIN_PASSWORD=admin123
-JWT_SECRET=your-secret-key-change-in-production
+ADMIN_PASSWORD=<güclü-şifrə-təyin-edin>
+JWT_SECRET=<ən azı 32 təsadüfi simvol>
 ```
 
 **Qeyd:** Gmail istifadə edirsinizsə, "App Password" yaratmalısınız:
@@ -226,7 +226,7 @@ Admin girişi.
 ```json
 {
   "username": "admin",
-  "password": "admin123"
+  "password": "<ADMIN_PASSWORD dəyəri>"
 }
 ```
 
@@ -281,7 +281,7 @@ Admin panelə daxil olmaq üçün:
 1. Browser-də `/admin` səhifəsinə gedin
 2. Default credentials:
    - Username: `admin`
-   - Password: `admin123`
+   - Password: `ADMIN_PASSWORD` dəyişəninin dəyəri
 
 **Qeyd:** Production-da `.env` faylında `ADMIN_USERNAME` və `ADMIN_PASSWORD` dəyişənlərini dəyişdirməyi unutmayın!
 
