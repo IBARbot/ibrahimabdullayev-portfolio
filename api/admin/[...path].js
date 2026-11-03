@@ -29,6 +29,18 @@ const createTransporter = () => {
   });
 };
 
+// Sıfırlama linki etibarlıdırmı: imza/müddət + hələ istifadə olunmayıb
+async function isResetTokenUsable(token) {
+  try {
+    const decoded = verifyResetToken(token);
+    const changedAt = await getPasswordChangedAt();
+    if (changedAt && (decoded.iat || 0) * 1000 < Math.floor(changedAt / 1000) * 1000) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export default async function handler(req, res) {
   // CORS
   applyCors(req, res, 'GET,POST,PUT,OPTIONS');
@@ -135,6 +147,19 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, message: securityMessage });
     }
 
+    // Reset linkini səhifə açılan kimi yoxlayır
+    if (route === 'check-reset-token' && req.method === 'POST') {
+      const { token } = req.body || {};
+      const usable = typeof token === 'string' && token ? await isResetTokenUsable(token) : false;
+      if (!usable) {
+        return res.status(400).json({
+          success: false,
+          message: 'Link etibarsızdır, müddəti bitib və ya artıq istifadə olunub.'
+        });
+      }
+      return res.status(200).json({ success: true });
+    }
+
     // Reset Password route
     if (route === 'reset-password' && req.method === 'POST') {
       const { token, newPassword } = req.body || {};
@@ -171,17 +196,10 @@ export default async function handler(req, res) {
         });
       }
 
-      try {
-        const decodedReset = verifyResetToken(token);
-        // Link yalnız bir dəfə işləyir: şifrə dəyişdikdən sonra köhnə link keçərsizdir
-        const changedAt = await getPasswordChangedAt();
-        if (changedAt && (decodedReset.iat || 0) * 1000 < Math.floor(changedAt / 1000) * 1000) {
-          throw new Error('reset link already used');
-        }
-      } catch (error) {
+      if (!(await isResetTokenUsable(token))) {
         return res.status(400).json({
           success: false,
-          message: 'Token müddəti bitib və ya etibarsızdır. Zəhmət olmasa yeni şifrə sıfırlama linki istəyin.'
+          message: 'Link etibarsızdır, müddəti bitib və ya artıq istifadə olunub. Zəhmət olmasa yeni şifrə sıfırlama linki istəyin.'
         });
       }
 
