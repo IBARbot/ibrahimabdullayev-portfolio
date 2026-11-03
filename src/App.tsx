@@ -111,13 +111,37 @@ function HomePage() {
   )
 }
 
+// Səhifə yüklənərkən boş ağ ekran əvəzinə kiçik göstərici
+function PageLoader() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50" role="status" aria-label="Loading">
+      <div className="w-10 h-10 rounded-full border-4 border-primary-200 border-t-primary-600 animate-spin" />
+    </div>
+  )
+}
+
 function App() {
+  // Yeni versiya yayımlananda köhnə səhifənin fayl adları dəyişir; belə halda səhifəni bir dəfə yenilə
+  useEffect(() => {
+    const onPreloadError = () => {
+      try {
+        if (sessionStorage.getItem('chunkReloaded') === '1') return
+        sessionStorage.setItem('chunkReloaded', '1')
+      } catch {
+        return
+      }
+      window.location.reload()
+    }
+    window.addEventListener('vite:preloadError', onPreloadError)
+    return () => window.removeEventListener('vite:preloadError', onPreloadError)
+  }, [])
+
   return (
     <ErrorBoundary>
       {/* Sistemində "hərəkəti azalt" seçilibsə, animasiyalar avtomatik söndürülür */}
       <MotionConfig reducedMotion="user">
         <Router>
-          <Suspense fallback={null}>
+          <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/admin" element={<AdminPanel />} />
