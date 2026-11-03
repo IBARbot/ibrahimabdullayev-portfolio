@@ -15,10 +15,36 @@ export default function ResetPassword() {
     text: '',
   })
   const [success, setSuccess] = useState(false)
+  const [tokenInvalid, setTokenInvalid] = useState(false)
 
+  // Link səhifə açılan kimi yoxlanır (müddət, imza, artıq istifadə olunubmu)
   useEffect(() => {
     if (!token) {
+      setTokenInvalid(true)
       setMessage({ type: 'error', text: 'Etibarsız və ya eksik token' })
+      return
+    }
+    let cancelled = false
+    fetch('/api/admin/check-reset-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && !data.success) {
+          setTokenInvalid(true)
+          setMessage({
+            type: 'error',
+            text: data.message || 'Link etibarsızdır, müddəti bitib və ya artıq istifadə olunub.',
+          })
+        }
+      })
+      .catch(() => {
+        // Şəbəkə xətası: forma açıq qalır, göndərəndə server yenidən yoxlayır
+      })
+    return () => {
+      cancelled = true
     }
   }, [token])
 
@@ -114,6 +140,16 @@ export default function ResetPassword() {
           </div>
         )}
 
+        {tokenInvalid && (
+          <a
+            href="/admin"
+            className="block text-center px-4 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors"
+          >
+            Admin girişinə qayıt
+          </a>
+        )}
+
+        {!tokenInvalid && (
         <form onSubmit={handleReset} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -163,6 +199,7 @@ export default function ResetPassword() {
             </button>
           </div>
         </form>
+        )}
       </motion.div>
     </div>
   )
