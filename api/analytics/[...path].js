@@ -75,7 +75,7 @@ export default async function handler(req, res) {
     // Stats route
     if (route === 'stats' && req.method === 'GET') {
       // Yalnız admin
-      if (!requireAdmin(req, res)) return;
+      if (!(await requireAdmin(req, res))) return;
 
       const { startDate, endDate, type } = req.query;
       const sheetId = process.env.GOOGLE_SHEET_ID;

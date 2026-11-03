@@ -13,6 +13,7 @@ import {
   clientIp,
   escapeHtml,
 } from '../../server/security.js';
+import { verifyAdminLogin, setAdminPassword, getPasswordChangedAt } from '../../server/adminAuth.js';
 import nodemailer from 'nodemailer';
 import { getContent, updateContent } from '../../server/contentStore.js';
 import { logApiError } from '../../server/errorLogger.js';
@@ -55,10 +56,9 @@ export default async function handler(req, res) {
     // Login route
     if (route === 'login' && req.method === 'POST') {
       const adminUsername = process.env.ADMIN_USERNAME;
-      const adminPassword = process.env.ADMIN_PASSWORD;
-      if (!adminUsername || !adminPassword || !process.env.JWT_SECRET) {
+      if (!adminUsername || !process.env.JWT_SECRET) {
         // Ehtiyat (default) parol yoxdur: konfiqurasiya tam deyilsə giriş bağlıdır
-        console.error('Admin login disabled: ADMIN_USERNAME, ADMIN_PASSWORD or JWT_SECRET is not set');
+        console.error('Admin login disabled: ADMIN_USERNAME or JWT_SECRET is not set');
         return res.status(503).json({ success: false, message: 'Admin giriş konfiqurasiya edilməyib' });
       }
 
@@ -70,9 +70,14 @@ export default async function handler(req, res) {
       }
 
       const { username, password } = req.body || {};
-      const userOk = safeEqual(username, adminUsername);
-      const passOk = safeEqual(password, adminPassword);
-      if (userOk && passOk) {
+      let ok = false;
+      try {
+        ok = await verifyAdminLogin(username, password);
+      } catch (error) {
+        console.error('Admin login check failed:', error.message);
+        return res.status(503).json({ success: false, message: 'Giriş hazırda mümkün deyil. Bir az sonra yenidən cəhd edin.' });
+      }
+      if (ok) {
         clearRateLimit(ipKey);
         return res.status(200).json({ success: true, token: signAdminToken(adminUsername) });
       }
@@ -167,7 +172,12 @@ export default async function handler(req, res) {
       }
 
       try {
-        verifyResetToken(token)
+        const decodedReset = verifyResetToken(token);
+        // Link yalnız bir dəfə işləyir: şifrə dəyişdikdən sonra köhnə link keçərsizdir
+        const changedAt = await getPasswordChangedAt();
+        if (changedAt && (decodedReset.iat || 0) * 1000 < Math.floor(changedAt / 1000) * 1000) {
+          throw new Error('reset link already used');
+        }
       } catch (error) {
         return res.status(400).json({
           success: false,
@@ -175,8 +185,17 @@ export default async function handler(req, res) {
         });
       }
 
-      // Şifrə kodda saxlanmır və e-poçtla göndərilmir. Yeni şifrə yalnız Vercel-də
-      // ADMIN_PASSWORD dəyişənində təyin edilir (sahibi tərəfindən).
+      // Yeni şifrə yalnız hash şəklində saxlanır (scrypt). E-poçtla göndərilmir.
+      try {
+        await setAdminPassword(newPassword);
+      } catch (error) {
+        console.error('Password reset store error:', error.message);
+        return res.status(500).json({
+          success: false,
+          message: 'Şifrə saxlanıla bilmədi. Google Sheets bağlantısını yoxlayın və yenidən cəhd edin.'
+        });
+      }
+
       const adminEmail = process.env.ADMIN_EMAIL || process.env.CONTACT_EMAIL || process.env.EMAIL_USER;
       const transporter = createTransporter();
       if (transporter && adminEmail) {
@@ -184,13 +203,12 @@ export default async function handler(req, res) {
           await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: adminEmail,
-            subject: 'Admin Panel - Şifrə sıfırlama sorğusu tamamlandı',
+            subject: 'Admin Panel - Şifrə dəyişdirildi',
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #0ea5e9;">Şifrə sıfırlama sorğusu</h2>
-                <p>Admin panel üçün şifrə sıfırlama linki istifadə olundu (${escapeHtml(new Date().toLocaleString('az-AZ'))}).</p>
-                <p>Yeni şifrəni tətbiq etmək üçün Vercel Dashboard → Settings → Environment Variables bölməsində <code>ADMIN_PASSWORD</code> dəyişəninin dəyərini yeniləyin və yenidən deploy edin.</p>
-                <p style="color: #d32f2f;">Bu əməliyyatı siz etməmisinizsə, dərhal <code>JWT_SECRET</code> və <code>ADMIN_PASSWORD</code> dəyişənlərini dəyişdirin.</p>
+                <h2 style="color: #0ea5e9;">Şifrə dəyişdirildi</h2>
+                <p>Admin panel şifrəsi dəyişdirildi (${escapeHtml(new Date().toLocaleString('az-AZ'))}). Bütün köhnə sessiyalar bağlandı.</p>
+                <p style="color: #d32f2f;">Bu əməliyyatı siz etməmisinizsə, dərhal Vercel-də <code>JWT_SECRET</code> dəyişənini yeniləyin və bizimlə əlaqə saxlayın.</p>
               </div>
             `,
           });
@@ -201,7 +219,7 @@ export default async function handler(req, res) {
 
       return res.status(200).json({
         success: true,
-        message: 'Sorğu qəbul olundu. Yeni şifrəni tətbiq etmək üçün Vercel Dashboard-da ADMIN_PASSWORD dəyişənini yeniləyin və saytı yenidən deploy edin.'
+        message: 'Şifrəniz uğurla dəyişdirildi. İndi yeni şifrə ilə daxil ola bilərsiniz.'
       });
     }
 
@@ -275,7 +293,7 @@ export default async function handler(req, res) {
       }
 
       // PUT üçün admin tələb olunur
-      if (!requireAdmin(req, res)) return;
+      if (!(await requireAdmin(req, res))) return;
 
       if (req.method === 'PUT') {
         try {
@@ -305,7 +323,7 @@ export default async function handler(req, res) {
     }
 
     // Qalan marşrutlar yalnız admin üçündür
-    if (!requireAdmin(req, res)) return;
+    if (!(await requireAdmin(req, res))) return;
 
     // Bookings route
     if (route === 'bookings') {

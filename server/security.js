@@ -1,6 +1,7 @@
 // Ortaq təhlükəsizlik köməkçiləri: JWT, CORS, rate limit, təhlükəsiz müqayisə
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import { getPasswordChangedAt } from './adminAuth.js';
 
 const SITE_ORIGINS = [
   'https://www.ibrahimabdullayev.com',
@@ -81,12 +82,19 @@ export function getBearerToken(req) {
   return header.slice(7).trim() || null;
 }
 
-// Req-dən admini yoxlayır; uğursuzdursa 401 göndərir və null qaytarır
-export function requireAdmin(req, res) {
+// Req-dən admini yoxlayır; uğursuzdursa 401 göndərir və null qaytarır.
+// Şifrə dəyişdirildikdən əvvəl verilmiş tokenlər qəbul olunmur.
+export async function requireAdmin(req, res) {
   let decoded = null;
   try {
     const token = getBearerToken(req);
     decoded = token ? verifyAdminToken(token) : null;
+    if (decoded) {
+      const changedAt = await getPasswordChangedAt();
+      if (changedAt && (decoded.iat || 0) * 1000 < Math.floor(changedAt / 1000) * 1000) {
+        decoded = null;
+      }
+    }
   } catch (e) {
     res.status(503).json({ success: false, message: 'Server konfiqurasiyası tamamlanmayıb' });
     return null;

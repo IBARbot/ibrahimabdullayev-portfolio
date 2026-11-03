@@ -77,7 +77,7 @@ export default function ResetPassword() {
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Şifrə Sıfırlandı!</h2>
           <p className="text-gray-600 mb-4">
-            Şifrəniz uğurla sıfırlandı. Zəhmət olmasa Vercel Dashboard-da ADMIN_PASSWORD environment variable-ını yeniləyin.
+            Şifrəniz uğurla dəyişdirildi. İndi yeni şifrə ilə daxil ola bilərsiniz.
           </p>
           <p className="text-sm text-gray-500">
             Admin panel-ə yönləndirilirsiniz...
