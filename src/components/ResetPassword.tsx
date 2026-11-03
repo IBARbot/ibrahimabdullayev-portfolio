@@ -16,6 +16,7 @@ export default function ResetPassword() {
   })
   const [success, setSuccess] = useState(false)
   const [tokenInvalid, setTokenInvalid] = useState(false)
+  const [checking, setChecking] = useState(Boolean(token))
 
   // Link səhifə açılan kimi yoxlanır (müddət, imza, artıq istifadə olunubmu)
   useEffect(() => {
@@ -42,6 +43,9 @@ export default function ResetPassword() {
       })
       .catch(() => {
         // Şəbəkə xətası: forma açıq qalır, göndərəndə server yenidən yoxlayır
+      })
+      .finally(() => {
+        if (!cancelled) setChecking(false)
       })
     return () => {
       cancelled = true
@@ -124,9 +128,11 @@ export default function ResetPassword() {
           <Lock className="w-12 h-12 text-primary-600" />
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">Yeni Şifrə Təyin Et</h2>
-        <p className="text-gray-600 mb-6 text-center text-sm">
-          Yeni şifrənizi daxil edin
-        </p>
+        {!checking && !tokenInvalid && (
+          <p className="text-gray-600 mb-6 text-center text-sm">
+            Yeni şifrənizi daxil edin
+          </p>
+        )}
 
         {message.type && (
           <div
@@ -140,6 +146,12 @@ export default function ResetPassword() {
           </div>
         )}
 
+        {checking && (
+          <p className="text-center text-gray-500 py-6" role="status">
+            Yoxlanılır...
+          </p>
+        )}
+
         {tokenInvalid && (
           <a
             href="/admin"
@@ -149,7 +161,7 @@ export default function ResetPassword() {
           </a>
         )}
 
-        {!tokenInvalid && (
+        {!checking && !tokenInvalid && (
         <form onSubmit={handleReset} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
