@@ -225,7 +225,7 @@ export default async function handler(req, res) {
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h2 style="color: #0ea5e9;">Şifrə dəyişdirildi</h2>
-                <p>Admin panel şifrəsi dəyişdirildi (${escapeHtml(new Date().toLocaleString('az-AZ'))}). Bütün köhnə sessiyalar bağlandı.</p>
+                <p>Admin panel şifrəsi dəyişdirildi (Bakı vaxtı ilə ${escapeHtml(new Date().toLocaleString('az-AZ', { timeZone: 'Asia/Baku' }))}). Bütün köhnə sessiyalar bağlandı.</p>
                 <p style="color: #d32f2f;">Bu əməliyyatı siz etməmisinizsə, dərhal Vercel-də <code>JWT_SECRET</code> dəyişənini yeniləyin və bizimlə əlaqə saxlayın.</p>
               </div>
             `,
