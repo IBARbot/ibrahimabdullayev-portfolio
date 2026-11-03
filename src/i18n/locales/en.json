@@ -8,16 +8,16 @@
     "bookNow": "Book Now",
     "menu": "Menu",
     "language": "Select language",
-    "scrollDown": "Scroll down",
+    "darkMode": "Dark mode", "lightMode": "Light mode", "scrollDown": "Scroll down",
     "close": "Close"
   },
   "howItWorks": {
     "title": "How I work",
-    "subtitle": "The right solution in three simple steps",
+    "subtitle": "Three calm steps",
     "steps": [
-      { "title": "Send a request", "text": "Share your route, dates and needs via WhatsApp or the form." },
-      { "title": "Get an offer", "text": "I check options in GDS and direct sell interfaces and present the best fits." },
-      { "title": "Confirm your ticket", "text": "You confirm your choice, and I complete the booking and paperwork." }
+      { "title": "Write to me", "text": "From where to where, on which dates — a short WhatsApp message or the form is enough." },
+      { "title": "I look and get back to you", "text": "I check the options and send suitable ones with their prices." },
+      { "title": "You choose", "text": "Once you decide, I make the booking and send the documents." }
     ]
   },
   "notFound": {
@@ -28,9 +28,9 @@
   "hero": {
     "title": "Hello, I'm Ibrahim Abdullayev",
     "subtitle": "Specialist in Air Ticketing and Reservation Systems",
-    "description": "I work as a ticketing specialist across flights, insurance, package tours, transfers and reservation systems. With solid hands-on experience in GDS, NDC and direct sell UIs, I help both individual travelers and companies find clear, efficient and realistic booking solutions.",
+    "description": "I work with air tickets and reservations in Baku. Tell me where and when you want to go — I'll explain the options in plain words, and the decision stays yours.",
     "credentials": ["IATA certified", "Galileo GDS", "NDC", "Direct sell UI"],
-    "status": { "instant": "Replying instantly", "soon": "Replying shortly", "later": "May be offline · will reply a bit later", "time": "Baku time" },
+    "status": { "instant": "Message me, I reply quickly", "soon": "Message me, I reply soon", "later": "May be away right now · I'll reply a bit later", "time": "Baku time" },
     "clocks": { "title": "World clocks", "baku": "Baku", "istanbul": "Istanbul", "newyork": "New York", "london": "London", "beijing": "Beijing", "tokyo": "Tokyo", "moscow": "Moscow", "show": "Show world clocks", "hide": "Hide world clocks" },
     "viewServices": "View Services",
     "contact": "Contact Me"
@@ -70,11 +70,11 @@
   },
   "services": {
     "title": "My Services",
-    "subtitle": "Comprehensive services and professional advice in tourism",
+    "subtitle": "The things I help with most",
     "flight": {
       "title": "Flight Booking",
-      "description": "Flight reservations and advice at the best prices",
-      "features": ["Flight search", "Multi-city", "Optimal prices", "24/7 support"]
+      "description": "Flight reservations; I explain the differences between options in plain words",
+      "features": ["Flight search", "Multi-city", "Comparing options", "Support after booking"]
     },
     "hotel": {
       "title": "Hotel Booking",

@@ -8,16 +8,16 @@
     "bookNow": "İndi Rezerv Et",
     "menu": "Menyu",
     "language": "Dil seç",
-    "scrollDown": "Aşağı sürüşdür",
+    "darkMode": "Tünd rejim", "lightMode": "Açıq rejim", "scrollDown": "Aşağı sürüşdür",
     "close": "Bağla"
   },
   "howItWorks": {
     "title": "Necə işləyirəm",
-    "subtitle": "Üç sadə addımda sizə uyğun həll",
+    "subtitle": "Üç addımda, sakitcə",
     "steps": [
-      { "title": "Sorğu göndərin", "text": "Marşrut, tarixlər və ehtiyaclarınızı WhatsApp və ya formla yazın." },
-      { "title": "Təklif alın", "text": "GDS və birbaşa satış interfeyslərində variantları yoxlayıb ən uyğun seçimləri təqdim edirəm." },
-      { "title": "Bileti təsdiqləyin", "text": "Seçiminizi təsdiqləyirsiniz, mən rezervasiya və sənədləşməni tamamlayıram." }
+      { "title": "Mənə yazın", "text": "Haradan hara, hansı tarixdə — WhatsApp-da və ya formla qısa yazmaq bəs edir." },
+      { "title": "Mən baxıb qayıdıram", "text": "Variantları yoxlayır, uyğun olanları qiymətləri ilə birlikdə göndərirəm." },
+      { "title": "Siz seçirsiniz", "text": "Qərar verəndən sonra rezervasiyanı edib sənədləri göndərirəm." }
     ]
   },
   "notFound": {
@@ -28,9 +28,9 @@
   "hero": {
     "title": "Salam, mən İbrahim Abdullayev",
     "subtitle": "Aviabilet və Rezervasiya Sistemləri üzrə Mütəxəssis",
-    "description": "Aviabiletlər, sığorta, paket turlar, transfer və rezervasiya sistemləri üzrə işləyən ticketing mütəxəssisiyəm. GDS, NDC və birbaşa satış interfeyslərində (direct sell UI) uzunillik təcrübə ilə həm fərdi səyahətçilərə, həm də şirkətlərə ən uyğun həlləri təklif edirəm.",
+    "description": "Bakıda aviabilet və rezervasiya üzrə işləyirəm. Hara və nə vaxt getmək istədiyinizi yazın — variantları sadə dildə izah edim, qərarı siz verin.",
     "credentials": ["IATA sertifikatlı", "Galileo GDS", "NDC", "Direct sell UI"],
-    "status": { "instant": "Dərhal cavab verirəm", "soon": "Qısa müddətə cavab verirəm", "later": "Oflayn ola bilərəm · bir qədər sonra cavab verəcəm", "time": "Bakı vaxtı" },
+    "status": { "instant": "Yazsanız, tez cavab verərəm", "soon": "Yazsanız, qısa zamanda cavab verərəm", "later": "Hazırda əlçatan olmaya bilərəm · bir az sonra cavab verərəm", "time": "Bakı vaxtı" },
     "clocks": { "title": "Dünya saatları", "baku": "Bakı", "istanbul": "İstanbul", "newyork": "Nyu York", "london": "London", "beijing": "Pekin", "tokyo": "Tokio", "moscow": "Moskva", "show": "Dünya saatlarını göstər", "hide": "Dünya saatlarını gizlət" },
     "viewServices": "Xidmətlərimə Bax",
     "contact": "Əlaqə Saxla"
@@ -70,11 +70,11 @@
   },
   "services": {
     "title": "Xidmətlərim",
-    "subtitle": "Turizm sahəsində hərtərəfli xidmətlər və peşəkar məsləhət",
+    "subtitle": "Ən çox bu işlərdə kömək edirəm",
     "flight": {
       "title": "Aviabilet Rezervasiyası",
-      "description": "Ən yaxşı qiymətlərlə aviabilet rezervasiyası və məsləhəti",
-      "features": ["Uçuş axtarışı", "Multi-city", "Optimal qiymətlər", "24/7 dəstək"]
+      "description": "Aviabilet rezervasiyası; variantların fərqini sadə dillə izah edirəm",
+      "features": ["Uçuş axtarışı", "Multi-city", "Variantların müqayisəsi", "Rezervasiyadan sonra dəstək"]
     },
     "hotel": {
       "title": "Otel Rezervasiyası",

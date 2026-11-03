@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Menu, X, Calendar } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
+import ThemeToggle from './ThemeToggle'
 
 interface NavigationProps {
   isScrolled: boolean
@@ -135,6 +136,7 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
                 {item.label}
               </button>
             ))}
+            <ThemeToggle />
             <LanguageSwitcher />
             <button
               onClick={() => onOpenBooking?.()}
@@ -177,7 +179,10 @@ export default function Navigation({ isScrolled, onOpenBooking }: NavigationProp
               </button>
             ))}
             <div className="px-3 py-2">
-              <LanguageSwitcher onSelect={() => setIsOpen(false)} />
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <LanguageSwitcher onSelect={() => setIsOpen(false)} />
+              </div>
             </div>
             <button
               onClick={() => {
