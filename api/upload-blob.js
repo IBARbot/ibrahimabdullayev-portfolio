@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 
   try {
     // Yalnız admin yükləyə bilər
-    if (!requireAdmin(req, res)) return;
+    if (!(await requireAdmin(req, res))) return;
 
     // Get image from request
     const { image } = req.body || {};

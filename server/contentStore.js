@@ -114,7 +114,7 @@ const defaultContent = {
 let contentData = { ...defaultContent };
 
 // Get access token for Google Sheets API
-async function getAccessToken() {
+export async function getAccessToken() {
   const serviceAccountKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
   if (!serviceAccountKey) return null;
 

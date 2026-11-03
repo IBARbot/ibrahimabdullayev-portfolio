@@ -144,8 +144,31 @@ export default function AdminPanel() {
   const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [uploadedImages, setUploadedImages] = useState<Set<string>>(new Set())
 
+  // Təhlükəsizlik: giriş yalnız bu səhifə açıq olduğu müddətdə qüvvədədir.
+  // Səhifədən çıxanda, tabı bağlayanda və ya başqa səhifəyə keçəndə sessiya silinir.
   useEffect(() => {
-    const token = localStorage.getItem('adminToken')
+    try {
+      // Əvvəlki versiyadan qalan uzunmüddətli tokeni təmizlə
+      localStorage.removeItem('adminToken')
+    } catch {
+      // storage əlçatan deyil
+    }
+    const clearSession = () => {
+      try {
+        sessionStorage.removeItem('adminToken')
+      } catch {
+        // storage əlçatan deyil
+      }
+    }
+    window.addEventListener('pagehide', clearSession)
+    return () => {
+      window.removeEventListener('pagehide', clearSession)
+      clearSession()
+    }
+  }, [])
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('adminToken')
     if (token) {
       setIsAuthenticated(true)
       loadContent()
@@ -157,7 +180,7 @@ export default function AdminPanel() {
 
   const initializeErrorsSheetHeaders = async () => {
     try {
-      const token = localStorage.getItem('adminToken')
+      const token = sessionStorage.getItem('adminToken')
       const response = await fetch('/api/errors', {
         method: 'POST',
         headers: {
@@ -176,7 +199,7 @@ export default function AdminPanel() {
   }
 
   const loadStats = async () => {
-    const token = localStorage.getItem('adminToken')
+    const token = sessionStorage.getItem('adminToken')
     if (!token) return
 
     try {
@@ -316,7 +339,7 @@ export default function AdminPanel() {
       const data = await response.json()
 
       if (data.success) {
-        localStorage.setItem('adminToken', data.token)
+        sessionStorage.setItem('adminToken', data.token)
         setIsAuthenticated(true)
         loadContent()
         loadStats()
@@ -332,7 +355,7 @@ export default function AdminPanel() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('adminToken')
+    sessionStorage.removeItem('adminToken')
     setIsAuthenticated(false)
     navigate('/')
   }
@@ -397,7 +420,7 @@ export default function AdminPanel() {
 
     setLoading(true)
     setMessage({ type: null, text: '' })
-    const token = localStorage.getItem('adminToken')
+    const token = sessionStorage.getItem('adminToken')
 
     if (!token) {
       const errorText = 'Giriş edilməyib. Zəhmət olmasa yenidən giriş edin.'
@@ -500,7 +523,7 @@ export default function AdminPanel() {
       if (!content) return
 
       // Upload to API to get URL
-      const token = localStorage.getItem('adminToken')
+      const token = sessionStorage.getItem('adminToken')
       if (!token) {
         throw new Error('Giriş edilməyib. Zəhmət olmasa yenidən giriş edin.')
       }
