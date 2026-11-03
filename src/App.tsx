@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
+import { useState, useEffect, lazy, Suspense, type ReactNode } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { MotionConfig } from 'framer-motion'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -111,6 +111,15 @@ function HomePage() {
   )
 }
 
+// Admin və şifrə səhifələri həmişə açıq rejimdə qalır
+function LightOnly({ children }: { children: ReactNode }) {
+  useEffect(() => {
+    document.body.classList.add('no-dark')
+    return () => document.body.classList.remove('no-dark')
+  }, [])
+  return <>{children}</>
+}
+
 // Səhifə yüklənərkən boş ağ ekran əvəzinə kiçik göstərici
 function PageLoader() {
   return (
@@ -144,8 +153,8 @@ function App() {
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/admin" element={<AdminPanel />} />
-              <Route path="/admin/reset-password" element={<ResetPassword />} />
+              <Route path="/admin" element={<LightOnly><AdminPanel /></LightOnly>} />
+              <Route path="/admin/reset-password" element={<LightOnly><ResetPassword /></LightOnly>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

@@ -92,3 +92,62 @@ section[id] {
 .hero-route-dash {
   animation: route-dash 18s linear infinite;
 }
+
+/* ===== Tünd rejim (yalnız ictimai səhifə; admin və şifrə səhifəsi "no-dark" ilə açıq qalır) ===== */
+.dark body:not(.no-dark) {
+  background-color: #0b1220;
+  color: #e2e8f0;
+  color-scheme: dark;
+}
+.dark body:not(.no-dark) .bg-white { background-color: #111a2e; }
+.dark body:not(.no-dark) .bg-white\/95 { background-color: rgb(11 18 32 / 0.95); }
+.dark body:not(.no-dark) .bg-white\/90 { background-color: rgb(17 26 46 / 0.9); }
+.dark body:not(.no-dark) .bg-white\/80 { background-color: rgb(17 26 46 / 0.8); }
+.dark body:not(.no-dark) .bg-gray-50 { background-color: #0b1220; }
+.dark body:not(.no-dark) .bg-gray-100 { background-color: #1a2540; }
+.dark body:not(.no-dark) .bg-gray-200 { background-color: #243050; }
+.dark body:not(.no-dark) .hover\:bg-gray-50:hover,
+.dark body:not(.no-dark) .hover\:bg-gray-100:hover { background-color: #1a2540; }
+.dark body:not(.no-dark) .hover\:bg-gray-200:hover { background-color: #243050; }
+.dark body:not(.no-dark) .hover\:bg-white:hover { background-color: #1a2540; }
+.dark body:not(.no-dark) .bg-primary-50 { background-color: #0c2a43; }
+.dark body:not(.no-dark) .bg-primary-100 { background-color: #0c3a5c; }
+.dark body:not(.no-dark) .hover\:bg-primary-50:hover { background-color: #0c2a43; }
+.dark body:not(.no-dark) .hover\:bg-primary-100:hover { background-color: #0c3a5c; }
+
+.dark body:not(.no-dark) .text-gray-900,
+.dark body:not(.no-dark) .text-gray-800 { color: #f1f5f9; }
+.dark body:not(.no-dark) .text-gray-700 { color: #cbd5e1; }
+.dark body:not(.no-dark) .text-gray-600 { color: #aab6c8; }
+.dark body:not(.no-dark) .text-gray-500 { color: #94a3b8; }
+.dark body:not(.no-dark) .text-gray-400 { color: #7c8aa0; }
+.dark body:not(.no-dark) .text-primary-600,
+.dark body:not(.no-dark) .text-primary-700 { color: #38bdf8; }
+.dark body:not(.no-dark) .hover\:text-primary-600:hover,
+.dark body:not(.no-dark) .hover\:text-primary-700:hover { color: #7dd3fc; }
+.dark body:not(.no-dark) .border-primary-600 { border-color: #38bdf8; }
+
+.dark body:not(.no-dark) .border-gray-100,
+.dark body:not(.no-dark) .border-gray-200 { border-color: #1e293b; }
+.dark body:not(.no-dark) .border-gray-300 { border-color: #2f3d58; }
+.dark body:not(.no-dark) .border-primary-100,
+.dark body:not(.no-dark) .border-primary-200 { border-color: #0c4a6e; }
+.dark body:not(.no-dark) .border-white { border-color: #1e293b; }
+.dark body:not(.no-dark) .divide-gray-200 > :not([hidden]) ~ :not([hidden]) { border-color: #1e293b; }
+
+.dark body:not(.no-dark) input,
+.dark body:not(.no-dark) textarea,
+.dark body:not(.no-dark) select {
+  background-color: #0b1220;
+  color: #f1f5f9;
+}
+.dark body:not(.no-dark) ::placeholder { color: #7c8aa0; }
+.dark body:not(.no-dark) .shadow-md,
+.dark body:not(.no-dark) .shadow-lg,
+.dark body:not(.no-dark) .shadow-xl,
+.dark body:not(.no-dark) .shadow-2xl { --tw-shadow-color: rgb(0 0 0 / 0.5); }
+.dark body:not(.no-dark) .mix-blend-multiply { mix-blend-mode: screen; }
+.dark body:not(.no-dark) .hero-route-dash { opacity: 0.8; }
+
+/* Hero və bölmə foni: tünd rejimdə də səliqəli */
+.dark body:not(.no-dark) img { filter: brightness(0.92); }
