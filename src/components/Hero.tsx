@@ -49,8 +49,6 @@ export default function Hero({ onOpenBooking }: HeroProps) {
     >
       {/* Minimal background decoration */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary-50 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
         {/* Bakıdan dünyaya: yumşaq uçuş marşrutu */}
         <svg
           aria-hidden="true"
@@ -95,7 +93,6 @@ export default function Hero({ onOpenBooking }: HeroProps) {
             className="flex justify-center md:justify-start order-1 md:order-2"
           >
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full blur-2xl opacity-30 animate-blob"></div>
               <div className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-white shadow-2xl">
                 <img
                   src={heroImage}
@@ -126,17 +123,7 @@ export default function Hero({ onOpenBooking }: HeroProps) {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight text-balance"
           >
-            {heroTitle.includes('İbrahim Abdullayev') || heroTitle.includes('Ibrahim Abdullayev') || heroTitle.includes('Ибрагим Абдуллаев') ? (
-              <>
-                {heroTitle.split(/İbrahim Abdullayev|Ibrahim Abdullayev|Ибрагим Абдуллаев/)[0]}
-                <span className="text-primary-600">
-                  {i18n.language === 'az' ? 'İbrahim Abdullayev' : i18n.language === 'ru' ? 'Ибрагим Абдуллаев' : 'Ibrahim Abdullayev'}
-                </span>
-                {heroTitle.split(/İbrahim Abdullayev|Ibrahim Abdullayev|Ибрагим Абдуллаев/)[1]}
-              </>
-            ) : (
-              heroTitle
-            )}
+            {i18n.language === 'az' ? 'İbrahim Abdullayev' : i18n.language === 'ru' ? 'Ибрагим Абдуллаев' : 'Ibrahim Abdullayev'}
           </motion.h1>
 
           <motion.p

@@ -4,7 +4,6 @@ import { Award, Coffee, Heart, ZoomIn } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { formatDate } from '../utils/formatDate'
 
-const PROFILE_IMAGE = '/profile.jpg'
 
 interface CertificateItem {
   id: string
@@ -75,39 +74,14 @@ export default function About() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 sm:gap-12 items-start">
-          {/* Profile Image */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="flex justify-center md:justify-start order-2 md:order-1"
-          >
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary-400 to-primary-600 rounded-2xl blur-xl opacity-20"></div>
-              <div className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 rounded-2xl overflow-hidden border-4 border-primary-100 shadow-xl">
-                <img
-                  src={PROFILE_IMAGE}
-                  alt="İbrahim Abdullayev"
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.src = 'https://via.placeholder.com/400x400/0ea5e9/ffffff?text=IA'
-                  }}
-                />
-              </div>
-            </div>
-          </motion.div>
-
+        <div className="max-w-3xl mx-auto">
           {/* Text Content */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="order-1 md:order-2 space-y-6"
+            className="space-y-6"
           >
             <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
               {t('about.specialist')}
