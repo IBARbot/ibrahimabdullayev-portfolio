@@ -20,7 +20,7 @@
     "bookNow": "İndi Rezerv Et",
     "menu": "Menyu",
     "language": "Dil seç",
-    "darkMode": "Tünd rejim", "lightMode": "Açıq rejim", "scrollDown": "Aşağı sürüşdür",
+    "light": "Açıq", "dark": "Tünd", "theme": "Rejim", "darkMode": "Tünd rejim", "lightMode": "Açıq rejim", "scrollDown": "Aşağı sürüşdür",
     "close": "Bağla"
   },
   "howItWorks": {
@@ -42,7 +42,7 @@
     "subtitle": "Aviabilet və Rezervasiya Sistemləri üzrə Mütəxəssis",
     "description": "Bakıda aviabilet və rezervasiya üzrə işləyirəm. Hara və nə vaxt getmək istədiyinizi yazın — variantları sadə dildə izah edim, qərarı siz verin.",
     "credentials": ["IATA sertifikatlı", "Galileo GDS", "NDC", "Direct sell UI"],
-    "status": { "instant": "Yazsanız, tez cavab verərəm", "soon": "Yazsanız, qısa zamanda cavab verərəm", "later": "Hazırda əlçatan olmaya bilərəm · bir az sonra cavab verərəm", "time": "Bakı vaxtı" },
+    "status": { "instant": "Əlçatan", "soon": "Qısa müddətə cavab verilir", "later": "Cavab bir qədər gec ola bilər", "time": "Bakı" },
     "clocks": { "title": "Dünya saatları", "baku": "Bakı", "istanbul": "İstanbul", "newyork": "Nyu York", "london": "London", "beijing": "Pekin", "tokyo": "Tokio", "moscow": "Moskva", "show": "Dünya saatlarını göstər", "hide": "Dünya saatlarını gizlət" },
     "viewServices": "Xidmətlərimə Bax",
     "contact": "Əlaqə Saxla"

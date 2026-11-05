@@ -17,6 +17,12 @@ const DOT_COLOR: Record<Availability, string> = {
   later: 'bg-gray-400',
 }
 
+const RING_COLOR: Record<Availability, string> = {
+  instant: 'ring-green-500/25',
+  soon: 'ring-amber-400/25',
+  later: 'ring-gray-400/25',
+}
+
 const BAKU_TZ = 'Asia/Baku'
 
 const CITIES: { key: string; tz: string }[] = [
@@ -58,6 +64,7 @@ export default function BakuStatus() {
   const { t } = useTranslation()
   const [now, setNow] = useState(() => new Date())
   const [open, setOpen] = useState(false)
+  const [tip, setTip] = useState(false)
 
   // Saniyədə bir yenilənir
   useEffect(() => {
@@ -70,28 +77,48 @@ export default function BakuStatus() {
   const status = getAvailability(bakuHour)
   const bakuDay = dayKey(BAKU_TZ, now)
 
+  const statusText = t(`hero.status.${status}`)
+
   return (
-    <div className="mb-5 flex flex-col items-center md:items-start">
-      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 border border-gray-200 shadow-sm text-xs sm:text-sm text-gray-700">
-        <span className="relative flex h-2.5 w-2.5" aria-hidden="true">
-          {status === 'instant' && (
-            <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping motion-reduce:hidden" />
-          )}
-          <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${DOT_COLOR[status]}`} />
-        </span>
-        <span>{t(`hero.status.${status}`)}</span>
-        <span className="text-gray-300" aria-hidden="true">|</span>
+    <div className="mt-2 flex flex-col items-center">
+      <div className="flex items-center gap-3.5">
+        {/* Nöqtə: üzərinə gələndə və ya toxunanda vəziyyət mətni görünür */}
+        <div className="relative group">
+          <button
+            type="button"
+            onClick={() => setTip((v) => !v)}
+            onBlur={() => setTip(false)}
+            aria-label={statusText}
+            className="relative flex h-5 w-5 items-center justify-center rounded-full focus-visible:outline-2"
+          >
+            {status === 'instant' && (
+              <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60 animate-ping motion-reduce:hidden" />
+            )}
+            <span className={`relative inline-flex rounded-full h-4 w-4 ring-4 ${RING_COLOR[status]} ${DOT_COLOR[status]}`} />
+          </button>
+          <span
+            role="status"
+            className={`pointer-events-none absolute left-1/2 top-full z-10 mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg border border-gray-700 bg-gray-800 px-2.5 py-1.5 text-xs font-medium text-white shadow-lg transition-opacity group-hover:opacity-100 ${
+              tip ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            {statusText}
+          </span>
+        </div>
+
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-label={open ? t('hero.clocks.hide') : t('hero.clocks.show')}
-          className="inline-flex items-center gap-1 text-gray-500 hover:text-primary-600 transition-colors"
+          className="inline-flex items-baseline gap-2 text-gray-900 hover:text-primary-600 transition-colors"
         >
-          <span className="tabular-nums">
-            {bakuTime} {t('hero.status.time')}
-          </span>
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
+          <span className="text-3xl sm:text-4xl font-semibold tabular-nums tracking-tight">{bakuTime}</span>
+          <span className="text-sm text-gray-500">{t('hero.status.time')}</span>
+          <ChevronDown
+            className={`w-4 h-4 self-center text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`}
+            aria-hidden="true"
+          />
         </button>
       </div>
 
