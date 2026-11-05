@@ -1,4 +1,16 @@
 {
+  "home": {
+    "tagline": "Marşrutu və tarixi yazın, uyğun variantlar sizə təqdim olunacaq.",
+    "whatsapp": "WhatsApp ilə əlaqə",
+    "request": "Rezervasiya sorğusu",
+    "email": "E-poçt",
+    "servicesTitle": "Xidmətlər",
+    "aboutLead": "Aviabilet tarifləri, marşrutlaşdırma və rezervasiya xidmətləri.",
+    "aboutText1": "Aviabilet, otel, transfer, sığorta və viza dəstəyi fərdi və korporativ müştərilər üçün təqdim olunur.",
+    "aboutText2": "Zəruri hallarda yük (cargo) daşımaları üzrə də məsləhət xidməti göstərilir.",
+    "certificates": "Sertifikatlar",
+    "location": "Bakı"
+  },
   "nav": {
     "home": "Ana Səhifə",
     "about": "Haqqımda",

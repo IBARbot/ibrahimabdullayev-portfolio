@@ -2,16 +2,12 @@ import { useState, useEffect, lazy, Suspense, type ReactNode } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { MotionConfig } from 'framer-motion'
 import { ErrorBoundary } from './components/ErrorBoundary'
-import Navigation from './components/Navigation'
-import Hero from './components/Hero'
-import About from './components/About'
-import Services from './components/Services'
-import HowItWorks from './components/HowItWorks'
-import Projects from './components/Projects'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
-import FloatingWhatsApp from './components/FloatingWhatsApp'
 import Analytics from './components/Analytics'
+import TopBar from './components/TopBar'
+import Profile from './components/Profile'
+import HomeServices from './components/HomeServices'
+import HomeAbout from './components/HomeAbout'
+import SimpleFooter from './components/SimpleFooter'
 import { initializeLanguage } from './i18n/config'
 import CookieConsent from './components/CookieConsent'
 import NotFound from './components/NotFound'
@@ -25,7 +21,6 @@ const BookingModal = lazy(() => import('./components/BookingModal'))
 type BookingType = 'flight' | 'hotel' | 'transfer' | 'insurance' | 'embassy'
 
 function HomePage() {
-  const [isScrolled, setIsScrolled] = useState(false)
   const [showWelcomeModal, setShowWelcomeModal] = useState(false)
   const [showBookingModal, setShowBookingModal] = useState(false)
   const [bookingType, setBookingType] = useState<BookingType>('flight')
@@ -36,14 +31,6 @@ function HomePage() {
     initializeLanguage().then(() => {
       setLanguageInitialized(true)
     })
-  }, [])
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
-    }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   useEffect(() => {
@@ -73,19 +60,14 @@ function HomePage() {
   return (
     <div className="min-h-screen">
       <Analytics />
-      <Navigation isScrolled={isScrolled} onOpenBooking={openBookingModal} />
-      <main>
-        <Hero onOpenBooking={openBookingModal} />
-        <About />
-        <Services onOpenBooking={openBookingModal} />
-        <HowItWorks />
-        <Projects onOpenBooking={openBookingModal} />
-        <Contact />
+      <TopBar />
+      <main className="pb-4">
+        <Profile onOpenBooking={() => openBookingModal('flight')} />
+        <HomeServices onOpenBooking={openBookingModal} />
+        <HomeAbout />
       </main>
-      <Footer />
+      <SimpleFooter />
 
-      {/* Floating WhatsApp Button */}
-      <FloatingWhatsApp />
       {/* Cookie / Privacy banner */}
       <CookieConsent />
 

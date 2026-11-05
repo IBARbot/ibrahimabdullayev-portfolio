@@ -1,4 +1,16 @@
 {
+  "home": {
+    "tagline": "Send the route and dates, and suitable options will be provided.",
+    "whatsapp": "Contact via WhatsApp",
+    "request": "Booking request",
+    "email": "Email",
+    "servicesTitle": "Services",
+    "aboutLead": "Airfare, routing and reservation services.",
+    "aboutText1": "Flight, hotel, transfer, insurance and visa support is provided for individual and corporate clients.",
+    "aboutText2": "Where needed, advisory support on air cargo shipments is also available.",
+    "certificates": "Certificates",
+    "location": "Baku"
+  },
   "nav": {
     "home": "Home",
     "about": "About",
