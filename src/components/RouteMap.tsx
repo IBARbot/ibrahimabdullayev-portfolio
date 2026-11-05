@@ -166,7 +166,6 @@ export default function RouteMap() {
       setCam(clamp({ z, x: cx - W / z / 2, y: cy - H / z / 2 }))
     }
   }
-  }
 
   const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
