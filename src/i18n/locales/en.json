@@ -20,7 +20,7 @@
     "bookNow": "Book Now",
     "menu": "Menu",
     "language": "Select language",
-    "darkMode": "Dark mode", "lightMode": "Light mode", "scrollDown": "Scroll down",
+    "light": "Light", "dark": "Dark", "theme": "Theme", "darkMode": "Dark mode", "lightMode": "Light mode", "scrollDown": "Scroll down",
     "close": "Close"
   },
   "howItWorks": {
@@ -42,7 +42,7 @@
     "subtitle": "Specialist in Air Ticketing and Reservation Systems",
     "description": "I work with air tickets and reservations in Baku. Tell me where and when you want to go — I'll explain the options in plain words, and the decision stays yours.",
     "credentials": ["IATA certified", "Galileo GDS", "NDC", "Direct sell UI"],
-    "status": { "instant": "Message me, I reply quickly", "soon": "Message me, I reply soon", "later": "May be away right now · I'll reply a bit later", "time": "Baku time" },
+    "status": { "instant": "Available", "soon": "Replies shortly", "later": "Reply may be delayed", "time": "Baku" },
     "clocks": { "title": "World clocks", "baku": "Baku", "istanbul": "Istanbul", "newyork": "New York", "london": "London", "beijing": "Beijing", "tokyo": "Tokyo", "moscow": "Moscow", "show": "Show world clocks", "hide": "Hide world clocks" },
     "viewServices": "View Services",
     "contact": "Contact Me"

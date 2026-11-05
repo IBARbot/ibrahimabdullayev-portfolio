@@ -6,6 +6,17 @@ function readDark(): boolean {
   return document.documentElement.classList.contains('dark')
 }
 
+function apply(dark: boolean, remember: boolean) {
+  document.documentElement.classList.toggle('dark', dark)
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0b1220' : '#0ea5e9')
+  if (!remember) return
+  try {
+    localStorage.setItem('theme', dark ? 'dark' : 'light')
+  } catch {
+    /* ignore */
+  }
+}
+
 export default function ThemeToggle() {
   const { t } = useTranslation()
   const [dark, setDark] = useState(readDark)
@@ -19,38 +30,37 @@ export default function ThemeToggle() {
       } catch {
         /* ignore */
       }
-      document.documentElement.classList.toggle('dark', e.matches)
+      apply(e.matches, false)
       setDark(e.matches)
     }
     mq.addEventListener('change', onChange)
     return () => mq.removeEventListener('change', onChange)
   }, [])
 
-  const toggle = () => {
-    const next = !dark
-    document.documentElement.classList.toggle('dark', next)
+  const choose = (next: boolean) => {
+    apply(next, true)
     setDark(next)
-    try {
-      localStorage.setItem('theme', next ? 'dark' : 'light')
-    } catch {
-      /* ignore */
-    }
-    document
-      .querySelector('meta[name="theme-color"]')
-      ?.setAttribute('content', next ? '#0b1220' : '#0ea5e9')
   }
 
-  const label = dark ? t('nav.lightMode') : t('nav.darkMode')
+  const base =
+    'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors touch-manipulation'
+  const on = 'bg-primary-600 text-white shadow-sm'
+  const off = 'text-gray-600 hover:text-gray-900'
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={label}
-      title={label}
-      className="p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors touch-manipulation"
+    <div
+      role="group"
+      aria-label={t('nav.theme')}
+      className="inline-flex items-center gap-1 p-1 rounded-full bg-gray-100 border border-gray-200"
     >
-      {dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-    </button>
+      <button type="button" onClick={() => choose(false)} aria-pressed={!dark} className={`${base} ${!dark ? on : off}`}>
+        <Sun className="w-4 h-4" aria-hidden="true" />
+        {t('nav.light')}
+      </button>
+      <button type="button" onClick={() => choose(true)} aria-pressed={dark} className={`${base} ${dark ? on : off}`}>
+        <Moon className="w-4 h-4" aria-hidden="true" />
+        {t('nav.dark')}
+      </button>
+    </div>
   )
 }
