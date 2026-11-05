@@ -151,3 +151,14 @@ section[id] {
 
 /* Hero və bölmə foni: tünd rejimdə də səliqəli */
 .dark body:not(.no-dark) img { filter: brightness(0.92); }
+
+/* Uçuş xəritəsi */
+.route-land { fill: #e2e8f0; }
+.route-hub { fill: #0f172a; }
+.route-hub-ring { stroke: #0f172a; }
+.route-arc { stroke-dasharray: 5 9; animation: route-flow 7s linear infinite; }
+@keyframes route-flow { to { stroke-dashoffset: -140; } }
+@media (prefers-reduced-motion: reduce) { .route-arc { animation: none; } }
+.dark .route-land { fill: #1e293b; }
+.dark .route-hub { fill: #f1f5f9; }
+.dark .route-hub-ring { stroke: #f1f5f9; }
