@@ -5,11 +5,11 @@ import { BAKU, PASSENGER_ROUTES, ROUTES_MAX_AGE_DAYS, ROUTES_UPDATED } from '../
 import { formatDate } from '../utils/formatDate'
 
 const W = 1000
-const H = 366
-const LON0 = -170
-const LON1 = 180
-const LAT_TOP = 78
-const LAT_BOTTOM = -50
+const H = 500
+const LON0 = -4
+const LON1 = 92
+const LAT_TOP = 66
+const LAT_BOTTOM = 18
 
 function project(lon: number, lat: number): [number, number] {
   return [((lon - LON0) / (LON1 - LON0)) * W, ((LAT_TOP - lat) / (LAT_TOP - LAT_BOTTOM)) * H]
