@@ -142,12 +142,30 @@ export default function RouteMap() {
       return
     }
     setSelected(key)
-    // Seçilən şəhərə fokuslan
+    // Çıxış və təyinat şəhərini birlikdə ortalayan görünüş
     const a = arcs.find((x) => x.key === key)
-    if (a) {
-      const z = Math.max(cam.z, mode === 'cargo' ? 2.5 : 3)
-      setCam(clamp({ z, x: a.x - W / z / 2, y: a.y - H / z / 2 }))
+    const route = view.routes.find((x) => x.key === key)
+    if (a && route) {
+      const o = route.from === 'ganja' ? GANJA : BAKU
+      const [ox, oy] = project(view, o.lon, o.lat)
+      const pts: [number, number][] = [[ox, oy], [a.x, a.y]]
+      if (a.via) pts.push(a.via)
+      const xs = pts.map((q) => q[0])
+      const ys = pts.map((q) => q[1])
+      const minX = Math.min(...xs)
+      const maxX = Math.max(...xs)
+      const minY = Math.min(...ys)
+      const maxY = Math.max(...ys)
+      const padX = 0.2
+      const bw = Math.max(maxX - minX, 40) / (1 - 2 * padX)
+      const bh = Math.max(maxY - minY, 25) / (1 - 2 * padX)
+      const z = Math.min(MAX_ZOOM, Math.max(1, Math.min(W / bw, H / bh)))
+      const cx = (minX + maxX) / 2
+      // Qövs yuxarı əyildiyi üçün mərkəzi bir qədər yuxarı çəkirik
+      const cy = (minY + maxY) / 2 - (maxX - minX) * 0.05
+      setCam(clamp({ z, x: cx - W / z / 2, y: cy - H / z / 2 }))
     }
+  }
   }
 
   const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
