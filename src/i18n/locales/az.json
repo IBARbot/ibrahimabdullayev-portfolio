@@ -9,7 +9,7 @@
     "aboutText1": "Aviabilet, otel, transfer, sığorta və viza dəstəyi fərdi və korporativ müştərilər üçün təqdim olunur.",
     "aboutText2": "Zəruri hallarda yük (cargo) daşımaları üzrə də məsləhət xidməti göstərilir.",
     "certificates": "Sertifikatlar",
-    "routes": {"title": "Bakıdan uçuş coğrafiyası", "updated": "Məlumat tarixi: {{date}}", "note": "Məlumat xarakterlidir və reys cədvəlinin zəmanəti deyil. Reyslər aviaşirkətlər tərəfindən dəyişdirilə və ya ləğv oluna bilər. Dəqiq məlumat üçün aviaşirkətə və ya bizə müraciət edin."}, "location": "Bakı"
+    "routes": {"title": "Bakıdan uçuş coğrafiyası", "updated": "Məlumat tarixi: {{date}}", "passenger": "Sərnişin", "cargo": "Karqo", "baku": "Bakı", "km": "km", "hint": "Şəhərə toxunaraq marşrutu seçin", "note": "Məlumat xarakterlidir və reys cədvəlinin zəmanəti deyil. Reyslər aviaşirkətlər tərəfindən dəyişdirilə və ya ləğv oluna bilər. Dəqiq məlumat üçün aviaşirkətə və ya bizə müraciət edin."}, "location": "Bakı"
   },
   "nav": {
     "home": "Ana Səhifə",
