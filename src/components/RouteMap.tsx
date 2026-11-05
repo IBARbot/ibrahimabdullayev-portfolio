@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { WORLD_LAND_PATH } from '../data/worldLand'
-import { BAKU, PASSENGER_ROUTES, ROUTES_MAX_AGE_DAYS, ROUTES_UPDATED } from '../data/routes'
+import { WORLD_LAND_PATH } from '../flightData/worldLand'
+import { BAKU, PASSENGER_ROUTES, ROUTES_MAX_AGE_DAYS, ROUTES_UPDATED } from '../flightData/routes'
 import { formatDate } from '../utils/formatDate'
 
 const W = 1000
