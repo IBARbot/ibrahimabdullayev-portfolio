@@ -162,3 +162,5 @@ section[id] {
 .dark .route-land { fill: #1e293b; }
 .dark .route-hub { fill: #f1f5f9; }
 .dark .route-hub-ring { stroke: #f1f5f9; }
+.route-label { font-size: 26px; font-weight: 600; fill: #0f172a; paint-order: stroke; stroke: #ffffff; stroke-width: 5px; stroke-linejoin: round; }
+.dark .route-label { fill: #f1f5f9; stroke: #0b1220; }

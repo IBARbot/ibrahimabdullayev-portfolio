@@ -33,3 +33,13 @@ export const PASSENGER_ROUTES: RoutePoint[] = [
   { key: 'delhi', az: 'Dehli', en: 'Delhi', ru: 'Дели', lat: 28.61, lon: 77.21 },
   { key: 'jeddah', az: 'Cidda', en: 'Jeddah', ru: 'Джидда', lat: 21.54, lon: 39.17 },
 ]
+
+// Karqo: yük aviaşirkətlərinin xətləri. Dəyişdirmək üçün bu siyahını redaktə edin.
+export const CARGO_ROUTES: RoutePoint[] = [
+  { key: 'luxembourg', az: 'Lüksemburq', en: 'Luxembourg', ru: 'Люксембург', lat: 49.62, lon: 6.21 },
+  { key: 'liege', az: 'Liej', en: 'Liège', ru: 'Льеж', lat: 50.64, lon: 5.44 },
+  { key: 'tianjin', az: 'Tyantszin', en: 'Tianjin', ru: 'Тяньцзинь', lat: 39.34, lon: 117.36 },
+  { key: 'osaka', az: 'Osaka', en: 'Osaka', ru: 'Осака', lat: 34.43, lon: 135.23 },
+  { key: 'tokyo', az: 'Tokio', en: 'Tokyo', ru: 'Токио', lat: 35.77, lon: 140.39 },
+  { key: 'losangeles', az: 'Los-Anceles', en: 'Los Angeles', ru: 'Лос-Анджелес', lat: 33.94, lon: -118.41 },
+]

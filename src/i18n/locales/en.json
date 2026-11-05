@@ -9,7 +9,7 @@
     "aboutText1": "Flight, hotel, transfer, insurance and visa support is provided for individual and corporate clients.",
     "aboutText2": "Where needed, advisory support on air cargo shipments is also available.",
     "certificates": "Certificates",
-    "routes": {"title": "Flight geography from Baku", "updated": "Data as of: {{date}}", "note": "For information only; not a guarantee of any flight schedule. Flights may be changed or cancelled by airlines. Please confirm details with the airline or contact us."}, "location": "Baku"
+    "routes": {"title": "Flight geography from Baku", "updated": "Data as of: {{date}}", "passenger": "Passenger", "cargo": "Cargo", "baku": "Baku", "km": "km", "hint": "Tap a city to highlight its route", "note": "For information only; not a guarantee of any flight schedule. Flights may be changed or cancelled by airlines. Please confirm details with the airline or contact us."}, "location": "Baku"
   },
   "nav": {
     "home": "Home",

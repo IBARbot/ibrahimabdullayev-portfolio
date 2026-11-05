@@ -1,22 +1,55 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { WORLD_LAND_PATH } from '../flightData/worldLand'
-import { BAKU, PASSENGER_ROUTES, ROUTES_MAX_AGE_DAYS, ROUTES_UPDATED } from '../flightData/routes'
+import { LAND_CARGO, LAND_PASSENGER } from '../flightData/worldLand'
+import {
+  BAKU,
+  CARGO_ROUTES,
+  PASSENGER_ROUTES,
+  ROUTES_MAX_AGE_DAYS,
+  ROUTES_UPDATED,
+  type RoutePoint,
+} from '../flightData/routes'
 import { formatDate } from '../utils/formatDate'
 
-const W = 1000
-const H = 500
-const LON0 = -4
-const LON1 = 92
-const LAT_TOP = 66
-const LAT_BOTTOM = 18
+type Mode = 'passenger' | 'cargo'
 
-function project(lon: number, lat: number): [number, number] {
-  return [((lon - LON0) / (LON1 - LON0)) * W, ((LAT_TOP - lat) / (LAT_TOP - LAT_BOTTOM)) * H]
+interface View {
+  lon0: number
+  lon1: number
+  latTop: number
+  latBottom: number
+  land: string
+  routes: RoutePoint[]
+}
+
+const W = 1000
+
+const VIEWS: Record<Mode, View> = {
+  passenger: { lon0: -4, lon1: 92, latTop: 66, latBottom: 18, land: LAND_PASSENGER, routes: PASSENGER_ROUTES },
+  cargo: { lon0: -10, lon1: 150, latTop: 66, latBottom: 16, land: LAND_CARGO, routes: CARGO_ROUTES },
+}
+
+function heightOf(v: View): number {
+  return Math.round((W * (v.latTop - v.latBottom)) / (v.lon1 - v.lon0))
+}
+
+function project(v: View, lon: number, lat: number): [number, number] {
+  return [((lon - v.lon0) / (v.lon1 - v.lon0)) * W, ((v.latTop - lat) / (v.latTop - v.latBottom)) * heightOf(v)]
+}
+
+// Böyük dairə məsafəsi (km), yalnız məlumat üçün təxmini
+function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const rad = Math.PI / 180
+  const dLat = (lat2 - lat1) * rad
+  const dLon = (lon2 - lon1) * rad
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLon / 2) ** 2
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
 export default function RouteMap() {
   const { t, i18n } = useTranslation()
+  const [mode, setMode] = useState<Mode>('passenger')
+  const [selected, setSelected] = useState<string | null>(null)
 
   // Məlumat köhnələndə xəritə özü gizlənir: ləğv olunmuş və ya dəyişmiş xətt sayta qalmasın
   const fresh = useMemo(() => {
@@ -26,21 +59,39 @@ export default function RouteMap() {
   }, [])
 
   const lang = i18n.language === 'ru' ? 'ru' : i18n.language === 'en' ? 'en' : 'az'
+  const view = VIEWS[mode]
+  const H = heightOf(view)
 
   const arcs = useMemo(() => {
-    const [bx, by] = project(BAKU.lon, BAKU.lat)
-    return PASSENGER_ROUTES.map((r) => {
-      const [x, y] = project(r.lon, r.lat)
+    const [bx, by] = project(view, BAKU.lon, BAKU.lat)
+    return view.routes.map((r) => {
+      const [x, y] = project(view, r.lon, r.lat)
       const dist = Math.hypot(x - bx, y - by)
       const cx = (x + bx) / 2
-      const cy = (y + by) / 2 - dist * 0.28
-      return { key: r.key, x, y, d: `M${bx.toFixed(1)},${by.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${x.toFixed(1)},${y.toFixed(1)}` }
+      const cy = (y + by) / 2 - dist * 0.22
+      return {
+        key: r.key,
+        x,
+        y,
+        d: `M${bx.toFixed(1)},${by.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${x.toFixed(1)},${y.toFixed(1)}`,
+      }
     })
-  }, [])
+  }, [view])
 
   if (!fresh) return null
 
-  const [bx, by] = project(BAKU.lon, BAKU.lat)
+  const [bx, by] = project(view, BAKU.lon, BAKU.lat)
+  const current = view.routes.find((r) => r.key === selected) ?? null
+  const currentArc = arcs.find((a) => a.key === selected) ?? null
+
+  const switchMode = (next: Mode) => {
+    setMode(next)
+    setSelected(null)
+  }
+  const toggle = (key: string) => setSelected((s) => (s === key ? null : key))
+
+  const segBase =
+    'px-4 py-2 rounded-full text-sm font-semibold transition-colors touch-manipulation min-h-[40px]'
 
   return (
     <section id="routes" className="max-w-xl mx-auto px-5 pt-12">
@@ -49,20 +100,69 @@ export default function RouteMap() {
         {t('home.routes.updated', { date: formatDate(ROUTES_UPDATED, i18n.language) })}
       </p>
 
+      <div
+        role="group"
+        aria-label={t('home.routes.title')}
+        className="mt-3 inline-flex gap-1 p-1 rounded-full bg-gray-100 border border-gray-200"
+      >
+        {(['passenger', 'cargo'] as Mode[]).map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => switchMode(m)}
+            aria-pressed={mode === m}
+            className={`${segBase} ${mode === m ? 'bg-primary-600 text-white shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}
+          >
+            {t(`home.routes.${m}`)}
+          </button>
+        ))}
+      </div>
+
       <div className="mt-3 rounded-2xl bg-white border border-gray-200 p-2.5">
         <svg
           viewBox={`0 0 ${W} ${H}`}
           role="img"
           aria-label={t('home.routes.title')}
-          className="w-full h-auto block text-primary-600"
+          className={`w-full h-auto block ${mode === 'cargo' ? 'text-amber-600' : 'text-primary-600'}`}
         >
-          <path d={WORLD_LAND_PATH} className="route-land" />
-          {arcs.map((a) => (
-            <g key={a.key}>
-              <path d={a.d} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" opacity="0.75" className="route-arc" />
-              <circle cx={a.x} cy={a.y} r="3.2" fill="currentColor" />
-            </g>
-          ))}
+          <path d={view.land} className="route-land" />
+          {arcs.map((a) => {
+            const active = a.key === selected
+            const dim = selected !== null && !active
+            return (
+              <g key={a.key} style={{ transition: 'opacity .25s' }} opacity={dim ? 0.15 : 1}>
+                <path
+                  d={a.d}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={active ? 2.6 : 1.4}
+                  strokeLinecap="round"
+                  opacity={active ? 1 : 0.75}
+                  className={active ? '' : 'route-arc'}
+                />
+                {/* Nöqtə toxunmaq üçün böyük görünməz dairə ilə əhatə olunub */}
+                <circle cx={a.x} cy={a.y} r={active ? 6 : 3.4} fill="currentColor" />
+                <circle
+                  cx={a.x}
+                  cy={a.y}
+                  r="16"
+                  fill="transparent"
+                  className="cursor-pointer"
+                  onClick={() => toggle(a.key)}
+                />
+              </g>
+            )
+          })}
+          {current && currentArc && (
+            <text
+              x={Math.min(Math.max(currentArc.x, 60), W - 60)}
+              y={Math.max(currentArc.y - 14, 18)}
+              textAnchor="middle"
+              className="route-label"
+            >
+              {current[lang]}
+            </text>
+          )}
           <circle cx={bx} cy={by} r="5" className="route-hub" />
           <circle cx={bx} cy={by} r="5" fill="none" strokeWidth="1.5" className="route-hub-ring motion-reduce:hidden">
             <animate attributeName="r" values="5;16" dur="2.4s" repeatCount="indefinite" />
@@ -70,12 +170,40 @@ export default function RouteMap() {
           </circle>
         </svg>
 
-        <ul className="flex flex-wrap gap-1.5 px-1 pt-2 pb-1">
-          {PASSENGER_ROUTES.map((r) => (
-            <li key={r.key} className="text-xs sm:text-[13px] text-gray-700 border border-gray-200 rounded-full px-2.5 py-1">
-              {r[lang]}
-            </li>
-          ))}
+        <p className="px-1 pt-2 text-sm text-gray-700 min-h-[1.75rem]" aria-live="polite">
+          {current ? (
+            <>
+              <span className="font-semibold">{t('home.routes.baku')} → {current[lang]}</span>
+              <span className="text-gray-400">
+                {' · ≈'}
+                {Math.round(distanceKm(BAKU.lat, BAKU.lon, current.lat, current.lon) / 10) * 10} {t('home.routes.km')}
+              </span>
+            </>
+          ) : (
+            <span className="text-gray-400">{t('home.routes.hint')}</span>
+          )}
+        </p>
+
+        <ul className="flex flex-wrap gap-1.5 px-1 pt-1 pb-1">
+          {view.routes.map((r) => {
+            const on = r.key === selected
+            return (
+              <li key={r.key}>
+                <button
+                  type="button"
+                  onClick={() => toggle(r.key)}
+                  aria-pressed={on}
+                  className={`text-xs sm:text-[13px] rounded-full px-3 py-1.5 border transition-colors touch-manipulation ${
+                    on
+                      ? 'bg-primary-600 border-primary-600 text-white'
+                      : 'bg-white border-gray-200 text-gray-700 hover:border-primary-300'
+                  }`}
+                >
+                  {r[lang]}
+                </button>
+              </li>
+            )
+          })}
         </ul>
       </div>
 
