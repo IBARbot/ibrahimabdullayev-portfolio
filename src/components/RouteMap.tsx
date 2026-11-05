@@ -115,8 +115,9 @@ export default function RouteMap() {
     const z = Math.min(MAX_ZOOM, Math.max(1, c.z))
     return {
       z,
-      x: Math.min(Math.max(c.x, 0), W - W / z),
-      y: Math.min(Math.max(c.y, 0), H - H / z),
+      // Kənarlara bir qədər boşluqla sərbəst sürüşdürmə
+      x: Math.min(Math.max(c.x, -0.35 * (W / z)), W - 0.65 * (W / z)),
+      y: Math.min(Math.max(c.y, -0.35 * (H / z)), H - 0.65 * (H / z)),
     }
   }
   const zoomBy = (factor: number, fx = 0.5, fy = 0.5) =>
@@ -135,7 +136,18 @@ export default function RouteMap() {
   }
   const toggle = (key: string) => {
     if (gesture.current.moved) return
-    setSelected((s) => (s === key ? null : key))
+    if (key === selected) {
+      setSelected(null)
+      setCam({ x: 0, y: 0, z: 1 })
+      return
+    }
+    setSelected(key)
+    // Seçilən şəhərə fokuslan
+    const a = arcs.find((x) => x.key === key)
+    if (a) {
+      const z = Math.max(cam.z, mode === 'cargo' ? 2.5 : 3)
+      setCam(clamp({ z, x: a.x - W / z / 2, y: a.y - H / z / 2 }))
+    }
   }
 
   const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
@@ -152,11 +164,18 @@ export default function RouteMap() {
     const rect = svgRef.current?.getBoundingClientRect()
     if (!rect) return
     const next = { x: e.clientX, y: e.clientY }
-    if (pointers.current.size === 1 && cam.z > 1) {
+    if (pointers.current.size === 1) {
       const dx = next.x - prev.x
       const dy = next.y - prev.y
       if (Math.abs(dx) + Math.abs(dy) > 0) {
         if (!gesture.current.moved && Math.abs(dx) + Math.abs(dy) < 2) return
+        if (!gesture.current.moved) {
+          try {
+            e.currentTarget.setPointerCapture(e.pointerId)
+          } catch {
+            /* ignore */
+          }
+        }
         gesture.current.moved = true
         pointers.current.set(e.pointerId, next)
         const scale = W / cam.z / rect.width
