@@ -1,7 +1,6 @@
 // Bakıdan uzun müddətdir mövcud olan, əsas istiqamətlər. Yeni istiqamət əlavə etmək üçün bura sətir əlavə edin.
-// Məlumat tarixini hər yeniləmədə dəyişin: 14 gündən köhnə olarsa, xəritə səhifədə avtomatik gizlənir.
-export const ROUTES_UPDATED = '2026-11-05'
-export const ROUTES_MAX_AGE_DAYS = 14
+// Məlumat tarixini siyahını yenilədikdə dəyişin (saytda "Məlumat tarixi" kimi göstərilir).
+export const ROUTES_UPDATED = '2026-11-20'
 
 export interface ViaPoint {
   az: string

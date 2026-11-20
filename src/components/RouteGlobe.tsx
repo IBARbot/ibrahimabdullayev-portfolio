@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LAND_DOTS } from '../flightData/landDots'
 import {
@@ -6,7 +6,6 @@ import {
   CARGO_ROUTES,
   GANJA,
   PASSENGER_ROUTES,
-  ROUTES_MAX_AGE_DAYS,
   ROUTES_UPDATED,
   type RoutePoint,
 } from '../flightData/routes'
@@ -67,12 +66,6 @@ export default function RouteGlobe() {
     selected: null as string | null,
     lang: 'az' as 'az' | 'en' | 'ru',
   })
-
-  const fresh = useMemo(() => {
-    const updated = new Date(`${ROUTES_UPDATED}T00:00:00Z`).getTime()
-    if (Number.isNaN(updated)) return false
-    return Date.now() - updated <= ROUTES_MAX_AGE_DAYS * 24 * 60 * 60 * 1000
-  }, [])
 
   const lang = i18n.language === 'ru' ? 'ru' : i18n.language === 'en' ? 'en' : 'az'
   const routes = mode === 'passenger' ? PASSENGER_ROUTES : CARGO_ROUTES
@@ -462,9 +455,7 @@ export default function RouteGlobe() {
       cv.removeEventListener('wheel', onWheel)
       cv.removeEventListener('dblclick', onDbl)
     }
-  }, [fresh])
-
-  if (!fresh) return null
+  }, [])
 
   const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
