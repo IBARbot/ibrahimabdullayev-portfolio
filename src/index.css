@@ -155,9 +155,9 @@ section[id] {
 /* Uçuş xəritəsi */
 .route-globe {
   --g-panel: #ffffff; --g-ocean: #e8f1fa; --g-land: #94a3b8; --g-fg: #0f172a; --g-muted: #64748b; --g-bg: #f8fafc;
-  --g-pax: #0284c7; --g-cargo: #d97706; --g-glow: rgba(2, 132, 199, 0.18);
+  --g-pax: #0284c7; --g-cargo: #d97706; --g-glow: rgba(2, 132, 199, 0.18); --g-border: #475569;
 }
 .dark .route-globe {
   --g-panel: #0b1324; --g-ocean: #0a1630; --g-land: #5b7bb0; --g-fg: #e7eef9; --g-muted: #8193b2; --g-bg: #060b16;
-  --g-pax: #38bdf8; --g-cargo: #fbbf24; --g-glow: rgba(56, 189, 248, 0.28);
+  --g-pax: #38bdf8; --g-cargo: #fbbf24; --g-glow: rgba(56, 189, 248, 0.28); --g-border: #a5b8d8;
 }

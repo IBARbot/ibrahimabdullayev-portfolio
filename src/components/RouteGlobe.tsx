@@ -65,7 +65,10 @@ export default function RouteGlobe() {
     mode: 'passenger' as Mode,
     selected: null as string | null,
     lang: 'az' as 'az' | 'en' | 'ru',
+    lines: null as null | { solid: Vec[][]; dashed: Vec[][]; coast: Vec[][] },
+    hits: [] as { key: string; x: number; y: number; dot: boolean }[],
   })
+  const pickRef = useRef<(key: string) => void>(() => {})
 
   const lang = i18n.language === 'ru' ? 'ru' : i18n.language === 'en' ? 'en' : 'az'
   const routes = mode === 'passenger' ? PASSENGER_ROUTES : CARGO_ROUTES
@@ -81,6 +84,19 @@ export default function RouteGlobe() {
     const s = st.current
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     s.auto = !reduce
+    // Sərhəd və sahil xətləri ayrıca, gecikmə ilə yüklənir (əsas səhifəni ağırlaşdırmır)
+    const parse = (txt: string): Vec[][] =>
+      txt.split(';').map((line) => {
+        const n = line.split(',').map(Number)
+        const out: Vec[] = []
+        for (let i = 0; i < n.length; i += 2) out.push(vec(n[i] / 10, n[i + 1] / 10))
+        return out
+      })
+    import('../flightData/borders')
+      .then((m) => {
+        s.lines = { solid: parse(m.BORDERS_SOLID), dashed: parse(m.BORDERS_DASHED), coast: parse(m.COASTLINES) }
+      })
+      .catch(() => {})
     let raf = 0
     let visible = true
     let last = performance.now()
@@ -137,6 +153,7 @@ export default function RouteGlobe() {
         muted: tok('--g-muted'),
         bg: tok('--g-bg'),
         glow: tok('--g-glow'),
+        border: tok('--g-border'),
         accent: s.mode === 'passenger' ? tok('--g-pax') : tok('--g-cargo'),
       }
       const { W, H } = s
@@ -179,8 +196,45 @@ export default function RouteGlobe() {
         ctx.globalAlpha = 0.25 + 0.75 * v[2]
         ctx.fillRect(x - ds * 0.75, y - ds * 0.75, ds * 1.5, ds * 1.5)
       }
+      // Sahil xətləri və dövlət sərhədləri: yaxınlaşdıqca daha aydın
+      if (s.lines) {
+        const strokeSet = (set: Vec[][]) => {
+          ctx.beginPath()
+          for (const line of set) {
+            let pen = false
+            for (const v0 of line) {
+              const v = view(v0)
+              if (v[2] <= 0) {
+                pen = false
+                continue
+              }
+              const x = cx + v[0] * R
+              const y = cy - v[1] * R
+              if (!pen) {
+                ctx.moveTo(x, y)
+                pen = true
+              } else ctx.lineTo(x, y)
+            }
+          }
+          ctx.stroke()
+        }
+        const zf = Math.max(0, Math.min(1, (s.zoom - 1) / 1.5))
+        ctx.lineJoin = 'round'
+        ctx.strokeStyle = c.land
+        ctx.lineWidth = 0.8
+        ctx.globalAlpha = 0.35 + 0.4 * zf
+        strokeSet(s.lines.coast)
+        ctx.strokeStyle = c.border
+        ctx.lineWidth = 0.6 + 0.6 * zf
+        ctx.globalAlpha = 0.25 + 0.65 * zf
+        strokeSet(s.lines.solid)
+        ctx.setLineDash([3, 3])
+        strokeSet(s.lines.dashed)
+        ctx.setLineDash([])
+      }
       ctx.restore()
       ctx.globalAlpha = 1
+      s.hits = []
 
       const list = s.mode === 'passenger' ? PASSENGER_ROUTES : CARGO_ROUTES
       const phase = reduce ? 1 : (now / 2600) % 1
@@ -193,6 +247,7 @@ export default function RouteGlobe() {
         }
       }
       const arc = (
+        key: string,
         a: { lat: number; lon: number },
         b: { lat: number; lon: number },
         on: boolean,
@@ -225,6 +280,7 @@ export default function RouteGlobe() {
           } else ctx.lineTo(p.x, p.y)
         }
         ctx.stroke()
+        for (let i = 1; i < pts.length; i += 2) if (pts[i].vis) s.hits.push({ key, x: pts[i].x, y: pts[i].y, dot: false })
         if (!dim) {
           const p = pts[Math.floor(((phase + delay) % 1) * N)]
           if (p && p.vis) {
@@ -246,9 +302,9 @@ export default function RouteGlobe() {
         const dim = s.selected !== null && !on
         const o = originOf(r)
         if (r.via) {
-          arc(o, r.via, on, dim, i * 0.13)
-          arc(r.via, r, on, dim, i * 0.13 + 0.5)
-        } else arc(o, r, on, dim, i * 0.13)
+          arc(r.key, o, r.via, on, dim, i * 0.13)
+          arc(r.key, r.via, r, on, dim, i * 0.13 + 0.5)
+        } else arc(r.key, o, r, on, dim, i * 0.13)
       })
 
       list.forEach((r) => {
@@ -256,6 +312,7 @@ export default function RouteGlobe() {
         const dim = s.selected !== null && !on
         const p = P(vec(r.lat, r.lon), 0)
         if (!p.vis) return
+        s.hits.push({ key: r.key, x: p.x, y: p.y, dot: true })
         ctx.globalAlpha = dim ? 0.25 : 1
         ctx.fillStyle = c.accent
         ctx.beginPath()
@@ -357,14 +414,38 @@ export default function RouteGlobe() {
       s.auto = false
     }
 
+    // Ekrandakı nöqtəyə ən yaxın marşrut: əvvəlcə şəhər nöqtəsi, sonra xətt
+    const hitAt = (px: number, py: number): string | null => {
+      const rc = cv.getBoundingClientRect()
+      const x = px - rc.left
+      const y = py - rc.top
+      let best: string | null = null
+      let bestD = Infinity
+      for (const h of s.hits) {
+        const d = Math.hypot(h.x - x, h.y - y) - (h.dot ? 8 : 0)
+        if (d < bestD && d < (h.dot ? 12 : 10)) {
+          bestD = d
+          best = h.key
+        }
+      }
+      return best
+    }
+
     const ptrs = new Map<number, { x: number; y: number }>()
+    let downAt: { x: number; y: number } | null = null
     let pinch = 0
     let lastTap = 0
     const stage = cv.parentElement as HTMLElement
-    const onDown = (e: PointerEvent) => ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY })
+    const onDown = (e: PointerEvent) => {
+      ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      downAt = ptrs.size === 1 ? { x: e.clientX, y: e.clientY } : null
+    }
     const onMove = (e: PointerEvent) => {
       const p = ptrs.get(e.pointerId)
-      if (!p) return
+      if (!p) {
+        if (e.pointerType === 'mouse' && ptrs.size === 0) cv.style.cursor = hitAt(e.clientX, e.clientY) ? 'pointer' : 'grab'
+        return
+      }
       const dx = e.clientX - p.x
       const dy = e.clientY - p.y
       if (ptrs.size === 1) {
@@ -410,7 +491,18 @@ export default function RouteGlobe() {
         cv.style.cursor = 'grab'
         stage.style.touchAction = 'pan-y'
       }
-      if (e.type === 'pointerup' && e.pointerType === 'touch' && !wasDragging) {
+      const tapped =
+        e.type === 'pointerup' && !wasDragging && downAt && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 8
+      downAt = null
+      if (tapped) {
+        const key = hitAt(e.clientX, e.clientY)
+        if (key) {
+          pickRef.current(key)
+          lastTap = 0
+          return
+        }
+      }
+      if (tapped && e.pointerType === 'touch') {
         const n = performance.now()
         if (n - lastTap < 300) {
           zoomAt(e.clientX, e.clientY, 2)
@@ -424,6 +516,7 @@ export default function RouteGlobe() {
     }
     const onDbl = (e: MouseEvent) => {
       e.preventDefault()
+      if (hitAt(e.clientX, e.clientY)) return
       zoomAt(e.clientX, e.clientY, 2)
     }
 
@@ -494,6 +587,11 @@ export default function RouteGlobe() {
     const next = selected === r.key ? null : r.key
     setSelected(next)
     focus(next ? r : null)
+  }
+
+  pickRef.current = (key: string) => {
+    const r = routes.find((x) => x.key === key)
+    if (r) toggle(r)
   }
 
   const zoomBy = (f: number) => {
