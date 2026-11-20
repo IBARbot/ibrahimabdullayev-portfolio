@@ -7,7 +7,7 @@ import TopBar from './components/TopBar'
 import Profile from './components/Profile'
 import HomeServices from './components/HomeServices'
 import HomeAbout from './components/HomeAbout'
-import RouteMap from './components/RouteMap'
+import RouteGlobe from './components/RouteGlobe'
 import SimpleFooter from './components/SimpleFooter'
 import { initializeLanguage } from './i18n/config'
 import CookieConsent from './components/CookieConsent'
@@ -65,7 +65,7 @@ function HomePage() {
       <main className="pb-4">
         <Profile onOpenBooking={() => openBookingModal('flight')} />
         <HomeServices onOpenBooking={openBookingModal} />
-        <RouteMap />
+        <RouteGlobe />
         <HomeAbout />
       </main>
       <SimpleFooter />
