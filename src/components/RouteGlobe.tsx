@@ -18,6 +18,8 @@ const RAD = Math.PI / 180
 const ZMIN = 0.7
 const ZMAX = 4.5
 const DOTS = LAND_DOTS.split(',').map(Number)
+// Bucağı -180…180 aralığına salır (ən qısa fırlanma yolu üçün)
+const wrap = (a: number) => ((((a % 360) + 540) % 360) - 180)
 const short = (s: string) => s.replace(/\s*\(.*\)\s*$/, '')
 
 const vec = (lat: number, lon: number): Vec => [
@@ -130,16 +132,18 @@ export default function RouteGlobe() {
       const tg = s.target
       if (tg) {
         const k = 1 - Math.pow(0.0025, dt / 1000)
-        const dl = ((tg.lon - s.rot.lon + 540) % 360) - 180
+        const dl = wrap(tg.lon - s.rot.lon)
         s.rot.lon += dl * k
         s.rot.lat += (tg.lat - s.rot.lat) * k
         s.zoom += (tg.zoom - s.zoom) * k
+        s.rot.lon = wrap(s.rot.lon)
         if (Math.abs(dl) < 0.05 && Math.abs(tg.lat - s.rot.lat) < 0.05 && Math.abs(tg.zoom - s.zoom) < 0.002) s.target = null
       } else if (!s.dragging) {
-        if (s.auto) s.rot.lon += (s.base + Math.sin(now / 5200) * 28 - s.rot.lon) * Math.min(1, dt / 900)
+        if (s.auto) s.rot.lon += wrap(s.base + Math.sin(now / 5200) * 28 - s.rot.lon) * Math.min(1, dt / 900)
         s.rot.lon += s.vel.x
         s.rot.lat = Math.max(-35, Math.min(70, s.rot.lat + s.vel.y))
         s.vel.x *= 0.92
+        s.rot.lon = wrap(s.rot.lon)
         s.vel.y *= 0.92
       }
 
@@ -407,7 +411,7 @@ export default function RouteGlobe() {
       let lat = cur.lat
       if (gp && f > 1) {
         const k = 1 - 1 / f
-        lon = cur.lon + ((((gp.lon - cur.lon + 540) % 360) - 180) * k)
+        lon = cur.lon + wrap(gp.lon - cur.lon) * k
         lat = cur.lat + (gp.lat - cur.lat) * k
       }
       s.target = { lon, lat: Math.max(-35, Math.min(70, lat)), zoom: z }
@@ -481,7 +485,7 @@ export default function RouteGlobe() {
         s.auto = false
         const k = 90 / (s.R || 200)
         s.vel = { x: -dx * k, y: dy * k }
-        s.rot.lon -= dx * k
+        s.rot.lon = wrap(s.rot.lon - dx * k)
         s.rot.lat = Math.max(-35, Math.min(70, s.rot.lat + dy * k))
       }
       ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY })
