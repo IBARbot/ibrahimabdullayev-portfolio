@@ -138,7 +138,7 @@ export default function RouteGlobe() {
       } else if (!s.dragging) {
         if (s.auto) s.rot.lon += (s.base + Math.sin(now / 5200) * 28 - s.rot.lon) * Math.min(1, dt / 900)
         s.rot.lon += s.vel.x
-        s.rot.lat = Math.max(-60, Math.min(70, s.rot.lat + s.vel.y))
+        s.rot.lat = Math.max(-35, Math.min(70, s.rot.lat + s.vel.y))
         s.vel.x *= 0.92
         s.vel.y *= 0.92
       }
@@ -410,7 +410,7 @@ export default function RouteGlobe() {
         lon = cur.lon + ((((gp.lon - cur.lon + 540) % 360) - 180) * k)
         lat = cur.lat + (gp.lat - cur.lat) * k
       }
-      s.target = { lon, lat: Math.max(-60, Math.min(70, lat)), zoom: z }
+      s.target = { lon, lat: Math.max(-35, Math.min(70, lat)), zoom: z }
       s.auto = false
     }
 
@@ -431,7 +431,18 @@ export default function RouteGlobe() {
       return best
     }
 
+    // Barmaq kürənin üzərindədirsə kürə hər istiqamətdə fırlanır; kənardadırsa səhifə sürüşür
+    const onGlobe = (px: number, py: number) => {
+      const rc = cv.getBoundingClientRect()
+      return Math.hypot(px - rc.left - s.W / 2, py - rc.top - s.H / 2) <= s.R * 1.04
+    }
+    const onTouchStart = (e: TouchEvent) => {
+      const t0 = e.touches[0]
+      if (e.touches.length > 1 || (t0 && onGlobe(t0.clientX, t0.clientY))) e.preventDefault()
+    }
+
     const ptrs = new Map<number, { x: number; y: number }>()
+    let grabbed = false
     let downAt: { x: number; y: number } | null = null
     let pinch = 0
     let lastTap = 0
@@ -439,6 +450,7 @@ export default function RouteGlobe() {
     const onDown = (e: PointerEvent) => {
       ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY })
       downAt = ptrs.size === 1 ? { x: e.clientX, y: e.clientY } : null
+      if (ptrs.size === 1) grabbed = e.pointerType !== 'touch' || onGlobe(e.clientX, e.clientY)
     }
     const onMove = (e: PointerEvent) => {
       const p = ptrs.get(e.pointerId)
@@ -449,8 +461,8 @@ export default function RouteGlobe() {
       const dx = e.clientX - p.x
       const dy = e.clientY - p.y
       if (ptrs.size === 1) {
-        // Telefonda şaquli hərəkət səhifəni sürüşdürür, kürəni yox
-        if (!s.dragging && e.pointerType === 'touch' && Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 6) {
+        // Kürədən kənarda başlayan şaquli hərəkət səhifəni sürüşdürür
+        if (!grabbed && !s.dragging && e.pointerType === 'touch' && Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 6) {
           ptrs.delete(e.pointerId)
           return
         }
@@ -470,7 +482,7 @@ export default function RouteGlobe() {
         const k = 90 / (s.R || 200)
         s.vel = { x: -dx * k, y: dy * k }
         s.rot.lon -= dx * k
-        s.rot.lat = Math.max(-60, Math.min(70, s.rot.lat + dy * k))
+        s.rot.lat = Math.max(-35, Math.min(70, s.rot.lat + dy * k))
       }
       ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY })
       if (ptrs.size === 2) {
@@ -520,6 +532,7 @@ export default function RouteGlobe() {
       zoomAt(e.clientX, e.clientY, 2)
     }
 
+    cv.addEventListener('touchstart', onTouchStart, { passive: false })
     cv.addEventListener('pointerdown', onDown)
     cv.addEventListener('pointermove', onMove)
     cv.addEventListener('pointerup', onUp)
@@ -541,6 +554,7 @@ export default function RouteGlobe() {
       cancelAnimationFrame(raf)
       io.disconnect()
       window.removeEventListener('resize', resize)
+      cv.removeEventListener('touchstart', onTouchStart)
       cv.removeEventListener('pointerdown', onDown)
       cv.removeEventListener('pointermove', onMove)
       cv.removeEventListener('pointerup', onUp)
