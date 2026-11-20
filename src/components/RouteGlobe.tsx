@@ -16,7 +16,7 @@ type Vec = [number, number, number]
 
 const RAD = Math.PI / 180
 const ZMIN = 0.7
-const ZMAX = 4.5
+const ZMAX = 30
 const DOTS = LAND_DOTS.split(',').map(Number)
 // Bucağı -180…180 aralığına salır (ən qısa fırlanma yolu üçün)
 const wrap = (a: number) => ((((a % 360) + 540) % 360) - 180)
@@ -184,20 +184,51 @@ export default function RouteGlobe() {
       ctx.arc(cx, cy, R, 0, 7)
       ctx.fill()
 
-      // Quru nöqtələri
       ctx.save()
       ctx.beginPath()
       ctx.arc(cx, cy, R, 0, 7)
       ctx.clip()
+
+      // Yaxınlaşdıqca quru ərazisi dolğun rənglə görünür (arxa tərəfdəki nöqtələr üfüqə sıxılır)
+      if (s.lines && s.zoom > 1.6) {
+        ctx.beginPath()
+        for (const ring of s.lines.coast) {
+          let front = false
+          for (const v0 of ring) if (view(v0)[2] > 0) { front = true; break }
+          if (!front) continue
+          ring.forEach((v0, i) => {
+            const v = view(v0)
+            let x = v[0]
+            let y = v[1]
+            if (v[2] <= 0) {
+              const h = Math.hypot(x, y) || 1
+              x /= h
+              y /= h
+            }
+            const px = cx + x * R
+            const py = cy - y * R
+            if (i === 0) ctx.moveTo(px, py)
+            else ctx.lineTo(px, py)
+          })
+          ctx.closePath()
+        }
+        ctx.fillStyle = c.land
+        ctx.globalAlpha = Math.min(0.3, (s.zoom - 1.6) * 0.1)
+        ctx.fill('evenodd')
+        ctx.globalAlpha = 1
+      }
+
+      // Quru nöqtələri: çox yaxında seyrək görünməsin deyə tədricən solur
       ctx.fillStyle = c.land
       const ds = Math.max(1, Math.min(2.4, R / 230))
-      for (let i = 0; i < DOTS.length; i += 2) {
+      const dotFade = Math.max(0, Math.min(1, (9 - s.zoom) / 5))
+      for (let i = 0; dotFade > 0 && i < DOTS.length; i += 2) {
         const v = view(vec(DOTS[i] / 10, DOTS[i + 1] / 10))
         if (v[2] <= 0) continue
         const x = cx + v[0] * R
         const y = cy - v[1] * R
         if (x < -5 || x > W + 5 || y < -5 || y > H + 5) continue
-        ctx.globalAlpha = 0.25 + 0.75 * v[2]
+        ctx.globalAlpha = (0.25 + 0.75 * v[2]) * dotFade
         ctx.fillRect(x - ds * 0.75, y - ds * 0.75, ds * 1.5, ds * 1.5)
       }
       // Sahil xətləri və dövlət sərhədləri: yaxınlaşdıqca daha aydın
@@ -224,8 +255,9 @@ export default function RouteGlobe() {
         }
         const zf = Math.max(0, Math.min(1, (s.zoom - 1) / 1.5))
         ctx.lineJoin = 'round'
+        const deep = Math.max(0, Math.min(1, (s.zoom - 3) / 6))
         ctx.strokeStyle = c.land
-        ctx.lineWidth = 0.8
+        ctx.lineWidth = 0.8 + 0.7 * deep
         ctx.globalAlpha = 0.35 + 0.4 * zf
         strokeSet(s.lines.coast)
         ctx.strokeStyle = c.border
@@ -261,7 +293,7 @@ export default function RouteGlobe() {
         const va = vec(a.lat, a.lon)
         const vb = vec(b.lat, b.lon)
         const d = angle(va, vb)
-        const hmax = Math.min(0.35, 0.05 + d * 0.28)
+        const hmax = Math.min(0.35, 0.006 + d * 0.3)
         const N = Math.max(16, Math.round(d * 60))
         const pts = []
         for (let i = 0; i <= N; i++) {
@@ -587,7 +619,7 @@ export default function RouteGlobe() {
     s.target = {
       lon,
       lat: Math.max(-40, Math.min(60, lat)),
-      zoom: Math.max(1, Math.min(3.2, 1.25 / Math.max(d, 0.15))),
+      zoom: Math.max(1, Math.min(26, 1.2 / Math.max(d, 0.03))),
     }
     s.auto = false
   }
@@ -663,10 +695,10 @@ export default function RouteGlobe() {
             style={{ cursor: 'grab' }}
           />
           <div className="absolute right-2 bottom-2 flex flex-col gap-1.5">
-            <button type="button" className={zoomBtn} onClick={() => zoomBy(1.6)} aria-label={t('home.routes.zoomIn')}>
+            <button type="button" className={zoomBtn} onClick={() => zoomBy(2)} aria-label={t('home.routes.zoomIn')}>
               +
             </button>
-            <button type="button" className={zoomBtn} onClick={() => zoomBy(1 / 1.6)} aria-label={t('home.routes.zoomOut')}>
+            <button type="button" className={zoomBtn} onClick={() => zoomBy(1 / 2)} aria-label={t('home.routes.zoomOut')}>
               −
             </button>
           </div>
