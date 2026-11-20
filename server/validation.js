@@ -182,13 +182,35 @@ export function sanitizeBookingData(bookingData) {
     };
   }
 
-  // Copy other safe fields
-  if (bookingData.tripType) sanitized.tripType = bookingData.tripType;
-  if (bookingData.segments) sanitized.segments = bookingData.segments;
-  if (bookingData.guestInfo) sanitized.guestInfo = bookingData.guestInfo;
-  if (bookingData.transferPassengerInfo) sanitized.transferPassengerInfo = bookingData.transferPassengerInfo;
-  if (bookingData.insuranceTravelerInfo) sanitized.insuranceTravelerInfo = bookingData.insuranceTravelerInfo;
-  if (bookingData.embassyTravelerInfo) sanitized.embassyTravelerInfo = bookingData.embassyTravelerInfo;
+  // Digər sahələr: yalnız gözlənilən formada qəbul olunur
+  if (['one-way', 'round-trip', 'multi-city'].includes(bookingData.tripType)) {
+    sanitized.tripType = bookingData.tripType;
+  }
+  if (Array.isArray(bookingData.segments)) {
+    sanitized.segments = bookingData.segments.slice(0, 10).map((seg) => ({
+      from: sanitizeString(String(seg?.from ?? '')).slice(0, 100),
+      to: sanitizeString(String(seg?.to ?? '')).slice(0, 100),
+      date: isValidDate(seg?.date) ? seg.date : '',
+    }));
+  }
+  const people = (info) => {
+    if (!info || typeof info !== 'object') return undefined;
+    const n = (v, max) => Math.max(0, Math.min(max, parseInt(v, 10) || 0));
+    const ages = (arr, min, max) =>
+      Array.isArray(arr) ? arr.slice(0, 20).map((a) => Math.max(min, Math.min(max, parseInt(a, 10) || min))) : [];
+    return {
+      adults: n(info.adults, 50),
+      children: n(info.children, 50),
+      infants: n(info.infants, 20),
+      seniors: n(info.seniors, 50),
+      childAges: ages(info.childAges, 2, 17),
+      infantAges: ages(info.infantAges, 0, 23),
+    };
+  };
+  for (const key of ['guestInfo', 'transferPassengerInfo', 'insuranceTravelerInfo', 'embassyTravelerInfo']) {
+    const v = people(bookingData[key]);
+    if (v) sanitized[key] = v;
+  }
 
   return sanitized;
 }

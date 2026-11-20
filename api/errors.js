@@ -1,6 +1,6 @@
 // Combined API endpoint for error logging and initialization
 import { logErrorToSheets, initializeErrorsSheet } from '../server/errorLogger.js';
-import { applyCors } from '../server/security.js';
+import { applyCors, rateLimit, clientIp, requireAdmin } from '../server/security.js';
 
 export default async function handler(req, res) {
   // CORS
@@ -15,10 +15,14 @@ export default async function handler(req, res) {
   }
 
   try {
+    if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
+      return res.status(400).json({ success: false, message: 'Bad request' });
+    }
     const { action, ...errorInfo } = req.body;
 
-    // Handle initialization request
+    // Handle initialization request (yalnız admin)
     if (action === 'init') {
+      if (!(await requireAdmin(req, res))) return;
       const initialized = await initializeErrorsSheet();
       
       if (initialized) {
@@ -32,6 +36,13 @@ export default async function handler(req, res) {
           message: 'Failed to initialize Errors sheet headers. Please check Google Sheets configuration.' 
         });
       }
+    }
+
+    // Açıq endpoint: bir IP-dən qısa müddətdə çox yazı qəbul edilmir
+    const limit = rateLimit(`errors:${clientIp(req)}`, 20, 10 * 60 * 1000);
+    if (limit.limited) {
+      res.setHeader('Retry-After', String(limit.retryAfter));
+      return res.status(429).json({ success: false, message: 'Too many requests' });
     }
 
     // Handle error logging request (default)
