@@ -1,6 +1,21 @@
 // Error Logger - Saves errors to Google Sheets "Errors" page
 import jwt from 'jsonwebtoken';
 
+// Şifrə, token və şəkil kimi sahələr heç vaxt cədvələ yazılmır
+const SENSITIVE_KEYS = /pass(word)?|token|secret|authorization|image/i;
+function redact(value, depth = 0) {
+  if (depth > 6) return '[…]';
+  if (Array.isArray(value)) return value.slice(0, 50).map((v) => redact(v, depth + 1));
+  if (value && typeof value === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(value).slice(0, 60)) {
+      out[k] = SENSITIVE_KEYS.test(k) ? '[gizlədilib]' : redact(v, depth + 1);
+    }
+    return out;
+  }
+  return value;
+}
+
 // Get access token for Google Sheets API
 async function getAccessToken() {
   const serviceAccountKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
@@ -70,17 +85,19 @@ export async function logErrorToSheets(errorInfo) {
     await ensureErrorsSheetHeaders(accessToken, sheetId);
 
     // Prepare error row data
+    // Hər xana qısaldılır ki, cədvəl böyük yazılarla doldurulmasın
+    const cell = (v, max = 2000) => String(v ?? '').slice(0, max);
     const rowData = [
       new Date().toISOString(), // Timestamp
-      errorInfo.type || 'UNKNOWN_ERROR', // Error type
-      errorInfo.endpoint || 'N/A', // Endpoint/Page
-      errorInfo.message || 'No message', // Error message
-      errorInfo.stack || '', // Stack trace
-      errorInfo.data ? JSON.stringify(errorInfo.data) : '', // Additional data
-      errorInfo.userAgent || '', // User agent
-      errorInfo.url || '', // URL
-      errorInfo.statusCode || '', // HTTP status code
-      errorInfo.method || '', // HTTP method
+      cell(errorInfo.type || 'UNKNOWN_ERROR', 60), // Error type
+      cell(errorInfo.endpoint || 'N/A', 200), // Endpoint/Page
+      cell(errorInfo.message || 'No message', 1000), // Error message
+      cell(errorInfo.stack || '', 2000), // Stack trace
+      errorInfo.data ? cell(JSON.stringify(redact(errorInfo.data)), 3000) : '', // Additional data
+      cell(errorInfo.userAgent || '', 300), // User agent
+      cell(errorInfo.url || '', 500), // URL
+      cell(errorInfo.statusCode || '', 10), // HTTP status code
+      cell(errorInfo.method || '', 10), // HTTP method
     ];
 
     // Try to find the correct sheet name (Errors or errors)

@@ -17,6 +17,20 @@ function escapeHtml(text) {
   return String(text).replace(/[&<>"']/g, m => map[m]);
 }
 
+// E-poçt HTML-i üçün bütün sətirləri escape edir (rəqəmlər olduğu kimi qalır)
+function deepEscape(value, depth = 0) {
+  if (depth > 5) return '';
+  if (typeof value === 'string') return escapeHtml(value);
+  if (typeof value === 'number' || typeof value === 'boolean') return value;
+  if (Array.isArray(value)) return value.slice(0, 20).map((v) => deepEscape(v, depth + 1));
+  if (value && typeof value === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(value)) out[k] = deepEscape(v, depth + 1);
+    return out;
+  }
+  return value;
+}
+
 const createTransporter = () => {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return null;
   return nodemailer.createTransport({
@@ -90,31 +104,32 @@ export default async function handler(req, res) {
 
     const transporter = createTransporter();
     if (transporter) {
+      const safe = deepEscape(bookingData);
       const adminEmail = process.env.CONTACT_EMAIL || process.env.EMAIL_USER;
       let emailSubject = `Yeni Rezervasiya Sorğusu - ${bookingData.type}`;
-      let emailContent = `<h2>Yeni Rezervasiya Sorğusu</h2><p><strong>Ad:</strong> ${bookingData.name}</p><p><strong>Email:</strong> ${bookingData.email}</p><p><strong>Telefon:</strong> ${bookingData.phone}</p><p><strong>Növ:</strong> ${bookingData.type}</p>`;
+      let emailContent = `<h2>Yeni Rezervasiya Sorğusu</h2><p><strong>Ad:</strong> ${safe.name}</p><p><strong>Email:</strong> ${safe.email}</p><p><strong>Telefon:</strong> ${safe.phone}</p><p><strong>Növ:</strong> ${safe.type}</p>`;
       
       if (bookingData.type === 'flight') {
         emailSubject = `Yeni Aviabilet Sorğusu`;
-        emailContent += `<p><strong>Səyahət növü:</strong> ${bookingData.tripType || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Səyahət növü:</strong> ${safe.tripType || 'Təyin edilməyib'}</p>`;
         
         if (bookingData.tripType === 'one-way' || bookingData.tripType === 'round-trip') {
-          emailContent += `<p><strong>Haradan:</strong> ${bookingData.from || 'Təyin edilməyib'}</p><p><strong>Hara:</strong> ${bookingData.to || 'Təyin edilməyib'}</p>`;
-          emailContent += `<p><strong>Gediş tarixi:</strong> ${bookingData.departureDate || 'Təyin edilməyib'}</p>`;
+          emailContent += `<p><strong>Haradan:</strong> ${safe.from || 'Təyin edilməyib'}</p><p><strong>Hara:</strong> ${safe.to || 'Təyin edilməyib'}</p>`;
+          emailContent += `<p><strong>Gediş tarixi:</strong> ${safe.departureDate || 'Təyin edilməyib'}</p>`;
           if (bookingData.tripType === 'round-trip') {
-            emailContent += `<p><strong>Qayıdış tarixi:</strong> ${bookingData.returnDate || 'Təyin edilməyib'}</p>`;
+            emailContent += `<p><strong>Qayıdış tarixi:</strong> ${safe.returnDate || 'Təyin edilməyib'}</p>`;
           }
-        } else if (bookingData.tripType === 'multi-city' && bookingData.segments) {
+        } else if (bookingData.tripType === 'multi-city' && safe.segments) {
           emailContent += `<p><strong>Multi-şəhər uçuşlar:</strong></p><ul>`;
-          bookingData.segments.forEach((segment, index) => {
+          safe.segments.forEach((segment, index) => {
             emailContent += `<li>${index + 1}. ${segment.from || 'Təyin edilməyib'} → ${segment.to || 'Təyin edilməyib'} (${segment.date || 'Təyin edilməyib'})</li>`;
           });
           emailContent += `</ul>`;
         }
         
         // Passenger info
-        if (bookingData.passengerInfo) {
-          const pi = bookingData.passengerInfo;
+        if (safe.passengerInfo) {
+          const pi = safe.passengerInfo;
           emailContent += `<p><strong>Sərnişin detalları:</strong></p>`;
           emailContent += `<ul>`;
           emailContent += `<li>Böyüklər (12+): ${pi.adults || 0}</li>`;
@@ -124,19 +139,19 @@ export default async function handler(req, res) {
           emailContent += `<li>Ümumi: ${(pi.adults || 0) + (pi.children || 0) + (pi.infants || 0) + (pi.seniors || 0)}</li>`;
           emailContent += `</ul>`;
         } else {
-          emailContent += `<p><strong>Nəfər sayı:</strong> ${bookingData.passengers || 'Təyin edilməyib'}</p>`;
+          emailContent += `<p><strong>Nəfər sayı:</strong> ${safe.passengers || 'Təyin edilməyib'}</p>`;
         }
-        emailContent += `<p><strong>Sinif:</strong> ${bookingData.class || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Stopla:</strong> ${bookingData.stops || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Sinif:</strong> ${safe.class || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Stopla:</strong> ${safe.stops || 'Təyin edilməyib'}</p>`;
       } else if (bookingData.type === 'hotel') {
-        emailSubject = `Yeni Otel Rezervasiya Sorğusu - ${bookingData.destination || ''}`;
-        emailContent += `<p><strong>Məkan:</strong> ${bookingData.destination || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Giriş:</strong> ${bookingData.checkIn || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Çıxış:</strong> ${bookingData.checkOut || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Otaq sayı:</strong> ${bookingData.rooms || 'Təyin edilməyib'}</p>`;
+        emailSubject = `Yeni Otel Rezervasiya Sorğusu - ${safe.destination || ''}`;
+        emailContent += `<p><strong>Məkan:</strong> ${safe.destination || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Giriş:</strong> ${safe.checkIn || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Çıxış:</strong> ${safe.checkOut || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Otaq sayı:</strong> ${safe.rooms || 'Təyin edilməyib'}</p>`;
         // Guest info
-        if (bookingData.guestInfo) {
-          const gi = bookingData.guestInfo;
+        if (safe.guestInfo) {
+          const gi = safe.guestInfo;
           emailContent += `<p><strong>Qonaq detalları:</strong></p>`;
           emailContent += `<ul>`;
           emailContent += `<li>Böyüklər (18+): ${gi.adults || 0}</li>`;
@@ -146,20 +161,20 @@ export default async function handler(req, res) {
           emailContent += `<li>Ümumi: ${(gi.adults || 0) + (gi.children || 0) + (gi.infants || 0) + (gi.seniors || 0)}</li>`;
           emailContent += `</ul>`;
         } else {
-          emailContent += `<p><strong>Nəfər sayı:</strong> ${bookingData.guests || 'Təyin edilməyib'}</p>`;
+          emailContent += `<p><strong>Nəfər sayı:</strong> ${safe.guests || 'Təyin edilməyib'}</p>`;
         }
-        emailContent += `<p><strong>Otel növü:</strong> ${bookingData.hotelType || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Otel növü:</strong> ${safe.hotelType || 'Təyin edilməyib'}</p>`;
       } else if (bookingData.type === 'transfer') {
         emailSubject = `Yeni Transfer Sorğusu`;
-        emailContent += `<p><strong>Transfer növü:</strong> ${bookingData.transferType || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Haradan:</strong> ${bookingData.from || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Hara:</strong> ${bookingData.to || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Tarix:</strong> ${bookingData.date || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Vaxt:</strong> ${bookingData.time || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Nəqliyyat növü:</strong> ${bookingData.vehicleType || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Transfer növü:</strong> ${safe.transferType || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Haradan:</strong> ${safe.from || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Hara:</strong> ${safe.to || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Tarix:</strong> ${safe.date || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Vaxt:</strong> ${safe.time || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Nəqliyyat növü:</strong> ${safe.vehicleType || 'Təyin edilməyib'}</p>`;
         // Transfer passenger info
-        if (bookingData.transferPassengerInfo) {
-          const tpi = bookingData.transferPassengerInfo;
+        if (safe.transferPassengerInfo) {
+          const tpi = safe.transferPassengerInfo;
           emailContent += `<p><strong>Sərnişin detalları:</strong></p>`;
           emailContent += `<ul>`;
           emailContent += `<li>Böyüklər (18+): ${tpi.adults || 0}</li>`;
@@ -169,22 +184,22 @@ export default async function handler(req, res) {
           emailContent += `<li>Ümumi: ${(tpi.adults || 0) + (tpi.children || 0) + (tpi.infants || 0) + (tpi.seniors || 0)}</li>`;
           emailContent += `</ul>`;
         }
-        emailContent += `<p><strong>Nəfər sayı:</strong> ${bookingData.passengers || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Nəfər sayı:</strong> ${safe.passengers || 'Təyin edilməyib'}</p>`;
       } else if (bookingData.type === 'insurance') {
-        emailSubject = `Yeni Sığorta Sorğusu - ${bookingData.insuranceType || ''}`;
-        emailContent += `<p><strong>Sığorta növü:</strong> ${bookingData.insuranceType || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Paket:</strong> ${bookingData.package || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Başlama tarixi:</strong> ${bookingData.startDate || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Bitmə tarixi:</strong> ${bookingData.endDate || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Əhatə dairəsi:</strong> ${bookingData.coverage || 'Təyin edilməyib'}</p>`;
+        emailSubject = `Yeni Sığorta Sorğusu - ${safe.insuranceType || ''}`;
+        emailContent += `<p><strong>Sığorta növü:</strong> ${safe.insuranceType || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Paket:</strong> ${safe.package || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Başlama tarixi:</strong> ${safe.startDate || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Bitmə tarixi:</strong> ${safe.endDate || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Əhatə dairəsi:</strong> ${safe.coverage || 'Təyin edilməyib'}</p>`;
       } else if (bookingData.type === 'embassy') {
-        emailSubject = `Yeni Səfirlik Sorğusu - ${bookingData.embassyCountry || ''}`;
-        emailContent += `<p><strong>Ölkə:</strong> ${bookingData.embassyCountry || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Viza növü:</strong> ${bookingData.visaType || 'Təyin edilməyib'}</p>`;
-        emailContent += `<p><strong>Təcili:</strong> ${bookingData.urgent ? 'Bəli' : 'Xeyr'}</p>`;
+        emailSubject = `Yeni Səfirlik Sorğusu - ${safe.embassyCountry || ''}`;
+        emailContent += `<p><strong>Ölkə:</strong> ${safe.embassyCountry || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Viza növü:</strong> ${safe.visaType || 'Təyin edilməyib'}</p>`;
+        emailContent += `<p><strong>Təcili:</strong> ${safe.urgent ? 'Bəli' : 'Xeyr'}</p>`;
         // Embassy traveler info
-        if (bookingData.embassyTravelerInfo) {
-          const eti = bookingData.embassyTravelerInfo;
+        if (safe.embassyTravelerInfo) {
+          const eti = safe.embassyTravelerInfo;
           emailContent += `<p><strong>Səyahətçi detalları:</strong></p>`;
           emailContent += `<ul>`;
           emailContent += `<li>Böyüklər (18+): ${eti.adults || 0}</li>`;
@@ -196,7 +211,7 @@ export default async function handler(req, res) {
         }
       }
       
-        emailContent += `<p><strong>Əlavə məlumat:</strong> ${escapeHtml(bookingData.notes || 'Yoxdur')}</p>`;
+        emailContent += `<p><strong>Əlavə məlumat:</strong> ${safe.notes || 'Yoxdur'}</p>`;
       
       try {
         await transporter.sendMail({ 
